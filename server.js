@@ -4,8 +4,15 @@ const dotenv = require('dotenv');
 const path = require('path');
 const multer = require('multer');
 const session = require('express-session');
+const fs = require('fs');
 
 dotenv.config();
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Debugging Environment Variables
 console.log('--- Environment Variables Check ---');
