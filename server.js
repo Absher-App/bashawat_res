@@ -7,6 +7,14 @@ const session = require('express-session');
 
 dotenv.config();
 
+// Debugging Environment Variables
+console.log('--- Environment Variables Check ---');
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('DB_PASSWORD length:', process.env.DB_PASSWORD ? process.env.DB_PASSWORD.length : '0');
+console.log('-----------------------------------');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
