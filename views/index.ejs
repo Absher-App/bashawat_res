@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوظة بقداش - Bodat Bagdash</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <!-- إضافة أيقونات Font Awesome للسلة -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Offers Banner -->
+    <div class="offers-banner">
+        <div class="offers-text">
+            <%= offer_text || '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰' %>
+        </div>
+    </div>
+
+    <!-- Topbar Navigation -->
+    <nav class="topbar">
+        <div class="container topbar-content">
+            <div class="logo-area">
+                <img src="/images/logo.png" alt="بوظة بقداش" class="nav-logo">
+                <a href="/" class="brand-name"> بوظة بقداش - Bodat Bagdash</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/" class="active">الرئيسية</a></li>
+                <li><a href="#products-section">المنتجات</a></li>
+                <li><a href="/parties">الحفلات</a></li>
+                <li><a href="/cart">السلة <i class="fas fa-shopping-cart"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- زر السلة العائم -->
+    <a href="/cart" class="cart-floating-btn" id="cartBtn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </a>
+
+    <!-- قسم السلايدر -->
+    <section class="hero-slider">
+        <div class="slider-container">
+            <% if (slides && slides.length > 0) { %>
+                <% slides.forEach((slide, index) => { %>
+                <div class="slide <%= index === 0 ? 'active' : '' %>" style="background-image: url('<%= slide.image_url %>');">
+                    <div class="slide-content">
+                        <% if(slide.title) { %><h2><%= slide.title %></h2><% } %>
+                        <% if(slide.subtitle) { %><p><%= slide.subtitle %></p><% } %>
+                        <% if(slide.link_url) { %>
+                            <a href="<%= slide.link_url %>" class="cta-btn">تصفح المزيد</a>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+            <% } else { %>
+                <!-- Default Slide if no slides in DB -->
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1579372786545-d24232daf58c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                    <div class="slide-content">
+                        <h2>أشهى الحلويات العربية</h2>
+                        <p>طعم الأصالة في كل قطعة</p>
+                        <a href="#products-section" class="cta-btn">تصفح القائمة</a>
+                    </div>
+                </div>
+            <% } %>
+            
+            <button class="prev-slide">&#10094;</button>
+            <button class="next-slide">&#10095;</button>
+        </div>
+    </section>
+
+    <!-- Stories Section -->
+    <% if (locals.stories && stories.length > 0) { %>
+    <section class="stories-section">
+        <div class="stories-scroll-container">
+            <% stories.forEach(story => { %>
+                <div class="story-item" onclick="openStory('<%= story.video_url %>', '<%= story.title %>')">
+                    <div class="story-circle">
+                        <img src="<%= story.cover_url %>" alt="<%= story.title %>">
+                    </div>
+                    <div class="story-title"><%= story.title %></div>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- قسم المنتجات حسب التصنيف -->
+    <main class="container" id="products-section">
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <strong>تنبيه:</strong> <%= error %>
+            </div>
+        <% } %>
+
+        <% if (!locals.products || products.length === 0) { %>
+            <div class="no-products">
+                <p>لا توجد منتجات متاحة حالياً.</p>
+            </div>
+        <% } else { %>
+            <% 
+                // عرض المنتجات حسب التصنيفات الموجودة في قاعدة البيانات
+                // إذا لم تكن هناك تصنيفات، نستخدم التجميع القديم كاحتياط
+                let catsToRender = categories;
+                if (!catsToRender || catsToRender.length === 0) {
+                    const uniqueCats = [...new Set(products.map(p => p.category))];
+                    catsToRender = uniqueCats.map(c => ({ name: c, id: c }));
+                }
+            %>
+            
+            <% catsToRender.forEach(function(cat) { %>
+                <% const catProducts = products.filter(p => p.category === cat.name); %>
+                <% if (catProducts.length > 0) { %>
+                    <section class="category-block" id="cat-<%= cat.id %>">
+                        <div class="category-header">
+                            <h2 class="category-title"><%= cat.name %></h2>
+                        </div>
+                        
+                        <div class="products-grid">
+                            <% catProducts.forEach(function(product) { %>
+                                <div class="product-card" data-id="<%= product.id %>">
+                                    <div class="product-image">
+                                        <img src="<%= product.image_url || 'https://via.placeholder.com/300x200?text=No+Image' %>" alt="<%= product.name %>">
+                                        <span class="price"><%= product.price %> ر.س</span>
+                                    </div>
+                                    <div class="product-info">
+                                        <h3><%= product.name %></h3>
+                                        <p><%= product.description %></p>
+                                        
+                                        <!-- منطقة أزرار التحكم -->
+                                        <div class="product-actions">
+                                            <button class="order-btn add-to-cart-btn" 
+                                                onclick="addToCart(<%= JSON.stringify(product) %>)"
+                                            >
+                                                <i class="fas fa-cart-plus"></i> أضف للسلة
+                                            </button>
+                                            
+                                            <div class="qty-control-widget" style="display: none;">
+                                                <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)">-</button>
+                                                <span class="qty-display">1</span>
+                                                <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)">+</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </section>
+                <% } %>
+            <% }); %>
+            
+            <!-- Handle Uncategorized Products (optional, if any product doesn't match known categories) -->
+            <% const knownCatNames = catsToRender.map(c => c.name); %>
+            <% const otherProducts = products.filter(p => !knownCatNames.includes(p.category)); %>
+            <% if (otherProducts.length > 0) { %>
+                <section class="category-block" id="cat-other">
+                    <div class="category-header">
+                        <h2 class="category-title">أخرى</h2>
+                    </div>
+                    <div class="products-grid">
+                        <% otherProducts.forEach(function(product) { %>
+                            <div class="product-card" data-id="<%= product.id %>">
+                                <div class="product-image">
+                                    <img src="<%= product.image_url || 'https://via.placeholder.com/300x200?text=No+Image' %>" alt="<%= product.name %>">
+                                    <span class="price"><%= product.price %> ر.س</span>
+                                </div>
+                                <div class="product-info">
+                                    <h3><%= product.name %></h3>
+                                    <p><%= product.description %></p>
+                                    <div class="product-actions">
+                                        <button class="order-btn add-to-cart-btn" onclick="addToCart(<%= JSON.stringify(product) %>)">
+                                            <i class="fas fa-cart-plus"></i> أضف للسلة
+                                        </button>
+                                        <div class="qty-control-widget" style="display: none;">
+                                            <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)">-</button>
+                                            <span class="qty-display">1</span>
+                                            <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </section>
+            <% } %>
+
+        <% } %>
+    </main>
+
+    <!-- قسم آراء العملاء -->
+    <section class="reviews-section">
+        <div class="container">
+            <h2 class="section-title">ماذا يقول عملاؤنا</h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="review-avatar"><i class="fas fa-user"></i></div>
+                    <div class="stars">★★★★★</div>
+                    <p>"أطيب بوظة ذقتها في حياتي! الطعم الأصلي فعلاً والخدمة ممتازة جداً."</p>
+                    <h4>أحمد محمد</h4>
+                </div>
+                <div class="review-card">
+                    <div class="review-avatar"><i class="fas fa-user-circle"></i></div>
+                    <div class="stars">★★★★★</div>
+                    <p>"تعامل راقي وتوصيل سريع، والكيك كان خيالي والكل سألني عنه."</p>
+                    <h4>سارة العلي</h4>
+                </div>
+                <div class="review-card">
+                    <div class="review-avatar"><i class="fas fa-user-tie"></i></div>
+                    <div class="stars">★★★★☆</div>
+                    <p>"الحلويات الشرقية ممتازة جداً وتواجه في العزايم، شكراً لكم."</p>
+                    <h4>خالد فهد</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content container">
+            <div class="footer-col">
+                <h3>بوظة بقداش</h3>
+                <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
+            </div>
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="/">الرئيسية</a></li>
+                    <li><a href="#products-section">المنتجات</a></li>
+                    <li><a href="/parties">الحفلات</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>تواصل معنا</h3>
+                <p><i class="fas fa-phone"></i> 920005031 | واتساب : 0502975175</p>
+                <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة &copy; 2024 بوظة بقداش - Bodat Bagdash</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/966502975175" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Story Viewer Modal -->
+    <div class="story-modal" id="storyModal">
+        <span class="close-story" onclick="closeStory()">&times;</span>
+        <div class="story-video-container">
+            <video class="story-video" id="storyVideo" controls autoplay>
+                <source src="" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+        </div>
+        <h3 class="story-modal-title" id="storyTitle"></h3>
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

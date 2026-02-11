@@ -1,0 +1,53 @@
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/images/logo.png" alt="بقداش" class="sidebar-logo">
+            <span class="sidebar-brand"> بوظة بقداش - Bodat Bagdash</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="/admin" class="<%= activePage === 'dashboard' ? 'active' : '' %>">
+                    <i class="fas fa-th-large"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/settings" class="<%= activePage === 'settings' ? 'active' : '' %>">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>شريط العروض</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/slider" class="<%= activePage === 'slider' ? 'active' : '' %>">
+                    <i class="fas fa-images"></i>
+                    <span>السلايدر</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/stories" class="<%= activePage === 'stories' ? 'active' : '' %>">
+                    <i class="fas fa-video"></i>
+                    <span>القصص (Stories)</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/categories" class="<%= activePage === 'categories' ? 'active' : '' %>">
+                    <i class="fas fa-tags"></i>
+                    <span>التصنيفات</span>
+                </a>
+            </li>
+            <li>
+                <a href="/admin/products" class="<%= activePage === 'products' ? 'active' : '' %>">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="/admin/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>تسجيل الخروج</span>
+            </a>
+        </div>
+    </aside>

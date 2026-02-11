@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة المشتريات - بوظة بقداش - Bodat Bagdash</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Offers Banner -->
+    <div class="offers-banner">
+        <div class="offers-text">
+            ✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉
+        </div>
+    </div>
+
+    <!-- Topbar Navigation -->
+    <nav class="topbar">
+        <div class="container topbar-content">
+            <div class="logo-area">
+                <img src="/images/logo.png" alt="بوظة بقداش" class="nav-logo">
+                <a href="/" class="brand-name"> بوظة بقداش - Bodat Bagdash</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">الرئيسية</a></li>
+                <li><a href="/#products-section">المنتجات</a></li>
+                <li><a href="/parties">الحفلات</a></li>
+                <li><a href="/cart" class="active">السلة <i class="fas fa-shopping-cart"></i></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="page-header" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <div class="overlay"></div>
+        <div class="header-content">
+            <h1>سلة المشتريات</h1>
+            <p>مراجعة طلبك وإتمامه</p>
+        </div>
+    </header>
+
+    <main class="container cart-page-container">
+        <div class="cart-layout">
+            <div class="cart-items-section">
+                <h2>منتجاتك</h2>
+                <div id="fullCartItems">
+                    <!-- سيتم ملء المنتجات هنا بواسطة JavaScript -->
+                    <div class="loading-cart">جاري تحميل السلة...</div>
+                </div>
+            </div>
+
+            <div class="cart-summary-section">
+                <div class="cart-summary-card">
+                    <h3>ملخص الطلب</h3>
+                    <div class="summary-row">
+                        <span>المجموع الفرعي:</span>
+                        <span id="subTotal">0.00 ر.س</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>الضريبة (0%):</span>
+                        <span>0.00 ر.س</span>
+                    </div>
+                    <hr>
+                    <div class="summary-row total">
+                        <span>الإجمالي:</span>
+                        <span id="finalTotal">0.00 ر.س</span>
+                    </div>
+                    
+                    <button class="checkout-btn" id="pageCheckoutBtn">
+                        <i class="fab fa-whatsapp"></i> إتمام الطلب عبر واتساب
+                    </button>
+                    
+                    <a href="/" class="continue-shopping">
+                        <i class="fas fa-arrow-right"></i> متابعة التسوق
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content container">
+            <div class="footer-col">
+                <h3>بقداش</h3>
+                <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
+            </div>
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="/">الرئيسية</a></li>
+                    <li><a href="/#products-section">المنتجات</a></li>
+                    <li><a href="/parties">الحفلات</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>تواصل معنا</h3>
+                <p><i class="fas fa-phone"></i> 920005031 | واتساب : 0502975175</p>
+                <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة &copy; 2024 بقداش للحلويات</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/966502975175" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

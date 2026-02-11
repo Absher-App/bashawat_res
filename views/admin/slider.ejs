@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة السلايدر - لوحة التحكم</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <%- include('partials/sidebar') %>
+
+    <main class="main-content">
+        
+        <div class="header-title">
+            <h2>إدارة السلايدر</h2>
+            <div class="user-info">
+                <span>مرحباً، المشرف</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </div>
+
+        <!-- Add Button Container -->
+        <div class="add-btn-container">
+            <button onclick="openModal('addSlideModal')" class="btn-add-new">
+                <i class="fas fa-plus-circle"></i> إضافة سلايد جديد
+            </button>
+        </div>
+
+        <div class="content-grid">
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-header">
+                    <h3>الشرائح الحالية</h3>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الصورة</th>
+                                <th>العنوان</th>
+                                <th>العنوان الفرعي</th>
+                                <th>الترتيب</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% slides.forEach(slide => { %>
+                            <tr>
+                                <td>
+                                    <img src="<%= slide.image_url %>" alt="<%= slide.title %>" class="product-img-sm">
+                                </td>
+                                <td><%= slide.title %></td>
+                                <td><%= slide.subtitle %></td>
+                                <td><%= slide.display_order %></td>
+                                <td>
+                                    <form action="/admin/delete-slide/<%= slide.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                                        <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Slide Modal -->
+        <div id="addSlideModal" class="admin-modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('addSlideModal')">&times;</span>
+                <div class="modal-header">
+                    <h3>إضافة سلايد جديد</h3>
+                </div>
+                <form action="/admin/add-slide" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>العنوان الرئيسي</label>
+                        <input type="text" name="title" class="form-control" placeholder="عنوان الشريحة">
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان الفرعي</label>
+                        <input type="text" name="subtitle" class="form-control" placeholder="وصف قصير">
+                    </div>
+                    <div class="form-group">
+                        <label>رابط الزر (اختياري)</label>
+                        <input type="text" name="link_url" class="form-control" placeholder="مثال: #products-section">
+                    </div>
+                    <div class="form-group">
+                        <label>الترتيب</label>
+                        <input type="number" name="display_order" class="form-control" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>الصورة</label>
+                        <input type="file" name="image" accept="image/*" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-plus"></i> إضافة الشريحة
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('admin-modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+
+</body>
+</html>

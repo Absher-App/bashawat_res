@@ -1,0 +1,348 @@
+const express = require('express');
+const mysql = require('mysql2');
+const dotenv = require('dotenv');
+const path = require('path');
+const multer = require('multer');
+const session = require('express-session');
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+// إعداد الجلسة
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'bagdash_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// إعداد body-parser المدمج في express
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// إعداد ملفات الاستاتيك (CSS, JS, Images)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// إعداد Multer لرفع الصور
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)) // تسمية فريدة
+    }
+});
+const upload = multer({ storage: storage });
+
+// متغير لتخزين حالة الاتصال
+let dbConnected = false;
+let dbError = null;
+
+// إعداد اتصال قاعدة البيانات
+let db;
+function handleDisconnect() {
+    db = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
+    });
+
+    db.connect((err) => {
+        if (err) {
+            console.error('فشل الاتصال بقاعدة البيانات:', err.message);
+            dbError = err.message;
+            dbConnected = false;
+            setTimeout(handleDisconnect, 2000);
+        } else {
+            console.log('تم الاتصال بقاعدة البيانات MySQL بنجاح');
+            dbConnected = true;
+            dbError = null;
+        }
+    });
+
+    db.on('error', function(err) {
+        console.log('خطأ في قاعدة البيانات:', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect();
+        } else {
+            dbError = err.message;
+            dbConnected = false;
+        }
+    });
+}
+
+handleDisconnect();
+
+// Helper function to query database
+function queryDb(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        if (!dbConnected) return reject(new Error('Database not connected'));
+        db.query(sql, params, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+}
+
+// الصفحة الرئيسية - عرض المينو
+app.get('/', async (req, res) => {
+    if (!dbConnected) {
+        return res.render('index', { 
+            products: [], categories: [], slides: [], stories: [], offer_text: '',
+            error: 'فشل الاتصال بقاعدة البيانات: ' + dbError 
+        });
+    }
+
+    try {
+        const products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        const categories = await queryDb('SELECT * FROM categories');
+        const slides = await queryDb('SELECT * FROM slides ORDER BY display_order');
+        const stories = await queryDb('SELECT * FROM stories ORDER BY created_at DESC');
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+
+        res.render('index', { products, categories, slides, stories, offer_text, error: null });
+    } catch (err) {
+        console.error(err);
+        res.render('index', { products: [], categories: [], slides: [], stories: [], offer_text: '', error: 'خطأ في جلب البيانات' });
+    }
+});
+
+// صفحة الحفلات
+app.get('/parties', (req, res) => {
+    res.render('parties');
+});
+
+// صفحة السلة
+app.get('/cart', (req, res) => {
+    res.render('cart');
+});
+
+// Middleware للتحقق من تسجيل الدخول
+const requireAuth = (req, res, next) => {
+    if (req.session.userId) {
+        next();
+    } else {
+        res.redirect('/admin/login');
+    }
+};
+
+// صفحة تسجيل الدخول
+app.get('/admin/login', (req, res) => {
+    res.render('admin/login', { error: null });
+});
+
+app.post('/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    const adminUser = process.env.ADMIN_USERNAME || 'admin';
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+
+    if (username === adminUser && password === adminPass) {
+        req.session.userId = 1;
+        req.session.username = username;
+        res.redirect('/admin');
+    } else {
+        res.render('admin/login', { error: 'اسم المستخدم أو كلمة المرور غير صحيحة' });
+    }
+});
+
+// تسجيل الخروج
+app.get('/admin/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/admin/login');
+    });
+});
+
+// لوحة التحكم - الرئيسية (الإحصائيات)
+app.get('/admin', requireAuth, async (req, res) => {
+    if (!dbConnected) return res.send('خطأ في الاتصال بقاعدة البيانات');
+
+    try {
+        const productsCount = await queryDb('SELECT COUNT(*) as count FROM products');
+        const categoriesCount = await queryDb('SELECT COUNT(*) as count FROM categories');
+        const slidesCount = await queryDb('SELECT COUNT(*) as count FROM slides');
+        // Mock data for sales/orders as we don't have tables for them yet
+        const stats = {
+            products: productsCount[0].count,
+            categories: categoriesCount[0].count,
+            slides: slidesCount[0].count,
+            orders: 150,
+            customers: 1250,
+            sales: 45000
+        };
+
+        res.render('admin/dashboard', { stats, activePage: 'dashboard' });
+    } catch (err) {
+        console.error(err);
+        res.send('خطأ في جلب البيانات');
+    }
+});
+
+// إدارة المنتجات
+app.get('/admin/products', requireAuth, async (req, res) => {
+    try {
+        const products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        const categories = await queryDb('SELECT * FROM categories');
+        res.render('admin/products', { products, categories, activePage: 'products' });
+    } catch (err) {
+        console.error(err);
+        res.send('خطأ في جلب البيانات');
+    }
+});
+
+// إدارة التصنيفات
+app.get('/admin/categories', requireAuth, async (req, res) => {
+    try {
+        const categories = await queryDb('SELECT * FROM categories');
+        res.render('admin/categories', { categories, activePage: 'categories' });
+    } catch (err) {
+        console.error(err);
+        res.send('خطأ في جلب البيانات');
+    }
+});
+
+// إدارة السلايدر
+app.get('/admin/slider', requireAuth, async (req, res) => {
+    try {
+        const slides = await queryDb('SELECT * FROM slides ORDER BY display_order');
+        res.render('admin/slider', { slides, activePage: 'slider' });
+    } catch (err) {
+        console.error(err);
+        res.send('خطأ في جلب البيانات');
+    }
+});
+
+// إدارة الإعدادات (شريط العروض)
+app.get('/admin/settings', requireAuth, async (req, res) => {
+    try {
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+        res.render('admin/settings', { offer_text, activePage: 'settings' });
+    } catch (err) {
+        console.error(err);
+        res.send('خطأ في جلب البيانات');
+    }
+});
+
+// إضافة منتج جديد
+app.post('/admin/add-product', requireAuth, upload.single('image'), (req, res) => {
+    const { name, description, price, category } = req.body;
+    const image_url = req.file ? '/uploads/' + req.file.filename : '';
+
+    const query = 'INSERT INTO products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)';
+    db.query(query, [name, description, price, category, image_url], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/products');
+    });
+});
+
+// حذف منتج
+app.post('/admin/delete-product/:id', requireAuth, (req, res) => {
+    const productId = req.params.id;
+    const query = 'DELETE FROM products WHERE id = ?';
+    db.query(query, [productId], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/products');
+    });
+});
+
+// إدارة الستوريات (Stories)
+app.get('/admin/stories', requireAuth, async (req, res) => {
+    try {
+        const stories = await queryDb('SELECT * FROM stories ORDER BY created_at DESC');
+        res.render('admin/stories', { stories, activePage: 'stories' });
+    } catch (err) {
+        console.error(err);
+        res.send('خطأ في جلب البيانات');
+    }
+});
+
+app.post('/admin/add-story', requireAuth, upload.fields([{ name: 'cover', maxCount: 1 }, { name: 'video', maxCount: 1 }]), (req, res) => {
+    const { title } = req.body;
+    
+    if (!req.files || !req.files['cover'] || !req.files['video']) {
+        return res.send('يجب رفع صورة الغلاف والفيديو');
+    }
+
+    const cover_url = '/uploads/' + req.files['cover'][0].filename;
+    const video_url = '/uploads/' + req.files['video'][0].filename;
+
+    const query = 'INSERT INTO stories (title, cover_url, video_url) VALUES (?, ?, ?)';
+    db.query(query, [title, cover_url, video_url], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/stories');
+    });
+});
+
+app.post('/admin/delete-story/:id', requireAuth, (req, res) => {
+    const { id } = req.params;
+    const query = 'DELETE FROM stories WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/stories');
+    });
+});
+
+// تحديث شريط العروض
+app.post('/admin/update-offer', requireAuth, (req, res) => {
+    const { offer_text } = req.body;
+    const query = "INSERT INTO settings (setting_key, setting_value) VALUES ('offer_banner', ?) ON DUPLICATE KEY UPDATE setting_value = ?";
+    db.query(query, [offer_text, offer_text], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/settings');
+    });
+});
+
+// إضافة تصنيف
+app.post('/admin/add-category', requireAuth, (req, res) => {
+    const { name } = req.body;
+    const query = 'INSERT INTO categories (name) VALUES (?)';
+    db.query(query, [name], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/categories');
+    });
+});
+
+// حذف تصنيف
+app.post('/admin/delete-category/:id', requireAuth, (req, res) => {
+    const id = req.params.id;
+    const query = 'DELETE FROM categories WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/categories');
+    });
+});
+
+// إضافة سلايد
+app.post('/admin/add-slide', requireAuth, upload.single('image'), (req, res) => {
+    const { title, subtitle, link_url, display_order } = req.body;
+    const image_url = req.file ? '/uploads/' + req.file.filename : '';
+
+    const query = 'INSERT INTO slides (title, subtitle, image_url, link_url, display_order) VALUES (?, ?, ?, ?, ?)';
+    db.query(query, [title, subtitle, image_url, link_url, display_order || 0], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/slider');
+    });
+});
+
+// حذف سلايد
+app.post('/admin/delete-slide/:id', requireAuth, (req, res) => {
+    const id = req.params.id;
+    const query = 'DELETE FROM slides WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/slider');
+    });
+});
+
+app.listen(port, () => {
+    console.log(`الخادم يعمل على الرابط: http://localhost:${port}`);
+});
