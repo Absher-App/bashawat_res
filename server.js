@@ -47,60 +47,33 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// متغير لتخزين حالة الاتصال
-let dbConnected = false;
-let dbError = null;
+// إعداد اتصال قاعدة البيانات (Connection Pool)
+const dbConfig = {
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USER || 'u592434413_bagdash',
+    password: process.env.DB_PASSWORD || 'Bagdash2024@Pass',
+    database: process.env.DB_NAME || 'u592434413_bagdash',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
+};
 
-// إعداد اتصال قاعدة البيانات
-let db;
-function handleDisconnect() {
-    const dbConfig = {
-        host: process.env.DB_HOST || '127.0.0.1',
-        user: process.env.DB_USER || 'u592434413_bagdash',
-        password: process.env.DB_PASSWORD || 'Bagdash2024@Pass',
-        database: process.env.DB_NAME || 'u592434413_bagdash'
-    };
+console.log('Initializing DB Pool with:', {
+    host: dbConfig.host,
+    user: dbConfig.user,
+    database: dbConfig.database,
+    passwordLength: dbConfig.password ? dbConfig.password.length : 0
+});
 
-    console.log('Attempting DB Connection with:', {
-        host: dbConfig.host,
-        user: dbConfig.user,
-        database: dbConfig.database,
-        passwordLength: dbConfig.password ? dbConfig.password.length : 0
-    });
-
-    db = mysql.createConnection(dbConfig);
-
-    db.connect((err) => {
-        if (err) {
-            console.error('فشل الاتصال بقاعدة البيانات:', err.message);
-            dbError = err.message;
-            dbConnected = false;
-            setTimeout(handleDisconnect, 2000);
-        } else {
-            console.log('تم الاتصال بقاعدة البيانات MySQL بنجاح');
-            dbConnected = true;
-            dbError = null;
-        }
-    });
-
-    db.on('error', function(err) {
-        console.log('خطأ في قاعدة البيانات:', err);
-        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
-            handleDisconnect();
-        } else {
-            dbError = err.message;
-            dbConnected = false;
-        }
-    });
-}
-
-handleDisconnect();
+const pool = mysql.createPool(dbConfig);
+const db = pool; // For backward compatibility with existing code
 
 // Helper function to query database
 function queryDb(sql, params = []) {
     return new Promise((resolve, reject) => {
-        if (!dbConnected) return reject(new Error('Database not connected'));
-        db.query(sql, params, (err, results) => {
+        pool.query(sql, params, (err, results) => {
             if (err) return reject(err);
             resolve(results);
         });
@@ -109,13 +82,6 @@ function queryDb(sql, params = []) {
 
 // الصفحة الرئيسية - عرض المينو
 app.get('/', async (req, res) => {
-    if (!dbConnected) {
-        return res.render('index', { 
-            products: [], categories: [], slides: [], stories: [], offer_text: '',
-            error: 'فشل الاتصال بقاعدة البيانات: ' + dbError 
-        });
-    }
-
     try {
         const products = await queryDb('SELECT * FROM products ORDER BY id DESC');
         const categories = await queryDb('SELECT * FROM categories');
@@ -180,8 +146,6 @@ app.get('/admin/logout', (req, res) => {
 
 // لوحة التحكم - الرئيسية (الإحصائيات)
 app.get('/admin', requireAuth, async (req, res) => {
-    if (!dbConnected) return res.send('خطأ في الاتصال بقاعدة البيانات');
-
     try {
         const productsCount = await queryDb('SELECT COUNT(*) as count FROM products');
         const categoriesCount = await queryDb('SELECT COUNT(*) as count FROM categories');
