@@ -54,12 +54,21 @@ let dbError = null;
 // إعداد اتصال قاعدة البيانات
 let db;
 function handleDisconnect() {
-    db = mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
+    const dbConfig = {
+        host: process.env.DB_HOST || '127.0.0.1',
+        user: process.env.DB_USER || 'u592434413_bagdash',
+        password: process.env.DB_PASSWORD || 'Bagdash2024@Pass',
+        database: process.env.DB_NAME || 'u592434413_bagdash'
+    };
+
+    console.log('Attempting DB Connection with:', {
+        host: dbConfig.host,
+        user: dbConfig.user,
+        database: dbConfig.database,
+        passwordLength: dbConfig.password ? dbConfig.password.length : 0
     });
+
+    db = mysql.createConnection(dbConfig);
 
     db.connect((err) => {
         if (err) {
