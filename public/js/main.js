@@ -1,4 +1,49 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // === Navigation Active State Logic ===
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    // 1. Click Handler for Active Class
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Remove active from all
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            // Add to clicked
+            this.classList.add('active');
+        });
+    });
+
+    // 2. Scroll Spy (Only on Homepage)
+    if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            if(current === 'products-section') {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if(link.getAttribute('href').includes('products-section')) {
+                        link.classList.add('active');
+                    }
+                });
+            } else if (scrollY < 300) {
+                 navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if(link.getAttribute('href') === '/' || link.getAttribute('href') === '/index.html') {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }
+
     // === Slider Logic ===
     const slides = document.querySelectorAll('.slide');
     const nextBtn = document.querySelector('.next-slide');

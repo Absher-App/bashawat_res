@@ -6,6 +6,7 @@
     <title>خدمات الحفلات - بوظة بقداش - Bodat Bagdash</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Offers Banner -->
@@ -15,7 +16,7 @@
         </div>
     </div>
 
-    <!-- Topbar (سيتم نقله لملف منفصل لاحقاً لضمان التوحيد، لكن الآن نكرره للسرعة) -->
+    <!-- Topbar -->
     <nav class="topbar">
         <div class="container topbar-content">
             <div class="logo-area">
@@ -31,37 +32,68 @@
         </div>
     </nav>
 
-    <header class="page-header" style="background-image: url('https://images.unsplash.com/photo-1464349153735-7db50ed83c84?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
-        <div class="overlay"></div>
-        <div class="header-content">
+    <!-- Floating Cart Button -->
+    <a href="/cart" class="cart-floating-btn" id="cartBtn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </a>
+
+    <!-- Header / Hero Section -->
+    <header class="parties-page-header" style="background-image: url('https://images.unsplash.com/photo-1530103862676-de3c9a59af38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');">
+        <div class="parties-header-content">
             <h1>خدمات الحفلات والمناسبات</h1>
-            <p>اجعل مناسبتك مميزة مع أشهى حلويات بقداش</p>
+            <p>اجعل مناسبتك ذكرى لا تُنسى مع لمسة بقداش الفاخرة</p>
         </div>
     </header>
 
-    <section class="parties-content container">
-        <div class="service-card">
-            <i class="fas fa-birthday-cake icon"></i>
-            <h3>حفلات الميلاد</h3>
-            <p>كيكات مخصصة وتوزيعات رائعة لأعياد الميلاد.</p>
-        </div>
-        <div class="service-card">
-            <i class="fas fa-ring icon"></i>
-            <h3>الأعراس والخطوبة</h3>
-            <p>بوفيهات حلويات فاخرة تناسب أرقى المناسبات.</p>
-        </div>
-        <div class="service-card">
-            <i class="fas fa-building icon"></i>
-            <h3>مناسبات الشركات</h3>
-            <p>ضيافة راقية لاجتماعات العمل والمؤتمرات.</p>
-        </div>
-    </section>
+    <div class="container">
+        <!-- Services Grid -->
+        <section class="parties-grid">
+            <div class="service-card-pro">
+                <div class="service-icon-wrapper">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <h3>حفلات الميلاد</h3>
+                <p>نقدم تشكيلة رائعة من كيكات أعياد الميلاد المصممة خصيصاً لتناسب ذوقك، مع توزيعات آيس كريم مميزة للأطفال والضيوف.</p>
+            </div>
+            
+            <div class="service-card-pro">
+                <div class="service-icon-wrapper">
+                    <i class="fas fa-ring"></i>
+                </div>
+                <h3>الأعراس والخطوبة</h3>
+                <p>بوفيهات حلويات شرقية وغربية فاخرة تليق بأرقى حفلات الزفاف والخطوبة، مع خدمة تقديم احترافية.</p>
+            </div>
+            
+            <div class="service-card-pro">
+                <div class="service-icon-wrapper">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>مناسبات الشركات</h3>
+                <p>ضيافة راقية لاجتماعات العمل والمؤتمرات، تشمل القهوة المختصة وتشكيلة من المعجنات والحلويات الطازجة.</p>
+            </div>
 
-    <section class="contact-section container">
-        <h2>احجز مناسبتك الآن</h2>
-        <p>تواصل معنا لتنسيق بوفيه الحلويات الخاص بمناسبتك</p>
-        <a href="https://wa.me/966502975175" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> تواصل عبر واتساب</a>
-    </section>
+            <div class="service-card-pro">
+                <div class="service-icon-wrapper">
+                    <i class="fas fa-ice-cream"></i>
+                </div>
+                <h3>عربة الآيس كريم</h3>
+                <p>أضف لمسة من المرح لمناسبتك مع عربة الآيس كريم المتنقلة من بقداش، بتقديم مباشر ونكهات متعددة.</p>
+            </div>
+        </section>
+
+        <!-- Booking Call to Action -->
+        <section class="booking-section">
+            <div class="booking-content">
+                <h2>جاهزون لخدمتكم في جميع المناسبات</h2>
+                <p>فريقنا المتخصص مستعد لتنسيق بوفيه الحلويات والضيافة حسب ميزانيتك وعدد ضيوفك. تواصل معنا الآن للحصول على عرض سعر خاص.</p>
+                <a href="https://wa.me/966502975175" class="whatsapp-cta-btn" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                    احجز مناسبتك الآن
+                </a>
+            </div>
+        </section>
+    </div>
 
     <!-- Footer -->
     <footer class="main-footer">
@@ -74,7 +106,7 @@
                 <h3>روابط سريعة</h3>
                 <ul>
                     <li><a href="/">الرئيسية</a></li>
-                    <li><a href="/#products">المنتجات</a></li>
+                    <li><a href="/#products-section">المنتجات</a></li>
                     <li><a href="/parties">الحفلات</a></li>
                 </ul>
             </div>
@@ -89,7 +121,7 @@
         </div>
     </footer>
 
-    <!-- WhatsApp Button -->
+    <!-- WhatsApp Floating Button -->
     <a href="https://wa.me/966502975175" class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
