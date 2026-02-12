@@ -154,10 +154,71 @@ document.addEventListener('DOMContentLoaded', function() {
         if(card) {
             const img = card.querySelector('img');
             animateFlyToCart(img);
+
+            // Button Feedback
+            const btn = card.querySelector('.add-to-cart-btn');
+            if(btn) {
+                const originalContent = btn.innerHTML;
+                btn.classList.add('added');
+                btn.innerHTML = '<i class="fas fa-check"></i> تم الإضافة';
+                setTimeout(() => {
+                    btn.classList.remove('added');
+                    btn.innerHTML = originalContent;
+                }, 2000);
+            }
         }
 
         saveCart();
     };
+
+    // Helper: Fly Animation
+    function animateFlyToCart(sourceElement) {
+        if(!sourceElement) return;
+
+        // Clone the image
+        const clone = sourceElement.cloneNode(true);
+        const rect = sourceElement.getBoundingClientRect();
+        const cartBtn = document.getElementById('cartBtn');
+        
+        // If cart button is not visible (e.g. desktop topbar), target the topbar cart link
+        let targetRect;
+        // Check if floating btn is visible
+        if(cartBtn && window.getComputedStyle(cartBtn).display !== 'none') {
+             targetRect = cartBtn.getBoundingClientRect();
+        } else {
+             // Fallback to topbar cart icon
+             const topCart = document.querySelector('.nav-links a[href="/cart"] i');
+             if(topCart) targetRect = topCart.getBoundingClientRect();
+             else targetRect = { top: 50, left: 50, width: 0, height: 0 }; // Fallback
+        }
+
+        clone.classList.add('fly-item');
+        clone.style.top = `${rect.top}px`;
+        clone.style.left = `${rect.left}px`;
+        clone.style.width = `${rect.width}px`;
+        clone.style.height = `${rect.height}px`;
+        
+        document.body.appendChild(clone);
+
+        // Trigger animation
+        setTimeout(() => {
+            clone.style.top = `${targetRect.top}px`;
+            clone.style.left = `${targetRect.left}px`;
+            clone.style.width = '50px';
+            clone.style.height = '50px';
+            clone.style.opacity = '0.5';
+        }, 10);
+
+        // Cleanup
+        setTimeout(() => {
+            clone.remove();
+            // Optional: Shake cart button
+            if(cartBtn) {
+                cartBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
+            }
+        }, 810);
+    }
 
     // 3. Update Quantity (From Card or Cart Page)
     window.updateItemQty = function(id, change) {
@@ -215,11 +276,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <h3>سلتك فارغة حالياً</h3>
                     <p>تصفح قائمة منتجاتنا واختر ما يناسب ذوقك</p>
-                    <a href="/" class="btn-primary">العودة للتسوق</a>
+                    <a href="/" class="btn-primary empty-cart-btn">
+                        <i class="fas fa-home"></i> العودة للرئيسية
+                    </a>
                 </div>
             `;
+            // Hide summary section when empty
+            const summarySection = document.querySelector('.cart-summary-section');
+            if(summarySection) summarySection.style.display = 'none';
+            
+            // Fix layout to center content
+            const cartItemsSection = document.querySelector('.cart-items-section');
+            if(cartItemsSection) {
+                cartItemsSection.style.flex = '1';
+                cartItemsSection.style.textAlign = 'center';
+            }
+
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = true;
         } else {
+            // Restore Layout
+            const summarySection = document.querySelector('.cart-summary-section');
+            if(summarySection) summarySection.style.display = 'block';
+            
+            const cartItemsSection = document.querySelector('.cart-items-section');
+            if(cartItemsSection) {
+                cartItemsSection.style.flex = '2';
+                cartItemsSection.style.textAlign = 'right'; // RTL
+            }
+
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = false;
             
             cart.forEach((item, index) => {
@@ -232,10 +316,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 itemEl.innerHTML = `
                     <div class="cart-item-image">
-                        <img src="${imgUrl}" alt="${item.name}">
+                        <img src="${imgUrl}" alt="${item.name}" class="cart-item-img">
                     </div>
                     
-                    <div class="cart-item-info">
+                    <div class="cart-item-details">
                         <h4 class="item-name">${item.name}</h4>
                         <span class="item-price-unit">${item.price} ر.س</span>
                     </div>
@@ -252,11 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${(item.price * item.quantity).toFixed(2)} <small>ر.س</small>
                     </div>
 
-                    <div class="cart-item-remove">
-                        <button onclick="removeItem(${index})" class="remove-icon-btn" title="حذف المنتج">
-                            <i class="far fa-trash-alt"></i>
-                        </button>
-                    </div>
+                    <button onclick="removeItem(${index})" class="remove-btn" title="حذف المنتج">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
                 `;
                 fullCartItemsContainer.appendChild(itemEl);
             });
@@ -264,6 +346,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if(subTotalElement) subTotalElement.textContent = total.toFixed(2) + ' ر.س';
         if(finalTotalElement) finalTotalElement.textContent = total.toFixed(2) + ' ر.س';
+    }
+
+    // Checkout via WhatsApp
+    if(pageCheckoutBtn) {
+        pageCheckoutBtn.addEventListener('click', () => {
+            if(cart.length === 0) return;
+
+            let message = "مرحباً، أود طلب المنتجات التالية:\n\n";
+            let total = 0;
+
+            cart.forEach(item => {
+                message += `- *${item.name}* (العدد: ${item.quantity}) - السعر: ${item.price * item.quantity} ر.س\n`;
+                total += item.price * item.quantity;
+            });
+
+            message += `\n*الإجمالي: ${total} ر.س*`;
+            message += "\n\nالرجاء تأكيد الطلب.";
+
+            const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+        });
     }
 
     // Update Product Cards (Switch between "Add" and "Qty Controls")

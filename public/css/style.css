@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --primary-color: #d4af37; /* Gold */
     --secondary-color: #1a1a1a; /* Dark Gray */
     --text-color: #333;
@@ -76,9 +76,10 @@ ul {
 }
 
 .brand-name {
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 800;
     color: var(--secondary-color);
+    letter-spacing: -0.5px;
 }
 
 .nav-links {
@@ -89,10 +90,11 @@ ul {
 
 .nav-links a {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1rem;
     transition: var(--transition);
     color: var(--secondary-color);
     position: relative;
+    padding: 5px 0;
 }
 
 .nav-links a:hover,
@@ -103,12 +105,13 @@ ul {
 .nav-links a::after {
     content: '';
     position: absolute;
-    bottom: -5px;
+    bottom: 0;
     right: 0; /* RTL */
     width: 0;
-    height: 2px;
+    height: 3px;
     background-color: var(--primary-color);
     transition: var(--transition);
+    border-radius: 2px;
 }
 
 .nav-links a:hover::after,
@@ -117,10 +120,15 @@ ul {
 }
 
 .menu-toggle {
-    display: none;
-    font-size: 1.5rem;
+    display: none; /* Only visible on mobile */
+    font-size: 1.8rem;
     cursor: pointer;
     color: var(--secondary-color);
+    transition: var(--transition);
+}
+
+.menu-toggle:hover {
+    color: var(--primary-color);
 }
 
 /* Floating Cart Button */
@@ -539,4 +547,278 @@ ul {
         transform: none;
         transform: translateY(-2px);
     }
+}
+
+/* --- Professional Redesign Overrides --- */
+
+/* 1. Enhanced Product Card */
+.product-card, .product-item {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.03);
+    overflow: hidden;
+    position: relative;
+}
+
+.product-card:hover, .product-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    position: relative;
+    overflow: hidden;
+    height: 220px;
+    background: #f9f9f9;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.08);
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-info h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--secondary-color);
+}
+
+.price {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--secondary-color);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    backdrop-filter: blur(5px);
+}
+
+/* 2. Professional Add to Cart Button */
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #e5bd3c 0%, #cba52b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.add-to-cart-btn:active {
+    transform: translateY(0);
+}
+
+/* Added State */
+.add-to-cart-btn.added {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    pointer-events: none;
+}
+
+/* 3. Fly Animation Item */
+.fly-item {
+    position: fixed;
+    z-index: 9999;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* 4. Cart Page Professional Redesign */
+.cart-summary-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.cart-summary-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 1rem;
+}
+
+.summary-row.total {
+    color: var(--secondary-color);
+    font-weight: 800;
+    font-size: 1.3rem;
+    margin-top: 20px;
+    border-top: 2px solid #f0f0f0;
+    padding-top: 20px;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 16px;
+    background: #25D366; /* WhatsApp Green */
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkout-btn:hover {
+    background: #20bd5a;
+    box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+    transform: translateY(-2px);
+}
+
+.cart-item-row {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border: 1px solid #f5f5f5;
+    transition: transform 0.2s ease;
+}
+
+.cart-item-row:hover {
+    transform: translateX(-5px);
+}
+
+.cart-item-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.cart-item-details h4 {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.cart-item-actions {
+    margin-right: auto; /* Push to left in RTL */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.remove-btn {
+    color: #ff4757;
+    background: rgba(255, 71, 87, 0.1);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.remove-btn:hover {
+    background: #ff4757;
+    color: #fff;
+}
+
+/* 5. Empty Cart State */
+.empty-cart-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.empty-icon {
+    font-size: 5rem;
+    color: #eee;
+    margin-bottom: 20px;
+}
+
+.empty-cart-state h3 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.empty-cart-state p {
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.empty-cart-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: 50px;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.empty-cart-btn:hover {
+    background: #b89628;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* 6. Checkout Button Disabled State */
+.checkout-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
 }
