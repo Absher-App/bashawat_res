@@ -105,6 +105,21 @@ app.get('/', async (req, res) => {
     }
 });
 
+// صفحة المنتجات
+app.get('/products', async (req, res) => {
+    try {
+        const products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        const categories = await queryDb('SELECT * FROM categories');
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+
+        res.render('products', { products, categories, offer_text, error: null });
+    } catch (err) {
+        console.error(err);
+        res.render('products', { products: [], categories: [], offer_text: '', error: 'خطأ في جلب البيانات' });
+    }
+});
+
 // صفحة الحفلات
 app.get('/parties', (req, res) => {
     res.render('parties');
