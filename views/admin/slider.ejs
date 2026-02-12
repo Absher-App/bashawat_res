@@ -74,7 +74,7 @@
                 <div class="modal-header">
                     <h3>إضافة سلايد جديد</h3>
                 </div>
-                <form action="/admin/add-slide" method="POST" enctype="multipart/form-data">
+                <form id="addSlideForm" action="/admin/add-slide" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label>العنوان الرئيسي</label>
                         <input type="text" name="title" class="form-control" placeholder="عنوان الشريحة">
@@ -95,7 +95,7 @@
                         <label>الصورة</label>
                         <input type="file" name="image" accept="image/*" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn-primary">
+                    <button id="addSlideBtn" type="submit" class="btn-primary">
                         <i class="fas fa-plus"></i> إضافة الشريحة
                     </button>
                 </form>
@@ -116,6 +116,20 @@
             if (event.target.classList.contains('admin-modal')) {
                 event.target.classList.remove('active');
             }
+        }
+
+        // Loading State
+        const form = document.getElementById('addSlideForm');
+        const btn = document.getElementById('addSlideBtn');
+
+        if(form) {
+            form.addEventListener('submit', function() {
+                if(form.checkValidity()) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+                    btn.style.opacity = '0.7';
+                    btn.style.pointerEvents = 'none';
+                }
+            });
         }
     </script>
 

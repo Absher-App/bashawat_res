@@ -76,7 +76,7 @@
                 <div class="modal-header">
                     <h3>إضافة منتج جديد</h3>
                 </div>
-                <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
+                <form id="addProductForm" action="/admin/add-product" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label>اسم المنتج</label>
                         <input type="text" name="name" class="form-control" required>
@@ -105,7 +105,7 @@
                         <label>صورة المنتج</label>
                         <input type="file" name="image" accept="image/*" class="form-control" required>
                     </div>
-                    <button type="submit" class="btn-primary">
+                    <button id="addProductBtn" type="submit" class="btn-primary">
                         <i class="fas fa-plus"></i> إضافة المنتج
                     </button>
                 </form>
@@ -126,6 +126,20 @@
             if (event.target.classList.contains('admin-modal')) {
                 event.target.classList.remove('active');
             }
+        }
+
+        // Loading State
+        const form = document.getElementById('addProductForm');
+        const btn = document.getElementById('addProductBtn');
+
+        if(form) {
+            form.addEventListener('submit', function() {
+                if(form.checkValidity()) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+                    btn.style.opacity = '0.7';
+                    btn.style.pointerEvents = 'none';
+                }
+            });
         }
     </script>
 

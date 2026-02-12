@@ -815,10 +815,80 @@ ul {
     box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
-/* 6. Checkout Button Disabled State */
-.checkout-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
+/* 7. Professional Quantity Controls */
+.qty-control-widget, 
+.qty-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50px;
+    padding: 5px;
+    border: 1px solid #eee;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
+    width: fit-content;
+    margin: 10px auto 0;
+}
+
+.qty-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-size: 0.9rem;
+}
+
+.qty-btn.minus {
+    background: #fff;
+    color: #e74c3c;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.qty-btn.plus {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+}
+
+.qty-btn:hover {
+    transform: scale(1.15);
+}
+
+.qty-btn.minus:hover {
+    background: #fdeaea;
+}
+
+.qty-btn.plus:hover {
+    background: #b89628;
+}
+
+.qty-display, 
+.qty-val {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Update Product Card Actions */
+.product-actions {
+    min-height: 50px; /* Prevent layout jump */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Ensure add-to-cart button hides properly */
+.product-card.in-cart .add-to-cart-btn {
+    display: none !important;
+}
+
+.product-card.in-cart .qty-control-widget {
+    display: flex !important;
 }

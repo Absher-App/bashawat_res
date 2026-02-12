@@ -68,12 +68,12 @@
                 <div class="modal-header">
                     <h3>إضافة تصنيف جديد</h3>
                 </div>
-                <form action="/admin/add-category" method="POST">
+                <form id="addCategoryForm" action="/admin/add-category" method="POST">
                     <div class="form-group">
                         <label>اسم التصنيف</label>
                         <input type="text" name="name" class="form-control" required placeholder="مثال: بقلاوة">
                     </div>
-                    <button type="submit" class="btn-primary">
+                    <button id="addCategoryBtn" type="submit" class="btn-primary">
                         <i class="fas fa-plus"></i> إضافة التصنيف
                     </button>
                 </form>
@@ -94,6 +94,20 @@
             if (event.target.classList.contains('admin-modal')) {
                 event.target.classList.remove('active');
             }
+        }
+
+        // Loading State
+        const form = document.getElementById('addCategoryForm');
+        const btn = document.getElementById('addCategoryBtn');
+
+        if(form) {
+            form.addEventListener('submit', function() {
+                if(form.checkValidity()) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';
+                    btn.style.opacity = '0.7';
+                    btn.style.pointerEvents = 'none';
+                }
+            });
         }
     </script>
 
