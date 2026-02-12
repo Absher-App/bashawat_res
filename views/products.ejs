@@ -51,7 +51,16 @@
     </header>
 
     <!-- Main Content -->
-    <main class="container products-page-layout">
+    <main class="container">
+        <!-- Search Section -->
+        <div class="search-section" style="margin: 20px 0; display: flex; justify-content: center;">
+            <div class="search-box">
+                <input type="text" id="productSearch" placeholder="ابحث عن منتجك المفضل..." onkeyup="searchProducts()">
+                <button onclick="searchProducts()"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+
+        <div class="products-page-layout">
         <!-- Sidebar Filter -->
         <aside class="categories-sidebar">
             <h3>التصنيفات</h3>
@@ -124,6 +133,7 @@
                 </div>
             <% } %>
         </section>
+        </div> <!-- End products-page-layout -->
     </main>
 
     <!-- Footer -->
@@ -148,7 +158,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2024 بوظة بقداش - Bodat Bagdash</p>
+            <p>جميع الحقوق محفوظة &copy; 2026 بوظة بقداش - Bodat Bagdash</p>
         </div>
     </footer>
 
@@ -159,8 +169,37 @@
 
     <script src="/js/main.js"></script>
     <script>
+        // Search Logic
+        function searchProducts() {
+            const searchInput = document.getElementById('productSearch');
+            const filter = searchInput.value.toLowerCase().trim();
+            const products = document.querySelectorAll('.product-item');
+            
+            // Reset category filters visually
+            document.querySelectorAll('.category-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Set 'All' as active (first one usually)
+            const allBtn = document.querySelector('.category-filter-btn'); 
+            if(allBtn && allBtn.innerText.includes('الكل')) allBtn.classList.add('active');
+
+            products.forEach(product => {
+                const title = product.querySelector('h3').textContent.toLowerCase();
+                if (title.includes(filter)) {
+                    product.style.display = 'block';
+                    product.style.animation = 'fadeIn 0.5s';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
         // Client-side filtering logic
         function filterProducts(categoryId) {
+            // Clear search input when filtering by category
+            const searchInput = document.getElementById('productSearch');
+            if(searchInput) searchInput.value = '';
+
             // Update active button state
             document.querySelectorAll('.category-filter-btn').forEach(btn => {
                 btn.classList.remove('active');
