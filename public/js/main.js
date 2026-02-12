@@ -119,7 +119,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let total = 0;
 
         if (cart.length === 0) {
-            fullCartItemsContainer.innerHTML = '<div class="empty-cart-msg"><i class="fas fa-shopping-basket"></i><p>السلة فارغة</p><a href="/" class="btn-primary">تسوق الآن</a></div>';
+            fullCartItemsContainer.innerHTML = `
+                <div class="empty-cart-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-shopping-basket"></i>
+                    </div>
+                    <h3>سلتك فارغة حالياً</h3>
+                    <p>تصفح قائمة منتجاتنا واختر ما يناسب ذوقك</p>
+                    <a href="/" class="btn-primary">العودة للتسوق</a>
+                </div>
+            `;
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = true;
         } else {
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = false;
@@ -128,22 +137,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 total += item.price * item.quantity;
 
                 const itemEl = document.createElement('div');
-                itemEl.classList.add('cart-page-item');
+                itemEl.classList.add('cart-item-row');
+                // Use default image if missing
+                const imgUrl = item.image_url || 'https://via.placeholder.com/100?text=No+Image';
+                
                 itemEl.innerHTML = `
-                    <div class="item-info">
-                        <h4>${item.name}</h4>
-                        <p class="price">${item.price} ر.س</p>
+                    <div class="cart-item-image">
+                        <img src="${imgUrl}" alt="${item.name}">
                     </div>
-                    <div class="item-controls">
-                        <div class="quantity-controls">
-                            <button onclick="updateItemQty(${item.id}, -1)">-</button>
-                            <span>${item.quantity}</span>
-                            <button onclick="updateItemQty(${item.id}, 1)">+</button>
+                    
+                    <div class="cart-item-info">
+                        <h4 class="item-name">${item.name}</h4>
+                        <span class="item-price-unit">${item.price} ر.س</span>
+                    </div>
+
+                    <div class="cart-item-actions">
+                        <div class="qty-selector">
+                            <button class="qty-btn minus" onclick="updateItemQty(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+                            <span class="qty-val">${item.quantity}</span>
+                            <button class="qty-btn plus" onclick="updateItemQty(${item.id}, 1)"><i class="fas fa-plus"></i></button>
                         </div>
-                        <div class="item-total">
-                            <span>${(item.price * item.quantity).toFixed(2)} ر.س</span>
-                        </div>
-                        <button onclick="removeItem(${index})" class="remove-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="cart-item-subtotal">
+                        ${(item.price * item.quantity).toFixed(2)} <small>ر.س</small>
+                    </div>
+
+                    <div class="cart-item-remove">
+                        <button onclick="removeItem(${index})" class="remove-icon-btn" title="حذف المنتج">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
                     </div>
                 `;
                 fullCartItemsContainer.appendChild(itemEl);
