@@ -23,9 +23,12 @@
         </div>
 
         <!-- Add Button Container -->
-        <div class="add-btn-container">
+        <div class="add-btn-container" style="display: flex; gap: 12px; flex-wrap: wrap;">
             <button onclick="openModal('addCategoryModal')" class="btn-add-new">
                 <i class="fas fa-plus-circle"></i> إضافة تصنيف جديد
+            </button>
+            <button onclick="openModal('addCategoriesBulkModal')" class="btn-add-new" style="background: #3498db;">
+                <i class="fas fa-layer-group"></i> إضافة عدة تصنيفات
             </button>
         </div>
 
@@ -87,6 +90,30 @@
             </div>
         </div>
 
+        <!-- Add Multiple Categories Modal -->
+        <div id="addCategoriesBulkModal" class="admin-modal">
+            <div class="modal-content" style="max-width: 560px;">
+                <span class="close-modal" onclick="closeModal('addCategoriesBulkModal')">&times;</span>
+                <div class="modal-header">
+                    <h3>إضافة عدة تصنيفات</h3>
+                </div>
+                <form id="addCategoriesBulkForm" action="/admin/add-categories-bulk" method="POST">
+                    <div id="categoriesBulkRows">
+                        <div class="bulk-row">
+                            <input type="text" name="names[]" class="form-control" placeholder="اسم التصنيف">
+                            <button type="button" class="bulk-remove-btn" onclick="removeBulkRow(this)" title="حذف"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary" onclick="addBulkCategoryRow()" style="margin-bottom: 20px;">
+                        <i class="fas fa-plus"></i> إضافة صف
+                    </button>
+                    <button id="addCategoriesBulkBtn" type="submit" class="btn-primary">
+                        <i class="fas fa-check-double"></i> إضافة كل التصنيفات
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- Edit Category Modal -->
         <div id="editCategoryModal" class="admin-modal">
             <div class="modal-content">
@@ -131,6 +158,20 @@
             if (e.key === 'Escape') document.querySelectorAll('.admin-modal.active').forEach(m => m.classList.remove('active'));
         });
 
+        function addBulkCategoryRow() {
+            const container = document.getElementById('categoriesBulkRows');
+            const div = document.createElement('div');
+            div.className = 'bulk-row';
+            div.innerHTML = '<input type="text" name="names[]" class="form-control" placeholder="اسم التصنيف">' +
+                '<button type="button" class="bulk-remove-btn" onclick="removeBulkRow(this)" title="حذف"><i class="fas fa-times"></i></button>';
+            container.appendChild(div);
+        }
+        function removeBulkRow(btn) {
+            const rows = document.querySelectorAll('#categoriesBulkRows .bulk-row');
+            if (rows.length <= 1) return;
+            btn.closest('.bulk-row').remove();
+        }
+
         // Loading State
         const form = document.getElementById('addCategoryForm');
         const btn = document.getElementById('addCategoryBtn');
@@ -141,6 +182,20 @@
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';
                     btn.disabled = true;
                 }
+            });
+        }
+        const bulkCatForm = document.getElementById('addCategoriesBulkForm');
+        const bulkCatBtn = document.getElementById('addCategoriesBulkBtn');
+        if(bulkCatForm) {
+            bulkCatForm.addEventListener('submit', function(e) {
+                const filled = [...document.querySelectorAll('#categoriesBulkRows input[name="names[]"]')].filter(i => i.value.trim());
+                if(filled.length === 0) {
+                    e.preventDefault();
+                    alert('أدخل اسماً واحداً على الأقل للتصنيف');
+                    return;
+                }
+                bulkCatBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';
+                bulkCatBtn.disabled = true;
             });
         }
         const editCatForm = document.getElementById('editCategoryForm');

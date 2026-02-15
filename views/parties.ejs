@@ -12,7 +12,7 @@
     <!-- Offers Banner -->
     <div class="offers-banner">
         <div class="offers-text">
-            ✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉
+            <%= typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉' %>
         </div>
     </div>
 
@@ -49,39 +49,58 @@
     </header>
 
     <div class="container parties-container">
+        <!-- Section Title -->
+        <div class="parties-intro">
+            <span class="parties-badge">خدماتنا</span>
+            <h2 class="parties-section-title">خدمات الحفلات والمناسبات</h2>
+            <p class="parties-section-desc">نُحيط مناسبتك بلمسة من الفخامة والذوق الرفيع مع تشكيلة حصرية من الحلويات والضيافة</p>
+        </div>
+
         <!-- Services Grid -->
         <section class="parties-grid">
-            <div class="service-card-pro">
-                <div class="service-icon-wrapper">
-                    <i class="fas fa-birthday-cake"></i>
+            <article class="service-card-pro" style="--card-img: url('https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=600&q=80');">
+                <div class="service-card-img"></div>
+                <div class="service-card-body">
+                    <div class="service-icon-wrapper">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <h3>حفلات الميلاد</h3>
+                    <p>كيكات أعياد ميلاد مصممة خصيصاً لتناسب ذوقك، مع توزيعات آيس كريم مميزة للأطفال والضيوف</p>
                 </div>
-                <h3>حفلات الميلاد</h3>
-                <p>نقدم تشكيلة رائعة من كيكات أعياد الميلاد المصممة خصيصاً لتناسب ذوقك، مع توزيعات آيس كريم مميزة للأطفال والضيوف.</p>
-            </div>
+            </article>
             
-            <div class="service-card-pro">
-                <div class="service-icon-wrapper">
-                    <i class="fas fa-ring"></i>
+            <article class="service-card-pro" style="--card-img: url('https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80');">
+                <div class="service-card-img"></div>
+                <div class="service-card-body">
+                    <div class="service-icon-wrapper">
+                        <i class="fas fa-ring"></i>
+                    </div>
+                    <h3>الأعراس والخطوبة</h3>
+                    <p>بوفيهات حلويات شرقية وغربية فاخرة تليق بأرقى حفلات الزفاف والخطوبة، مع خدمة تقديم احترافية</p>
                 </div>
-                <h3>الأعراس والخطوبة</h3>
-                <p>بوفيهات حلويات شرقية وغربية فاخرة تليق بأرقى حفلات الزفاف والخطوبة، مع خدمة تقديم احترافية.</p>
-            </div>
+            </article>
             
-            <div class="service-card-pro">
-                <div class="service-icon-wrapper">
-                    <i class="fas fa-building"></i>
+            <article class="service-card-pro" style="--card-img: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80');">
+                <div class="service-card-img"></div>
+                <div class="service-card-body">
+                    <div class="service-icon-wrapper">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>مناسبات الشركات</h3>
+                    <p>ضيافة راقية لاجتماعات العمل والمؤتمرات، تشمل القهوة المختصة والمعجنات والحلويات الطازجة</p>
                 </div>
-                <h3>مناسبات الشركات</h3>
-                <p>ضيافة راقية لاجتماعات العمل والمؤتمرات، تشمل القهوة المختصة وتشكيلة من المعجنات والحلويات الطازجة.</p>
-            </div>
+            </article>
 
-            <div class="service-card-pro">
-                <div class="service-icon-wrapper">
-                    <i class="fas fa-ice-cream"></i>
+            <article class="service-card-pro" style="--card-img: url('https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600&q=80');">
+                <div class="service-card-img"></div>
+                <div class="service-card-body">
+                    <div class="service-icon-wrapper">
+                        <i class="fas fa-ice-cream"></i>
+                    </div>
+                    <h3>عربة الآيس كريم</h3>
+                    <p>أضف لمسة من المرح لمناسبتك مع عربة الآيس كريم المتنقلة، بتقديم مباشر ونكهات متعددة</p>
                 </div>
-                <h3>عربة الآيس كريم</h3>
-                <p>أضف لمسة من المرح لمناسبتك مع عربة الآيس كريم المتنقلة من بقداش، بتقديم مباشر ونكهات متعددة.</p>
-            </div>
+            </article>
         </section>
 
         <!-- Booking Call to Action -->

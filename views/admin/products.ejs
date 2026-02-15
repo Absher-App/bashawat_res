@@ -23,9 +23,12 @@
         </div>
 
         <!-- Add Button Container -->
-        <div class="add-btn-container">
+        <div class="add-btn-container" style="display: flex; gap: 12px; flex-wrap: wrap;">
             <button onclick="openModal('addProductModal')" class="btn-add-new">
                 <i class="fas fa-plus-circle"></i> إضافة منتج جديد
+            </button>
+            <button onclick="openModal('addProductsBulkModal')" class="btn-add-new" style="background: #3498db;">
+                <i class="fas fa-layer-group"></i> إضافة عدة منتجات
             </button>
         </div>
 
@@ -123,6 +126,43 @@
             </div>
         </div>
 
+        <!-- Add Multiple Products Modal -->
+        <div id="addProductsBulkModal" class="admin-modal">
+            <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+                <span class="close-modal" onclick="closeModal('addProductsBulkModal')">&times;</span>
+                <div class="modal-header">
+                    <h3>إضافة عدة منتجات</h3>
+                </div>
+                <form id="addProductsBulkForm" action="/admin/add-products-bulk" method="POST" enctype="multipart/form-data">
+                    <div id="productsBulkRows">
+                        <div class="bulk-product-row">
+                            <div class="bulk-product-num">1</div>
+                            <input type="text" name="names[]" class="form-control" placeholder="اسم المنتج" required>
+                            <input type="number" name="prices[]" class="form-control" step="0.01" placeholder="السعر" required style="max-width:100px;">
+                            <select name="categories[]" class="form-control" required style="max-width:140px;">
+                                <% if (categories && categories.length > 0) { %>
+                                    <% categories.forEach(cat => { %>
+                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                    <% }); %>
+                                <% } else { %>
+                                    <option value="">أضف تصنيفاً</option>
+                                <% } %>
+                            </select>
+                            <input type="file" name="images" accept="image/*" class="form-control" required style="max-width:180px;">
+                            <textarea name="descriptions[]" class="form-control" rows="1" placeholder="الوصف (اختياري)" style="flex:1;min-width:120px;"></textarea>
+                            <button type="button" class="bulk-remove-btn" onclick="removeBulkProductRow(this)" title="حذف"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary" onclick="addBulkProductRow()" style="margin-bottom: 20px;">
+                        <i class="fas fa-plus"></i> إضافة منتج آخر
+                    </button>
+                    <button id="addProductsBulkBtn" type="submit" class="btn-primary">
+                        <i class="fas fa-check-double"></i> إضافة كل المنتجات
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- Edit Product Modal -->
         <div id="editProductModal" class="admin-modal">
             <div class="modal-content">
@@ -197,6 +237,24 @@
             }
         });
 
+        function addBulkProductRow() {
+            const container = document.getElementById('productsBulkRows');
+            const firstRow = container.querySelector('.bulk-product-row');
+            const clone = firstRow.cloneNode(true);
+            clone.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'file') el.value = '';
+                else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                else el.value = '';
+            });
+            clone.querySelector('.bulk-product-num').textContent = container.querySelectorAll('.bulk-product-row').length + 1;
+            container.appendChild(clone);
+        }
+        function removeBulkProductRow(btn) {
+            const rows = document.querySelectorAll('#productsBulkRows .bulk-product-row');
+            if (rows.length <= 1) return;
+            btn.closest('.bulk-product-row').remove();
+        }
+
         // Loading State
         const form = document.getElementById('addProductForm');
         const btn = document.getElementById('addProductBtn');
@@ -206,6 +264,16 @@
                 if(form.checkValidity()) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
                     btn.disabled = true;
+                }
+            });
+        }
+        const bulkProdForm = document.getElementById('addProductsBulkForm');
+        const bulkProdBtn = document.getElementById('addProductsBulkBtn');
+        if(bulkProdForm) {
+            bulkProdForm.addEventListener('submit', function() {
+                if(bulkProdForm.checkValidity()) {
+                    bulkProdBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
+                    bulkProdBtn.disabled = true;
                 }
             });
         }

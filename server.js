@@ -121,13 +121,25 @@ app.get('/products', async (req, res) => {
 });
 
 // صفحة الحفلات
-app.get('/parties', (req, res) => {
-    res.render('parties');
+app.get('/parties', async (req, res) => {
+    try {
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+        res.render('parties', { offer_text });
+    } catch (err) {
+        res.render('parties', { offer_text: '' });
+    }
 });
 
 // صفحة السلة
-app.get('/cart', (req, res) => {
-    res.render('cart');
+app.get('/cart', async (req, res) => {
+    try {
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+        res.render('cart', { offer_text });
+    } catch (err) {
+        res.render('cart', { offer_text: '' });
+    }
 });
 
 // Middleware للتحقق من تسجيل الدخول
@@ -236,6 +248,40 @@ app.get('/admin/settings', requireAuth, async (req, res) => {
     }
 });
 
+// إضافة عدة منتجات دفعة واحدة
+app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), async (req, res) => {
+    let names = req.body.names;
+    let descriptions = req.body.descriptions;
+    let prices = req.body.prices;
+    let categories = req.body.categories;
+    const files = req.files || [];
+
+    if (!Array.isArray(names)) names = names ? [names] : [];
+    if (!Array.isArray(descriptions)) descriptions = descriptions ? [descriptions] : [];
+    if (!Array.isArray(prices)) prices = prices ? [prices] : [];
+    if (!Array.isArray(categories)) categories = categories ? [categories] : [];
+
+    const count = Math.min(names.length, prices.length, categories.length, files.length);
+    if (count === 0) return res.redirect('/admin/products');
+
+    try {
+        for (let i = 0; i < count; i++) {
+            const name = (names[i] || '').trim();
+            const description = (descriptions[i] || '').trim();
+            const price = parseFloat(prices[i]) || 0;
+            const category = (categories[i] || '').trim();
+            const image_url = files[i] ? '/uploads/' + files[i].filename : '';
+            if (!name || !category) continue;
+            await queryDb('INSERT INTO products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)',
+                [name, description, price, category, image_url]);
+        }
+        res.redirect('/admin/products');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin/products');
+    }
+});
+
 // إضافة منتج جديد
 app.post('/admin/add-product', requireAuth, upload.single('image'), (req, res) => {
     const { name, description, price, category } = req.body;
@@ -322,6 +368,24 @@ app.post('/admin/update-offer', requireAuth, (req, res) => {
         if (err) console.error(err);
         res.redirect('/admin/settings');
     });
+});
+
+// إضافة عدة تصنيفات دفعة واحدة
+app.post('/admin/add-categories-bulk', requireAuth, async (req, res) => {
+    let names = req.body.names;
+    if (!Array.isArray(names)) names = names ? [names] : [];
+    names = names.map(n => (n || '').trim()).filter(n => n.length > 0);
+    if (names.length === 0) return res.redirect('/admin/categories');
+
+    try {
+        for (const name of names) {
+            await queryDb('INSERT INTO categories (name) VALUES (?)', [name]);
+        }
+        res.redirect('/admin/categories');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin/categories');
+    }
 });
 
 // إضافة تصنيف

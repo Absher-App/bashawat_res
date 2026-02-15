@@ -587,6 +587,71 @@ body {
     margin-top: 8px;
 }
 
+.bulk-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.bulk-row .form-control {
+    flex: 1;
+}
+
+.bulk-remove-btn {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bulk-remove-btn:hover {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: var(--text-color);
+    border: none;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bulk-product-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: var(--radius-sm);
+    flex-wrap: wrap;
+}
+
+.bulk-product-num {
+    width: 28px;
+    height: 28px;
+    background: var(--primary-color);
+    color: #1a1a1a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
 /* ===== Empty State ===== */
 .empty-state {
     text-align: center;
