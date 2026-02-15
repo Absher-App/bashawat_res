@@ -35,7 +35,7 @@
                     <h3>التصنيفات الحالية</h3>
                 </div>
                 <div class="table-responsive">
-                    <table>
+                    <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>اسم التصنيف</th>
@@ -49,9 +49,16 @@
                                 <td><%= cat.name %></td>
                                 <td><%= new Date(cat.created_at).toLocaleDateString('ar-EG') %></td>
                                 <td>
-                                    <form action="/admin/delete-category/<%= cat.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟ سيتم حذف جميع المنتجات المرتبطة بهذا التصنيف!');">
-                                        <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
-                                    </form>
+                                    <div class="action-btns">
+                                        <button type="button" class="action-btn btn-edit-action" title="تعديل" 
+                                            data-id="<%= cat.id %>" data-name="<%= (cat.name || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;') %>"
+                                            onclick="openEditCategory(this)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="/admin/delete-category/<%= cat.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟ سيتم حذف جميع المنتجات المرتبطة بهذا التصنيف!');">
+                                            <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             <% }); %>
@@ -80,6 +87,25 @@
             </div>
         </div>
 
+        <!-- Edit Category Modal -->
+        <div id="editCategoryModal" class="admin-modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('editCategoryModal')">&times;</span>
+                <div class="modal-header">
+                    <h3>تعديل التصنيف</h3>
+                </div>
+                <form id="editCategoryForm" action="" method="POST">
+                    <div class="form-group">
+                        <label>اسم التصنيف</label>
+                        <input type="text" name="name" id="editCategoryName" class="form-control" required>
+                    </div>
+                    <button id="editCategoryBtn" type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                </form>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -89,12 +115,21 @@
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
-        // Close modal when clicking outside
+        function openEditCategory(btn) {
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            document.getElementById('editCategoryForm').action = '/admin/update-category/' + id;
+            document.getElementById('editCategoryName').value = name || '';
+            openModal('editCategoryModal');
+        }
         window.onclick = function(event) {
             if (event.target.classList.contains('admin-modal')) {
                 event.target.classList.remove('active');
             }
         }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') document.querySelectorAll('.admin-modal.active').forEach(m => m.classList.remove('active'));
+        });
 
         // Loading State
         const form = document.getElementById('addCategoryForm');
@@ -104,9 +139,16 @@
             form.addEventListener('submit', function() {
                 if(form.checkValidity()) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';
-                    btn.style.opacity = '0.7';
-                    btn.style.pointerEvents = 'none';
+                    btn.disabled = true;
                 }
+            });
+        }
+        const editCatForm = document.getElementById('editCategoryForm');
+        const editCatBtn = document.getElementById('editCategoryBtn');
+        if(editCatForm) {
+            editCatForm.addEventListener('submit', function() {
+                editCatBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+                editCatBtn.disabled = true;
             });
         }
     </script>

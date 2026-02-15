@@ -1,23 +1,27 @@
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <img src="/images/logo.png" alt="بقداش" class="sidebar-logo">
-            <span class="sidebar-brand"> بوظة بقداش - Bodat Bagdash</span>
+            <span class="sidebar-brand">بوظة بقداش</span>
         </div>
         
         <ul class="sidebar-menu">
+            <li class="menu-section">الرئيسية</li>
             <li>
                 <a href="/admin" class="<%= activePage === 'dashboard' ? 'active' : '' %>">
                     <i class="fas fa-th-large"></i>
                     <span>لوحة التحكم</span>
                 </a>
             </li>
+            
+            <li class="menu-section">الإعدادات</li>
             <li>
                 <a href="/admin/settings" class="<%= activePage === 'settings' ? 'active' : '' %>">
                     <i class="fas fa-bullhorn"></i>
                     <span>شريط العروض</span>
                 </a>
             </li>
+            
+            <li class="menu-section">المحتوى</li>
             <li>
                 <a href="/admin/slider" class="<%= activePage === 'slider' ? 'active' : '' %>">
                     <i class="fas fa-images"></i>
@@ -30,6 +34,8 @@
                     <span>القصص (Stories)</span>
                 </a>
             </li>
+            
+            <li class="menu-section">المنتجات</li>
             <li>
                 <a href="/admin/categories" class="<%= activePage === 'categories' ? 'active' : '' %>">
                     <i class="fas fa-tags"></i>

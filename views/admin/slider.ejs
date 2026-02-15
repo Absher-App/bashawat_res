@@ -35,7 +35,7 @@
                     <h3>الشرائح الحالية</h3>
                 </div>
                 <div class="table-responsive">
-                    <table>
+                    <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>الصورة</th>
@@ -55,9 +55,15 @@
                                 <td><%= slide.subtitle %></td>
                                 <td><%= slide.display_order %></td>
                                 <td>
-                                    <form action="/admin/delete-slide/<%= slide.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
-                                        <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
-                                    </form>
+                                    <div class="action-btns">
+                                        <button type="button" class="action-btn btn-edit-action" title="تعديل"
+                                            onclick="openEditSlide(<%= slide.id %>)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="/admin/delete-slide/<%= slide.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                                            <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             <% }); %>
@@ -89,7 +95,7 @@
                     </div>
                     <div class="form-group">
                         <label>الترتيب</label>
-                        <input type="number" name="display_order" class="form-control" value="0">
+                        <input type="number" name="display_order" class="form-control" value="0" placeholder="0">
                     </div>
                     <div class="form-group">
                         <label>الصورة</label>
@@ -102,21 +108,69 @@
             </div>
         </div>
 
+        <!-- Edit Slide Modal -->
+        <div id="editSlideModal" class="admin-modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('editSlideModal')">&times;</span>
+                <div class="modal-header">
+                    <h3>تعديل الشريحة</h3>
+                </div>
+                <form id="editSlideForm" action="" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>العنوان الرئيسي</label>
+                        <input type="text" name="title" id="editSlideTitle" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان الفرعي</label>
+                        <input type="text" name="subtitle" id="editSlideSubtitle" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>رابط الزر (اختياري)</label>
+                        <input type="text" name="link_url" id="editSlideLink" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>الترتيب</label>
+                        <input type="number" name="display_order" id="editSlideOrder" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>صورة جديدة (اختياري - اتركه فارغاً للإبقاء على الصورة الحالية)</label>
+                        <input type="file" name="image" accept="image/*" class="form-control">
+                    </div>
+                    <button id="editSlideBtn" type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                </form>
+            </div>
+        </div>
+
     </main>
 
     <script>
+        const slidesData = { <% slides.forEach((s, i) => { %><%= s.id %>: <%- JSON.stringify({id:s.id,title:s.title||'',subtitle:s.subtitle||'',link_url:s.link_url||'',display_order:s.display_order||0}) %><%= i < slides.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
-        // Close modal when clicking outside
+        function openEditSlide(id) {
+            const slide = slidesData[id];
+            if (!slide) return;
+            document.getElementById('editSlideForm').action = '/admin/update-slide/' + slide.id;
+            document.getElementById('editSlideTitle').value = slide.title || '';
+            document.getElementById('editSlideSubtitle').value = slide.subtitle || '';
+            document.getElementById('editSlideLink').value = slide.link_url || '';
+            document.getElementById('editSlideOrder').value = slide.display_order || 0;
+            openModal('editSlideModal');
+        }
         window.onclick = function(event) {
             if (event.target.classList.contains('admin-modal')) {
                 event.target.classList.remove('active');
             }
         }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') document.querySelectorAll('.admin-modal.active').forEach(m => m.classList.remove('active'));
+        });
 
         // Loading State
         const form = document.getElementById('addSlideForm');
@@ -126,9 +180,16 @@
             form.addEventListener('submit', function() {
                 if(form.checkValidity()) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
-                    btn.style.opacity = '0.7';
-                    btn.style.pointerEvents = 'none';
+                    btn.disabled = true;
                 }
+            });
+        }
+        const editSlideForm = document.getElementById('editSlideForm');
+        const editSlideBtn = document.getElementById('editSlideBtn');
+        if(editSlideForm) {
+            editSlideForm.addEventListener('submit', function() {
+                editSlideBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+                editSlideBtn.disabled = true;
             });
         }
     </script>

@@ -32,9 +32,10 @@
         </div>
     </nav>
 
-    <header class="page-header" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+    <header class="page-header cart-page-header" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
         <div class="overlay"></div>
         <div class="header-content">
+            <div class="header-icon"><i class="fas fa-shopping-cart"></i></div>
             <h1>سلة المشتريات</h1>
             <p>مراجعة طلبك وإتمامه</p>
         </div>
@@ -43,10 +44,12 @@
     <main class="container cart-page-container">
         <div class="cart-layout">
             <div class="cart-items-section">
-                <h2>منتجاتك</h2>
-                <div id="fullCartItems">
+                <div class="cart-items-card">
+                    <h2 class="cart-section-title"><i class="fas fa-box-open"></i> منتجاتك</h2>
+                    <div id="fullCartItems">
                     <!-- سيتم ملء المنتجات هنا بواسطة JavaScript -->
-                    <div class="loading-cart">جاري تحميل السلة...</div>
+                        <div class="loading-cart">جاري تحميل السلة...</div>
+                    </div>
                 </div>
             </div>
 
@@ -71,7 +74,7 @@
                         <i class="fab fa-whatsapp"></i> إتمام الطلب عبر واتساب
                     </button>
                     
-                    <a href="/" class="continue-shopping">
+                    <a href="/products" class="continue-shopping">
                         <i class="fas fa-arrow-right"></i> متابعة التسوق
                     </a>
                 </div>

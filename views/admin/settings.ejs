@@ -27,7 +27,7 @@
                 <div class="card-header">
                     <h3>تحديث شريط العروض</h3>
                 </div>
-                <form action="/admin/update-offer" method="POST">
+                <form id="offerForm" action="/admin/update-offer" method="POST">
                     <div class="form-group">
                         <label>نص العرض (يظهر أعلى الصفحة الرئيسية)</label>
                         <textarea name="offer_text" rows="4" class="form-control" placeholder="أدخل نص العرض هنا..."><%= offer_text %></textarea>
@@ -35,7 +35,7 @@
                             مثال: ✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰
                         </small>
                     </div>
-                    <button type="submit" class="btn-primary">
+                    <button id="saveOfferBtn" type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> حفظ التغييرات
                     </button>
                 </form>
@@ -44,5 +44,12 @@
 
     </main>
 
+<script>
+        document.getElementById('offerForm')?.addEventListener('submit', function() {
+            const btn = document.getElementById('saveOfferBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            btn.disabled = true;
+        });
+    </script>
 </body>
 </html>

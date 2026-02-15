@@ -35,7 +35,7 @@
                     <h3>قائمة المنتجات</h3>
                 </div>
                 <div class="table-responsive">
-                    <table>
+                    <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>الصورة</th>
@@ -51,15 +51,24 @@
                                 <td>
                                     <% if(product.image_url) { %>
                                         <img src="<%= product.image_url %>" alt="<%= product.name %>" class="product-img-sm">
+                                    <% } else { %>
+                                        <span class="product-img-sm" style="background:#eee;display:inline-flex;align-items:center;justify-content:center;color:#999;"><i class="fas fa-image"></i></span>
                                     <% } %>
                                 </td>
                                 <td><%= product.name %></td>
                                 <td><%= product.price %> ريال</td>
                                 <td><%= product.category %></td>
                                 <td>
-                                    <form action="/admin/delete-product/<%= product.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
-                                        <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
-                                    </form>
+                                    <div class="action-btns">
+                                        <button type="button" class="action-btn btn-edit-action" title="تعديل" 
+                                            data-id="<%= product.id %>"
+                                            onclick="openEditProduct(<%= product.id %>)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="/admin/delete-product/<%= product.id %>" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                                            <button type="submit" class="action-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             <% }); %>
@@ -79,27 +88,29 @@
                 <form id="addProductForm" action="/admin/add-product" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label>اسم المنتج</label>
-                        <input type="text" name="name" class="form-control" required>
+                        <input type="text" name="name" class="form-control" required placeholder="أدخل اسم المنتج">
                     </div>
                     <div class="form-group">
                         <label>الوصف</label>
-                        <textarea name="description" class="form-control" rows="3"></textarea>
+                        <textarea name="description" class="form-control" rows="3" placeholder="وصف اختياري"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>السعر (ريال)</label>
-                        <input type="number" name="price" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>التصنيف</label>
-                        <select name="category" class="form-control" required>
-                            <% if (categories && categories.length > 0) { %>
-                                <% categories.forEach(cat => { %>
-                                    <option value="<%= cat.name %>"><%= cat.name %></option>
-                                <% }); %>
-                            <% } else { %>
-                                <option value="" disabled selected>لا توجد تصنيفات، أضف تصنيفاً أولاً</option>
-                            <% } %>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>السعر (ريال)</label>
+                            <input type="number" name="price" class="form-control" step="0.01" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>التصنيف</label>
+                            <select name="category" class="form-control" required>
+                                <% if (categories && categories.length > 0) { %>
+                                    <% categories.forEach(cat => { %>
+                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                    <% }); %>
+                                <% } else { %>
+                                    <option value="" disabled selected>أضف تصنيفاً أولاً</option>
+                                <% } %>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>صورة المنتج</label>
@@ -112,21 +123,79 @@
             </div>
         </div>
 
+        <!-- Edit Product Modal -->
+        <div id="editProductModal" class="admin-modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('editProductModal')">&times;</span>
+                <div class="modal-header">
+                    <h3>تعديل المنتج</h3>
+                </div>
+                <form id="editProductForm" action="" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>اسم المنتج</label>
+                        <input type="text" name="name" id="editProductName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الوصف</label>
+                        <textarea name="description" id="editProductDesc" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>السعر (ريال)</label>
+                            <input type="number" name="price" id="editProductPrice" class="form-control" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>التصنيف</label>
+                            <select name="category" id="editProductCategory" class="form-control" required>
+                                <% if (categories && categories.length > 0) { %>
+                                    <% categories.forEach(cat => { %>
+                                        <option value="<%= cat.name %>"><%= cat.name %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>صورة جديدة (اختياري - اتركه فارغاً للإبقاء على الصورة الحالية)</label>
+                        <input type="file" name="image" accept="image/*" class="form-control">
+                    </div>
+                    <button id="editProductBtn" type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> حفظ التغييرات
+                    </button>
+                </form>
+            </div>
+        </div>
+
     </main>
 
     <script>
+        const productsData = { <% products.forEach((p, i) => { %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',price:p.price,category:p.category||''}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
-        // Close modal when clicking outside
+        function openEditProduct(id) {
+            const product = productsData[id];
+            if (!product) return;
+            document.getElementById('editProductForm').action = '/admin/update-product/' + product.id;
+            document.getElementById('editProductName').value = product.name;
+            document.getElementById('editProductDesc').value = product.description || '';
+            document.getElementById('editProductPrice').value = product.price;
+            document.getElementById('editProductCategory').value = product.category || '';
+            openModal('editProductModal');
+        }
         window.onclick = function(event) {
             if (event.target.classList.contains('admin-modal')) {
                 event.target.classList.remove('active');
             }
         }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.admin-modal.active').forEach(m => m.classList.remove('active'));
+            }
+        });
 
         // Loading State
         const form = document.getElementById('addProductForm');
@@ -136,8 +205,17 @@
             form.addEventListener('submit', function() {
                 if(form.checkValidity()) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
-                    btn.style.opacity = '0.7';
-                    btn.style.pointerEvents = 'none';
+                    btn.disabled = true;
+                }
+            });
+        }
+        const editForm = document.getElementById('editProductForm');
+        const editBtn = document.getElementById('editProductBtn');
+        if(editForm) {
+            editForm.addEventListener('submit', function() {
+                if(editForm.checkValidity()) {
+                    editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+                    editBtn.disabled = true;
                 }
             });
         }

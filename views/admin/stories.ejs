@@ -35,7 +35,7 @@
                     <h3>القصص الحالية</h3>
                 </div>
                 <div class="table-responsive">
-                    <table>
+                    <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>الغلاف</th>
@@ -103,6 +103,9 @@
     </main>
 
     <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') document.querySelectorAll('.admin-modal.active').forEach(m => m.classList.remove('active'));
+        });
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }

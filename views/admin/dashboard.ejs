@@ -6,7 +6,7 @@
     <title>لوحة التحكم - بوظة بقداش</title>
     <link rel="stylesheet" href="/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -21,63 +21,87 @@
             </div>
         </div>
 
-        <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+            <a href="/admin/products" class="stat-card">
+                <div class="icon" style="background: rgba(52, 152, 219, 0.15); color: #3498db;">
                     <i class="fas fa-box"></i>
                 </div>
                 <div class="details">
                     <h3><%= stats.products %></h3>
                     <p>المنتجات</p>
                 </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <div class="details">
-                    <h3><%= stats.orders %></h3>
-                    <p>الطلبات (تجريبي)</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon" style="background: rgba(155, 89, 182, 0.1); color: #9b59b6;">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="details">
-                    <h3><%= stats.customers %></h3>
-                    <p>العملاء (تجريبي)</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="icon" style="background: rgba(231, 76, 60, 0.1); color: #e74c3c;">
+            </a>
+            <a href="/admin/categories" class="stat-card">
+                <div class="icon" style="background: rgba(231, 76, 60, 0.15); color: #e74c3c;">
                     <i class="fas fa-tags"></i>
                 </div>
                 <div class="details">
                     <h3><%= stats.categories %></h3>
                     <p>التصنيفات</p>
                 </div>
-            </div>
+            </a>
+            <a href="/admin/slider" class="stat-card">
+                <div class="icon" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71;">
+                    <i class="fas fa-images"></i>
+                </div>
+                <div class="details">
+                    <h3><%= stats.slides %></h3>
+                    <p>شرائح السلايدر</p>
+                </div>
+            </a>
+            <a href="/admin/stories" class="stat-card">
+                <div class="icon" style="background: rgba(155, 89, 182, 0.15); color: #9b59b6;">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="details">
+                    <h3><%= stats.stories %></h3>
+                    <p>القصص (Stories)</p>
+                </div>
+            </a>
         </div>
 
-        <div class="content-grid">
-            <div class="card" style="grid-column: span 2;">
-                <div class="card-header">
-                    <h3>مرحباً بك في لوحة التحكم</h3>
-                </div>
-                <div style="padding: 20px;">
-                    <p>يمكنك إدارة محتوى الموقع من القائمة الجانبية:</p>
-                    <ul style="margin-right: 20px; margin-top: 10px; line-height: 2;">
-                        <li><strong>شريط العروض:</strong> لتعديل النص المتحرك أعلى الموقع.</li>
-                        <li><strong>السلايدر:</strong> لإدارة الصور المتحركة في الصفحة الرئيسية.</li>
-                        <li><strong>التصنيفات:</strong> لإضافة وحذف أقسام المنتجات.</li>
-                        <li><strong>المنتجات:</strong> لإضافة وحذف المنتجات وتحديد أسعارها وصورها.</li>
-                    </ul>
-                </div>
+        <div class="card">
+            <div class="card-header">
+                <h3>وصول سريع</h3>
+            </div>
+            <div class="quick-access-grid">
+                <a href="/admin/products" class="quick-access-card">
+                    <div class="qa-icon" style="background: rgba(212, 175, 55, 0.15); color: #d4af37;">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h4>إضافة منتج</h4>
+                    <p>إضافة منتج جديد مع الصورة والسعر</p>
+                </a>
+                <a href="/admin/categories" class="quick-access-card">
+                    <div class="qa-icon" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71;">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h4>إضافة تصنيف</h4>
+                    <p>إنشاء تصنيف جديد للمنتجات</p>
+                </a>
+                <a href="/admin/slider" class="quick-access-card">
+                    <div class="qa-icon" style="background: rgba(52, 152, 219, 0.15); color: #3498db;">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h4>إضافة شريحة</h4>
+                    <p>إضافة صورة للسلايدر الرئيسي</p>
+                </a>
+                <a href="/admin/stories" class="quick-access-card">
+                    <div class="qa-icon" style="background: rgba(155, 89, 182, 0.15); color: #9b59b6;">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <h4>إضافة قصة</h4>
+                    <p>إضافة قصة فيديو للصفحة الرئيسية</p>
+                </a>
+                <a href="/admin/settings" class="quick-access-card">
+                    <div class="qa-icon" style="background: rgba(243, 156, 18, 0.15); color: #f39c12;">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h4>تعديل العروض</h4>
+                    <p>تحديث نص شريط العروض</p>
+                </a>
             </div>
         </div>
-
     </main>
 
 </body>

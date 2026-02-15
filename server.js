@@ -172,11 +172,12 @@ app.get('/admin', requireAuth, async (req, res) => {
         const productsCount = await queryDb('SELECT COUNT(*) as count FROM products');
         const categoriesCount = await queryDb('SELECT COUNT(*) as count FROM categories');
         const slidesCount = await queryDb('SELECT COUNT(*) as count FROM slides');
-        // Mock data for sales/orders as we don't have tables for them yet
+        const storiesCount = await queryDb('SELECT COUNT(*) as count FROM stories');
         const stats = {
             products: productsCount[0].count,
             categories: categoriesCount[0].count,
             slides: slidesCount[0].count,
+            stories: storiesCount[0].count,
             orders: 150,
             customers: 1250,
             sales: 45000
@@ -257,6 +258,25 @@ app.post('/admin/delete-product/:id', requireAuth, (req, res) => {
     });
 });
 
+// تحديث منتج
+app.post('/admin/update-product/:id', requireAuth, upload.single('image'), (req, res) => {
+    const { name, description, price, category } = req.body;
+    const productId = req.params.id;
+    let query, params;
+    if (req.file) {
+        const image_url = '/uploads/' + req.file.filename;
+        query = 'UPDATE products SET name = ?, description = ?, price = ?, category = ?, image_url = ? WHERE id = ?';
+        params = [name, description, price, category, image_url, productId];
+    } else {
+        query = 'UPDATE products SET name = ?, description = ?, price = ?, category = ? WHERE id = ?';
+        params = [name, description, price, category, productId];
+    }
+    db.query(query, params, (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/products');
+    });
+});
+
 // إدارة الستوريات (Stories)
 app.get('/admin/stories', requireAuth, async (req, res) => {
     try {
@@ -314,6 +334,17 @@ app.post('/admin/add-category', requireAuth, (req, res) => {
     });
 });
 
+// تحديث تصنيف
+app.post('/admin/update-category/:id', requireAuth, (req, res) => {
+    const { name } = req.body;
+    const id = req.params.id;
+    const query = 'UPDATE categories SET name = ? WHERE id = ?';
+    db.query(query, [name, id], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/categories');
+    });
+});
+
 // حذف تصنيف
 app.post('/admin/delete-category/:id', requireAuth, (req, res) => {
     const id = req.params.id;
@@ -331,6 +362,25 @@ app.post('/admin/add-slide', requireAuth, upload.single('image'), (req, res) => 
 
     const query = 'INSERT INTO slides (title, subtitle, image_url, link_url, display_order) VALUES (?, ?, ?, ?, ?)';
     db.query(query, [title, subtitle, image_url, link_url, display_order || 0], (err, result) => {
+        if (err) console.error(err);
+        res.redirect('/admin/slider');
+    });
+});
+
+// تحديث سلايد
+app.post('/admin/update-slide/:id', requireAuth, upload.single('image'), (req, res) => {
+    const { title, subtitle, link_url, display_order } = req.body;
+    const slideId = req.params.id;
+    let query, params;
+    if (req.file) {
+        const image_url = '/uploads/' + req.file.filename;
+        query = 'UPDATE slides SET title = ?, subtitle = ?, link_url = ?, display_order = ?, image_url = ? WHERE id = ?';
+        params = [title, subtitle, link_url, display_order || 0, image_url, slideId];
+    } else {
+        query = 'UPDATE slides SET title = ?, subtitle = ?, link_url = ?, display_order = ? WHERE id = ?';
+        params = [title, subtitle, link_url, display_order || 0, slideId];
+    }
+    db.query(query, params, (err, result) => {
         if (err) console.error(err);
         res.redirect('/admin/slider');
     });
