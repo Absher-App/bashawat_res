@@ -25,13 +25,11 @@ console.log('-----------------------------------');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// إعداد الجلسة
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'bagdash_secret_key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
+// Trust proxy when behind reverse proxy (Hostinger, Nginx) - ضروري لتحميل الملفات الثابتة
+app.set('trust proxy', 1);
+
+// إعداد ملفات الاستاتيك أولاً (قبل أي middleware) - مهم لتحميل CSS و JS على السيرفر
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -39,20 +37,6 @@ app.set('views', path.join(__dirname, 'views'));
 // إعداد body-parser المدمج في express
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// إعداد ملفات الاستاتيك (CSS, JS, Images)
-app.use(express.static(path.join(__dirname, 'public')));
-
-// إعداد Multer لرفع الصور
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads/')
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)) // تسمية فريدة
-    }
-});
-const upload = multer({ storage: storage });
 
 // إعداد اتصال قاعدة البيانات (Connection Pool)
 const dbConfig = {
@@ -66,6 +50,31 @@ const dbConfig = {
     enableKeepAlive: true,
     keepAliveInitialDelay: 0
 };
+
+// إعداد الجلسة - استخدام MySQL store لتجنب تحذير MemoryStore (يعمل في dev و production)
+const MySQLStore = require('express-mysql-session')(session);
+const sessionStore = new MySQLStore({ ...dbConfig, createDatabaseTable: true });
+
+const sessionConfig = {
+    secret: process.env.SESSION_SECRET || 'bagdash_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    store: sessionStore,
+    cookie: { secure: process.env.NODE_ENV === 'production' }
+};
+
+app.use(session(sessionConfig));
+
+// إعداد Multer لرفع الصور
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)) // تسمية فريدة
+    }
+});
+const upload = multer({ storage: storage });
 
 console.log('Initializing DB Pool with:', {
     host: dbConfig.host,
