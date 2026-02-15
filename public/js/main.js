@@ -309,17 +309,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const itemEl = document.createElement('div');
                 itemEl.classList.add('cart-item-row');
-                // Use default image if missing
-                const imgUrl = item.image_url || 'https://via.placeholder.com/100?text=No+Image';
+                const baseUrl = window.location.origin;
+                const imgUrl = item.image_url 
+                    ? (item.image_url.startsWith('http') ? item.image_url : baseUrl + (item.image_url.startsWith('/') ? '' : '/') + item.image_url)
+                    : 'https://via.placeholder.com/200x200?text=صورة';
+                const safeName = (item.name || '').replace(/"/g, '&quot;');
                 
                 itemEl.innerHTML = `
                     <div class="cart-item-image">
-                        <img src="${imgUrl}" alt="${item.name}" class="cart-item-img">
+                        <img src="${imgUrl}" alt="${safeName}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/200x200?text=صورة';this.onerror=null;">
                     </div>
                     
                     <div class="cart-item-details">
                         <h4 class="item-name">${item.name}</h4>
-                        <span class="item-price-unit">${item.price} ر.س</span>
+                        <span class="item-price-unit">${item.price} ر.س × ${item.quantity}</span>
                     </div>
 
                     <div class="cart-item-actions">
@@ -343,6 +346,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if(subTotalElement) subTotalElement.textContent = total.toFixed(2) + ' ر.س';
+        const taxEl = document.getElementById('taxAmount');
+        if(taxEl) taxEl.textContent = '0.00 ر.س';
         if(finalTotalElement) finalTotalElement.textContent = total.toFixed(2) + ' ر.س';
     }
 
