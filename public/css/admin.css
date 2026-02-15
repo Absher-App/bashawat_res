@@ -665,17 +665,234 @@ body {
     opacity: 0.5;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 992px) {
-    .content-grid { grid-template-columns: 1fr; }
+/* ===== Mobile Menu Button ===== */
+.admin-mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    background: var(--primary-color);
+    color: #1a1a1a;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1.25rem;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s;
 }
 
+.admin-mobile-menu-btn:hover {
+    background: var(--primary-dark);
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ===== Responsive - لوحة تحكم متجاوبة ===== */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .quick-access-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
+    .admin-mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .sidebar {
         transform: translateX(100%);
+        transition: transform 0.3s ease;
     }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+        box-shadow: -8px 0 24px rgba(0,0,0,0.2);
+    }
+
     .main-content {
         margin-right: 0;
+        padding: 20px 16px;
+        padding-top: 72px;
     }
-    .header-title { flex-direction: column; align-items: flex-start; }
+
+    .header-title {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 20px;
+        gap: 12px;
+    }
+
+    .header-title h2 {
+        font-size: 1.4rem;
+    }
+
+    .user-info {
+        padding: 10px 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .stat-card .stat-icon,
+    .stat-card .icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+    }
+
+    .stat-card h3,
+    .stat-info h3,
+    .details h3 {
+        font-size: 1.5rem;
+    }
+
+    .quick-access-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .quick-access-card {
+        padding: 18px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    .card-header h3 {
+        font-size: 1.05rem;
+    }
+
+    .add-btn-container {
+        margin-bottom: 18px;
+    }
+
+    .add-btn-container[style*="flex"] {
+        flex-direction: column;
+    }
+
+    .btn-add-new {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .table-responsive {
+        margin: 0 -18px;
+        padding: 0 18px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+    }
+
+    .product-img-sm {
+        width: 40px;
+        height: 40px;
+    }
+
+    .action-btns {
+        flex-wrap: wrap;
+    }
+
+    .modal-content {
+        margin: 16px;
+        padding: 24px 20px;
+        max-height: calc(100vh - 32px);
+    }
+
+    .close-modal {
+        top: 16px;
+        left: 16px;
+    }
+
+    .bulk-product-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bulk-product-row input,
+    .bulk-product-row select,
+    .bulk-product-row textarea {
+        max-width: none !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .main-content {
+        padding: 16px 12px;
+        padding-top: 68px;
+    }
+
+    .admin-mobile-menu-btn {
+        top: 12px;
+        right: 12px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .header-title h2 {
+        font-size: 1.25rem;
+    }
+
+    .stats-grid {
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .sidebar-header {
+        padding: 20px 16px;
+    }
+
+    .sidebar-brand {
+        font-size: 1rem;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
 }

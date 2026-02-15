@@ -1,4 +1,8 @@
-    <aside class="sidebar">
+    <button class="admin-mobile-menu-btn" id="adminMenuBtn" type="button" aria-label="فتح القائمة">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="adminSidebar">
         <div class="sidebar-header">
             <img src="/images/logo.png" alt="بقداش" class="sidebar-logo">
             <span class="sidebar-brand">بوظة بقداش</span>
@@ -57,3 +61,31 @@
             </a>
         </div>
     </aside>
+    <script>
+        (function() {
+            const btn = document.getElementById('adminMenuBtn');
+            const sidebar = document.getElementById('adminSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!btn || !sidebar) return;
+            function openSidebar() {
+                sidebar.classList.add('sidebar-open');
+                if(overlay) overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeSidebar() {
+                sidebar.classList.remove('sidebar-open');
+                if(overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            btn.addEventListener('click', openSidebar);
+            if(overlay) overlay.addEventListener('click', closeSidebar);
+            sidebar.querySelectorAll('a').forEach(function(a) {
+                a.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) closeSidebar();
+                });
+            });
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) closeSidebar();
+            });
+        })();
+    </script>

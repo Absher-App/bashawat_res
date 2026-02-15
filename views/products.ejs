@@ -39,57 +39,60 @@
     </a>
 
     <!-- Page Header -->
-    <header class="page-header" style="background-image: url('https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+    <header class="page-header products-page-header" style="background-image: url('https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
         <div class="overlay"></div>
         <div class="header-content">
+            <div class="header-icon"><i class="fas fa-box-open"></i></div>
             <h1>قائمة المنتجات</h1>
             <p>اكتشف تشكيلتنا الواسعة من الحلويات والبوظة العربية</p>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container">
+    <main class="container products-page-main">
         
-        <!-- Professional Search & Filter Section -->
-        <section class="products-control-bar">
-            <!-- Search Box -->
+        <!-- Search & Filter Card -->
+        <section class="products-control-card">
             <div class="search-wrapper">
                 <div class="search-box">
                     <input type="text" id="productSearch" placeholder="ابحث عن منتجك المفضل..." onkeyup="searchProducts()">
-                    <button onclick="searchProducts()"><i class="fas fa-search"></i></button>
+                    <button type="button" onclick="searchProducts()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
-
-            <!-- Horizontal Category Filter -->
             <div class="categories-filter-wrapper">
                 <ul class="category-filter-pills">
-                    <li><button class="category-pill active" onclick="filterProducts('all')">الكل</button></li>
+                    <li><button type="button" class="category-pill active" onclick="filterProducts('all', event)">الكل</button></li>
                     <% if (categories && categories.length > 0) { %>
                         <% categories.forEach(cat => { %>
-                            <li><button class="category-pill" onclick="filterProducts('<%= cat.id %>')"><%= cat.name %></button></li>
+                            <li><button type="button" class="category-pill" onclick="filterProducts('<%= cat.id %>', event)"><%= cat.name %></button></li>
                         <% }); %>
                     <% } else { %>
-                        <!-- Fallback if no categories in DB -->
-                        <% const uniqueCats = [...new Set(products.map(p => p.category))]; %>
-                        <% uniqueCats.forEach((cat, index) => { %>
-                            <li><button class="category-pill" onclick="filterProducts('<%= cat %>')"><%= cat %></button></li>
+                        <% const uniqueCats = products && products.length ? [...new Set(products.map(p => p.category))] : []; %>
+                        <% uniqueCats.forEach((cat) => { %>
+                            <li><button type="button" class="category-pill" onclick="filterProducts('<%= cat %>', event)"><%= cat %></button></li>
                         <% }); %>
                     <% } %>
                 </ul>
             </div>
         </section>
 
-        <!-- Products Grid -->
+        <!-- Products Section -->
         <section class="products-main-content">
             <% if (locals.error) { %>
-                <div class="error-message">
+                <div class="products-error-message">
+                    <i class="fas fa-exclamation-circle"></i>
                     <strong>تنبيه:</strong> <%= error %>
                 </div>
             <% } %>
 
             <% if (!locals.products || products.length === 0) { %>
-                <div class="no-products">
-                    <p>لا توجد منتجات متاحة حالياً.</p>
+                <div class="products-empty-state">
+                    <div class="products-empty-icon">
+                        <i class="fas fa-shopping-basket"></i>
+                    </div>
+                    <h3>لا توجد منتجات متاحة حالياً</h3>
+                    <p>نعمل على إضافة تشكيلة جديدة من الحلويات والبوظة. تفضل بزيارتنا قريباً!</p>
+                    <a href="/" class="products-empty-btn"><i class="fas fa-home"></i> العودة للرئيسية</a>
                 </div>
             <% } else { %>
                 <!-- All Products Container -->
@@ -110,7 +113,7 @@
                         %>
                         <div class="product-card product-item" data-id="<%= product.id %>" data-category-id="<%= catId %>" data-category-name="<%= product.category %>">
                             <div class="product-image">
-                                <img src="<%= product.image_url || 'https://via.placeholder.com/300x200?text=No+Image' %>" alt="<%= product.name %>">
+                                <img src="<%= product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
                                 <span class="price"><%= product.price %> ر.س</span>
                             </div>
                             <div class="product-info">
@@ -193,16 +196,14 @@
         }
 
         // Client-side filtering logic
-        function filterProducts(categoryId) {
-            // Clear search input when filtering by category
+        function filterProducts(categoryId, ev) {
             const searchInput = document.getElementById('productSearch');
             if(searchInput) searchInput.value = '';
 
-            // Update active button state
             document.querySelectorAll('.category-pill').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            if (ev && ev.target) ev.target.classList.add('active');
 
             const products = document.querySelectorAll('.product-item');
             

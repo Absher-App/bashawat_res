@@ -271,38 +271,36 @@ document.addEventListener('DOMContentLoaded', function() {
         if (cart.length === 0) {
             fullCartItemsContainer.innerHTML = `
                 <div class="empty-cart-state">
-                    <div class="empty-icon">
+                    <div class="empty-cart-icon-wrap">
                         <i class="fas fa-shopping-basket"></i>
                     </div>
                     <h3>سلتك فارغة حالياً</h3>
-                    <p>تصفح قائمة منتجاتنا واختر ما يناسب ذوقك</p>
-                    <a href="/" class="btn-primary empty-cart-btn">
-                        <i class="fas fa-home"></i> العودة للرئيسية
-                    </a>
+                    <p>لم تضف أي منتجات بعد. تصفح تشكيلتنا واختر ما يناسب ذوقك</p>
+                    <div class="empty-cart-actions">
+                        <a href="/products" class="empty-cart-btn primary">
+                            <i class="fas fa-box-open"></i> تصفح المنتجات
+                        </a>
+                        <a href="/" class="empty-cart-btn secondary">
+                            <i class="fas fa-home"></i> العودة للرئيسية
+                        </a>
+                    </div>
                 </div>
             `;
-            // Hide summary section when empty
             const summarySection = document.querySelector('.cart-summary-section');
             if(summarySection) summarySection.style.display = 'none';
-            
-            // Fix layout to center content
-            const cartItemsSection = document.querySelector('.cart-items-section');
-            if(cartItemsSection) {
-                cartItemsSection.style.flex = '1';
-                cartItemsSection.style.textAlign = 'center';
-            }
+            const cartLayout = document.getElementById('cartLayout');
+            if(cartLayout) cartLayout.classList.add('cart-is-empty');
+            const sectionTitle = document.querySelector('.cart-section-title-products');
+            if(sectionTitle) sectionTitle.style.display = 'none';
 
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = true;
         } else {
-            // Restore Layout
             const summarySection = document.querySelector('.cart-summary-section');
             if(summarySection) summarySection.style.display = 'block';
-            
-            const cartItemsSection = document.querySelector('.cart-items-section');
-            if(cartItemsSection) {
-                cartItemsSection.style.flex = '2';
-                cartItemsSection.style.textAlign = 'right'; // RTL
-            }
+            const cartLayout = document.getElementById('cartLayout');
+            if(cartLayout) cartLayout.classList.remove('cart-is-empty');
+            const sectionTitle = document.querySelector('.cart-section-title-products');
+            if(sectionTitle) sectionTitle.style.display = 'flex';
 
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = false;
             
