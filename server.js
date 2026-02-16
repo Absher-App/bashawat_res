@@ -34,6 +34,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// نسخة للملفات الثابتة - تتغير عند كل تشغيل لتفريغ الكاش (تحديث سريع بعد الرفع)
+app.locals.assetVersion = Date.now();
+
 // إعداد body-parser المدمج في express
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
