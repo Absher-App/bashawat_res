@@ -95,7 +95,11 @@
                     </div>
                     <div class="form-group">
                         <label>الوصف</label>
-                        <textarea name="description" class="form-control" rows="3" placeholder="وصف اختياري"></textarea>
+                        <textarea name="description" class="form-control" rows="3" placeholder="وصف قصير للمنتج"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>تفاصيل المنتج</label>
+                        <textarea name="details" class="form-control" rows="4" placeholder="تفاصيل إضافية تظهر عند تمرير الماوس: المكونات، الحجم، المعلومات الغذائية، إلخ"></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -149,7 +153,8 @@
                                 <% } %>
                             </select>
                             <input type="file" name="images" accept="image/*" class="form-control" required style="max-width:180px;">
-                            <textarea name="descriptions[]" class="form-control" rows="1" placeholder="الوصف (اختياري)" style="flex:1;min-width:120px;"></textarea>
+                            <textarea name="descriptions[]" class="form-control" rows="1" placeholder="الوصف" style="flex:1;min-width:120px;"></textarea>
+                            <textarea name="details[]" class="form-control" rows="1" placeholder="التفاصيل (اختياري)" style="flex:1;min-width:120px;"></textarea>
                             <button type="button" class="bulk-remove-btn" onclick="removeBulkProductRow(this)" title="حذف"><i class="fas fa-times"></i></button>
                         </div>
                     </div>
@@ -178,6 +183,10 @@
                     <div class="form-group">
                         <label>الوصف</label>
                         <textarea name="description" id="editProductDesc" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>تفاصيل المنتج</label>
+                        <textarea name="details" id="editProductDetails" class="form-control" rows="4" placeholder="تفاصيل إضافية تظهر عند تمرير الماوس"></textarea>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -209,7 +218,7 @@
     </main>
 
     <script>
-        const productsData = { <% products.forEach((p, i) => { %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',price:p.price,category:p.category||''}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
+        const productsData = { <% products.forEach((p, i) => { %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||''}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -222,6 +231,7 @@
             document.getElementById('editProductForm').action = '/admin/update-product/' + product.id;
             document.getElementById('editProductName').value = product.name;
             document.getElementById('editProductDesc').value = product.description || '';
+            document.getElementById('editProductDetails').value = product.details || '';
             document.getElementById('editProductPrice').value = product.price;
             document.getElementById('editProductCategory').value = product.category || '';
             openModal('editProductModal');

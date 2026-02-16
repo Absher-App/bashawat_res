@@ -841,6 +841,180 @@ html[dir="rtl"] .search-box button {
     overflow: hidden;
 }
 
+/* بطاقة تفاصيل المنتج عند تمرير الماوس */
+.product-has-hover {
+    overflow: visible;
+}
+
+.product-hover-card {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(26, 26, 26, 0.97) 0%, rgba(40, 35, 25, 0.98) 100%);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    z-index: 10;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.product-has-hover:hover .product-hover-card {
+    opacity: 1;
+    visibility: visible;
+}
+
+.hover-card-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.hover-card-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.hover-card-content::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.5);
+    border-radius: 4px;
+}
+
+.hover-card-header {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.hover-card-img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 2px solid rgba(212, 175, 55, 0.5);
+}
+
+.hover-card-title-block {
+    flex: 1;
+    min-width: 0;
+}
+
+.hover-card-title-block h4 {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+
+.hover-category {
+    color: var(--primary-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.hover-category i {
+    margin-left: 4px;
+}
+
+.hover-desc {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 0 12px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.hover-details-block {
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.hover-details-label {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.hover-details-label i {
+    margin-left: 6px;
+}
+
+.hover-details {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 0;
+    white-space: pre-line;
+}
+
+.hover-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    flex-shrink: 0;
+}
+
+.hover-price {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.hover-add-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.hover-add-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.5);
+}
+
+/* على الشاشات الصغيرة - إظهار البطاقة بالضغط بدل التمرير */
+@media (max-width: 768px) {
+    .product-hover-card {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .product-has-hover.hover-card-open .product-hover-card {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+}
+
 .price {
     position: absolute;
     top: 15px;

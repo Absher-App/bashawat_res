@@ -96,6 +96,20 @@ function queryDb(sql, params = []) {
     });
 }
 
+// تشغيل المايجريشن تلقائياً عند بدء السيرفر (لا يحتاج تيرمينال)
+async function runAutoMigrations() {
+    try {
+        await queryDb("ALTER TABLE products ADD COLUMN details TEXT DEFAULT NULL");
+        console.log('✓ تم إضافة عمود تفاصيل المنتج (details)');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') {
+            console.log('✓ عمود details موجود مسبقاً');
+        } else {
+            console.error('تحذير عند المايجريشن:', err.message);
+        }
+    }
+}
+
 // الصفحة الرئيسية - عرض المينو
 app.get('/', async (req, res) => {
     try {
@@ -261,12 +275,14 @@ app.get('/admin/settings', requireAuth, async (req, res) => {
 app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), async (req, res) => {
     let names = req.body.names;
     let descriptions = req.body.descriptions;
+    let details = req.body.details;
     let prices = req.body.prices;
     let categories = req.body.categories;
     const files = req.files || [];
 
     if (!Array.isArray(names)) names = names ? [names] : [];
     if (!Array.isArray(descriptions)) descriptions = descriptions ? [descriptions] : [];
+    if (!Array.isArray(details)) details = details ? [details] : [];
     if (!Array.isArray(prices)) prices = prices ? [prices] : [];
     if (!Array.isArray(categories)) categories = categories ? [categories] : [];
 
@@ -277,12 +293,13 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
         for (let i = 0; i < count; i++) {
             const name = (names[i] || '').trim();
             const description = (descriptions[i] || '').trim();
+            const productDetails = (details[i] || '').trim();
             const price = parseFloat(prices[i]) || 0;
             const category = (categories[i] || '').trim();
             const image_url = files[i] ? '/uploads/' + files[i].filename : '';
             if (!name || !category) continue;
-            await queryDb('INSERT INTO products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)',
-                [name, description, price, category, image_url]);
+            await queryDb('INSERT INTO products (name, description, details, price, category, image_url) VALUES (?, ?, ?, ?, ?, ?)',
+                [name, description, productDetails, price, category, image_url]);
         }
         res.redirect('/admin/products');
     } catch (err) {
@@ -293,11 +310,11 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
 
 // إضافة منتج جديد
 app.post('/admin/add-product', requireAuth, upload.single('image'), (req, res) => {
-    const { name, description, price, category } = req.body;
+    const { name, description, details, price, category } = req.body;
     const image_url = req.file ? '/uploads/' + req.file.filename : '';
 
-    const query = 'INSERT INTO products (name, description, price, category, image_url) VALUES (?, ?, ?, ?, ?)';
-    db.query(query, [name, description, price, category, image_url], (err, result) => {
+    const query = 'INSERT INTO products (name, description, details, price, category, image_url) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(query, [name, description || '', details || '', price, category, image_url], (err, result) => {
         if (err) console.error(err);
         res.redirect('/admin/products');
     });
@@ -315,16 +332,16 @@ app.post('/admin/delete-product/:id', requireAuth, (req, res) => {
 
 // تحديث منتج
 app.post('/admin/update-product/:id', requireAuth, upload.single('image'), (req, res) => {
-    const { name, description, price, category } = req.body;
+    const { name, description, details, price, category } = req.body;
     const productId = req.params.id;
     let query, params;
     if (req.file) {
         const image_url = '/uploads/' + req.file.filename;
-        query = 'UPDATE products SET name = ?, description = ?, price = ?, category = ?, image_url = ? WHERE id = ?';
-        params = [name, description, price, category, image_url, productId];
+        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, image_url = ? WHERE id = ?';
+        params = [name, description || '', details || '', price, category, image_url, productId];
     } else {
-        query = 'UPDATE products SET name = ?, description = ?, price = ?, category = ? WHERE id = ?';
-        params = [name, description, price, category, productId];
+        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ? WHERE id = ?';
+        params = [name, description || '', details || '', price, category, productId];
     }
     db.query(query, params, (err, result) => {
         if (err) console.error(err);
@@ -469,6 +486,9 @@ app.post('/admin/delete-slide/:id', requireAuth, (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`الخادم يعمل على الرابط: http://localhost:${port}`);
-});
+(async () => {
+    await runAutoMigrations();
+    app.listen(port, () => {
+        console.log(`الخادم يعمل على الرابط: http://localhost:${port}`);
+    });
+})();

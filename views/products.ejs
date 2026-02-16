@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة المنتجات - بوظة بقداش</title>
+    <title>قائمة المنتجات - حلويات بقداش</title>
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -20,8 +20,8 @@
     <nav class="topbar">
         <div class="container topbar-content">
             <div class="logo-area">
-                <img src="/images/logo.png" alt="بوظة بقداش" class="nav-logo">
-                <a href="/" class="brand-name"> بوظة بقداش - Bodat Bagdash</a>
+                <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
+                <a href="/" class="brand-name"> حلويات بقداش - Baqdash sweets</a>
             </div>
             <ul class="nav-links">
                 <li><a href="/">الرئيسية</a></li>
@@ -111,7 +111,7 @@
                                 catId = product.category; // Fallback
                             }
                         %>
-                        <div class="product-card product-item" data-id="<%= product.id %>" data-category-id="<%= catId %>" data-category-name="<%= product.category %>">
+                        <div class="product-card product-item product-has-hover" data-id="<%= product.id %>" data-category-id="<%= catId %>" data-category-name="<%= product.category %>">
                             <div class="product-image">
                                 <img src="<%= product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
                                 <span class="price"><%= product.price %> ر.س</span>
@@ -130,6 +130,28 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="product-hover-card">
+                                <div class="hover-card-content">
+                                    <div class="hover-card-header">
+                                        <img src="<%= product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" class="hover-card-img">
+                                        <div class="hover-card-title-block">
+                                            <h4><%= product.name %></h4>
+                                            <span class="hover-category"><i class="fas fa-tag"></i> <%= product.category %></span>
+                                        </div>
+                                    </div>
+                                    <p class="hover-desc"><%= product.description || '—' %></p>
+                                    <% if (product.details && product.details.trim()) { %>
+                                    <div class="hover-details-block">
+                                        <span class="hover-details-label"><i class="fas fa-info-circle"></i> التفاصيل</span>
+                                        <p class="hover-details"><%= product.details %></p>
+                                    </div>
+                                    <% } %>
+                                    <div class="hover-card-footer">
+                                        <span class="hover-price"><%= product.price %> ر.س</span>
+                                        <button type="button" class="hover-add-btn" onclick="event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     <% }); %>
                 </div>
@@ -141,7 +163,7 @@
     <footer class="main-footer">
         <div class="footer-content container">
             <div class="footer-col">
-                <h3>بوظة بقداش</h3>
+                <h3>حلويات بقداش</h3>
                 <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
             </div>
             <div class="footer-col">
@@ -159,7 +181,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2026 بوظة بقداش - Bodat Bagdash</p>
+            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Baqdash sweets</p>
         </div>
     </footer>
 
