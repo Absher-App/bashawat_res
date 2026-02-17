@@ -21,7 +21,7 @@
         <div class="container topbar-content">
             <div class="logo-area">
                 <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                <a href="/" class="brand-name"> حلويات بقداش - Baqdash sweets</a>
+                <a href="/" class="brand-name"> حلويات بقداش - Bagdash sweets</a>
             </div>
             <ul class="nav-links">
                 <li><a href="/">الرئيسية</a></li>
@@ -61,15 +61,15 @@
             </div>
             <div class="categories-filter-wrapper">
                 <ul class="category-filter-pills">
-                    <li><button type="button" class="category-pill active" onclick="filterProducts('all', event)">الكل</button></li>
+                    <li><button type="button" class="category-pill active" data-category="all" onclick="filterProducts('all', event)">الكل</button></li>
                     <% if (categories && categories.length > 0) { %>
                         <% categories.forEach(cat => { %>
-                            <li><button type="button" class="category-pill" onclick="filterProducts('<%= cat.id %>', event)"><%= cat.name %></button></li>
+                            <li><button type="button" class="category-pill" data-category="<%= cat.name %>" data-category-id="<%= cat.id %>" onclick="filterProducts('<%= cat.name %>', event)"><%= cat.name %></button></li>
                         <% }); %>
                     <% } else { %>
                         <% const uniqueCats = products && products.length ? [...new Set(products.map(p => p.category))] : []; %>
                         <% uniqueCats.forEach((cat) => { %>
-                            <li><button type="button" class="category-pill" onclick="filterProducts('<%= cat %>', event)"><%= cat %></button></li>
+                            <li><button type="button" class="category-pill" data-category="<%= cat %>" onclick="filterProducts('<%= cat %>', event)"><%= cat %></button></li>
                         <% }); %>
                     <% } %>
                 </ul>
@@ -176,12 +176,12 @@
             </div>
             <div class="footer-col">
                 <h3>تواصل معنا</h3>
-                <p><i class="fas fa-phone"></i> 920005031 | واتساب : 0502975175</p>
+                <p><i class="fas fa-phone"></i> 920005031</p>
                 <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Baqdash sweets</p>
+            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Bagdash sweets</p>
         </div>
     </footer>
 
@@ -190,6 +190,7 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <%- include('partials/cake-form-modal') %>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
     <script>
         // Search Logic
@@ -215,6 +216,20 @@
                     product.style.display = 'none';
                 }
             });
+        }
+
+        // تطبيق فلتر التصنيف من الرابط ?category=xxx
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryFromUrl = urlParams.get('category');
+        if (categoryFromUrl) {
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                btn.classList.remove('active');
+                const btnCat = btn.getAttribute('data-category');
+                if (btnCat && decodeURIComponent(btnCat) === decodeURIComponent(categoryFromUrl)) {
+                    btn.classList.add('active');
+                }
+            });
+            filterProducts(decodeURIComponent(categoryFromUrl));
         }
 
         // Client-side filtering logic

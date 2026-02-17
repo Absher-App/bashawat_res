@@ -123,6 +123,12 @@
                         <label>صورة المنتج</label>
                         <input type="file" name="image" accept="image/*" class="form-control" required>
                     </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_cake" value="1">
+                            <span>منتج كيك (يظهر نموذج التفاصيل عند الطلب)</span>
+                        </label>
+                    </div>
                     <button id="addProductBtn" type="submit" class="btn-primary">
                         <i class="fas fa-plus"></i> إضافة المنتج
                     </button>
@@ -154,7 +160,8 @@
                             </select>
                             <input type="file" name="images" accept="image/*" class="form-control" required style="max-width:180px;">
                             <textarea name="descriptions[]" class="form-control" rows="1" placeholder="الوصف" style="flex:1;min-width:120px;"></textarea>
-                            <textarea name="details[]" class="form-control" rows="1" placeholder="التفاصيل (اختياري)" style="flex:1;min-width:120px;"></textarea>
+                            <textarea name="details[]" class="form-control" rows="1" placeholder="التفاصيل" style="flex:1;min-width:120px;"></textarea>
+                            <label class="bulk-cake-check"><input type="checkbox" name="is_cake_0" value="1"> كيك</label>
                             <button type="button" class="bulk-remove-btn" onclick="removeBulkProductRow(this)" title="حذف"><i class="fas fa-times"></i></button>
                         </div>
                     </div>
@@ -208,6 +215,12 @@
                         <label>صورة جديدة (اختياري - اتركه فارغاً للإبقاء على الصورة الحالية)</label>
                         <input type="file" name="image" accept="image/*" class="form-control">
                     </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_cake" value="1" id="editProductIsCake">
+                            <span>منتج كيك (يظهر نموذج التفاصيل عند الطلب)</span>
+                        </label>
+                    </div>
                     <button id="editProductBtn" type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> حفظ التغييرات
                     </button>
@@ -218,7 +231,7 @@
     </main>
 
     <script>
-        const productsData = { <% products.forEach((p, i) => { %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||''}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
+        const productsData = { <% products.forEach((p, i) => { %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||'',is_cake:!!p.is_cake}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -232,6 +245,7 @@
             document.getElementById('editProductName').value = product.name;
             document.getElementById('editProductDesc').value = product.description || '';
             document.getElementById('editProductDetails').value = product.details || '';
+            document.getElementById('editProductIsCake').checked = product.is_cake || false;
             document.getElementById('editProductPrice').value = product.price;
             document.getElementById('editProductCategory').value = product.category || '';
             openModal('editProductModal');
@@ -249,14 +263,19 @@
 
         function addBulkProductRow() {
             const container = document.getElementById('productsBulkRows');
-            const firstRow = container.querySelector('.bulk-product-row');
+            const rows = container.querySelectorAll('.bulk-product-row');
+            const firstRow = rows[0];
             const clone = firstRow.cloneNode(true);
             clone.querySelectorAll('input, textarea, select').forEach(el => {
                 if (el.type === 'file') el.value = '';
+                else if (el.type === 'checkbox') el.checked = false;
                 else if (el.tagName === 'SELECT') el.selectedIndex = 0;
                 else el.value = '';
             });
-            clone.querySelector('.bulk-product-num').textContent = container.querySelectorAll('.bulk-product-row').length + 1;
+            const newIdx = rows.length;
+            clone.querySelector('.bulk-product-num').textContent = newIdx + 1;
+            const cakeCb = clone.querySelector('.bulk-cake-check input');
+            if (cakeCb) cakeCb.name = 'is_cake_' + newIdx;
             container.appendChild(clone);
         }
         function removeBulkProductRow(btn) {

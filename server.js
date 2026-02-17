@@ -105,13 +105,26 @@ async function runAutoMigrations() {
         await queryDb("ALTER TABLE products ADD COLUMN details TEXT DEFAULT NULL");
         console.log('✓ تم إضافة عمود تفاصيل المنتج (details)');
     } catch (err) {
-        if (err.code === 'ER_DUP_FIELDNAME') {
-            console.log('✓ عمود details موجود مسبقاً');
-        } else {
-            console.error('تحذير عند المايجريشن:', err.message);
-        }
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود details موجود مسبقاً');
+        else console.error('تحذير:', err.message);
+    }
+    try {
+        await queryDb("ALTER TABLE products ADD COLUMN is_cake TINYINT(1) DEFAULT 0");
+        console.log('✓ تم إضافة عمود is_cake');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود is_cake موجود مسبقاً');
+        else console.error('تحذير:', err.message);
     }
 }
+
+// رفع صورة تصميم الكيك (لعملاء الموقع)
+app.post('/api/upload-cake-image', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ success: false, error: 'لم يتم رفع أي ملف' });
+    }
+    const url = '/uploads/' + req.file.filename;
+    res.json({ success: true, url });
+});
 
 // الصفحة الرئيسية - عرض المينو
 app.get('/', async (req, res) => {
@@ -300,9 +313,10 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
             const price = parseFloat(prices[i]) || 0;
             const category = (categories[i] || '').trim();
             const image_url = files[i] ? '/uploads/' + files[i].filename : '';
+            const is_cake = (req.body['is_cake_' + i] === '1') ? 1 : 0;
             if (!name || !category) continue;
-            await queryDb('INSERT INTO products (name, description, details, price, category, image_url) VALUES (?, ?, ?, ?, ?, ?)',
-                [name, description, productDetails, price, category, image_url]);
+            await queryDb('INSERT INTO products (name, description, details, price, category, image_url, is_cake) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [name, description, productDetails, price, category, image_url, is_cake]);
         }
         res.redirect('/admin/products');
     } catch (err) {
@@ -315,9 +329,10 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
 app.post('/admin/add-product', requireAuth, upload.single('image'), (req, res) => {
     const { name, description, details, price, category } = req.body;
     const image_url = req.file ? '/uploads/' + req.file.filename : '';
+    const is_cake = req.body.is_cake === 'on' || req.body.is_cake === '1' ? 1 : 0;
 
-    const query = 'INSERT INTO products (name, description, details, price, category, image_url) VALUES (?, ?, ?, ?, ?, ?)';
-    db.query(query, [name, description || '', details || '', price, category, image_url], (err, result) => {
+    const query = 'INSERT INTO products (name, description, details, price, category, image_url, is_cake) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(query, [name, description || '', details || '', price, category, image_url, is_cake], (err, result) => {
         if (err) console.error(err);
         res.redirect('/admin/products');
     });
@@ -337,14 +352,15 @@ app.post('/admin/delete-product/:id', requireAuth, (req, res) => {
 app.post('/admin/update-product/:id', requireAuth, upload.single('image'), (req, res) => {
     const { name, description, details, price, category } = req.body;
     const productId = req.params.id;
+    const is_cake = req.body.is_cake === 'on' || req.body.is_cake === '1' ? 1 : 0;
     let query, params;
     if (req.file) {
         const image_url = '/uploads/' + req.file.filename;
-        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, image_url = ? WHERE id = ?';
-        params = [name, description || '', details || '', price, category, image_url, productId];
+        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, image_url = ?, is_cake = ? WHERE id = ?';
+        params = [name, description || '', details || '', price, category, image_url, is_cake, productId];
     } else {
-        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ? WHERE id = ?';
-        params = [name, description || '', details || '', price, category, productId];
+        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, is_cake = ? WHERE id = ?';
+        params = [name, description || '', details || '', price, category, is_cake, productId];
     }
     db.query(query, params, (err, result) => {
         if (err) console.error(err);

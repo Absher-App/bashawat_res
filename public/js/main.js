@@ -140,22 +140,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 2. Add Item (First Time)
+    function isCakeProduct(product) {
+        if (product.is_cake) return true;
+        const cat = (product.category || '').trim();
+        return ['كيك', 'كيكات'].some(c => cat.includes(c));
+    }
+
     window.addToCart = function(product) {
-        const existingItem = cart.find(item => item.id === product.id);
+        if (isCakeProduct(product)) {
+            openCakeModal(product);
+            return;
+        }
+
+        const existingItem = cart.find(item => item.id === product.id && !item.cakeOptions);
         
         if (existingItem) {
             existingItem.quantity++;
         } else {
             cart.push({ ...product, quantity: 1 });
+            const card = document.querySelector(`.product-card[data-id="${product.id}"], .product-item[data-id="${product.id}"]`);
+            if(card) {
+                const img = card.querySelector('.product-image img');
+                if(img) animateFlyToCart(img);
+            }
         }
         
-        // Animation feedback
-        const card = document.querySelector(`.product-card[data-id="${product.id}"]`);
+        const card = document.querySelector(`.product-card[data-id="${product.id}"], .product-item[data-id="${product.id}"]`);
         if(card) {
-            const img = card.querySelector('img');
-            animateFlyToCart(img);
-
-            // Button Feedback
             const btn = card.querySelector('.add-to-cart-btn');
             if(btn) {
                 const originalContent = btn.innerHTML;
@@ -171,66 +182,131 @@ document.addEventListener('DOMContentLoaded', function() {
         saveCart();
     };
 
-    // Helper: Fly Animation
+    window.openCakeModal = function(product) {
+        window._pendingCakeProduct = product;
+        document.getElementById('cakeModalProductName').textContent = product.name;
+        document.getElementById('cakeProductData').value = JSON.stringify(product);
+        document.getElementById('cakeOrderForm').reset();
+        document.getElementById('cakeFileName').textContent = '';
+        document.getElementById('cakeFormModal').classList.add('active');
+    };
+
+    window.closeCakeModal = function() {
+        document.getElementById('cakeFormModal').classList.remove('active');
+        window._pendingCakeProduct = null;
+    };
+
+    (function initCakeForm() {
+        const cakeForm = document.getElementById('cakeOrderForm');
+        const cakeModal = document.getElementById('cakeFormModal');
+        if (cakeForm) {
+            cakeForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const product = window._pendingCakeProduct;
+                if (!product) return;
+
+                const cakeOptions = {
+                    size: document.getElementById('cakeSize').value,
+                    sponge: document.getElementById('cakeSponge').value,
+                    filling: document.getElementById('cakeFilling').value,
+                    addon: document.getElementById('cakeAddon').value,
+                    date: document.getElementById('cakeDate').value,
+                    writing: document.getElementById('cakeWriting').value,
+                    note: document.getElementById('cakeNote').value,
+                    imageUrl: null
+                };
+
+                const fileInput = document.getElementById('cakeAttachment');
+                if (fileInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('image', fileInput.files[0]);
+                    try {
+                        const res = await fetch('/api/upload-cake-image', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.success) cakeOptions.imageUrl = data.url;
+                    } catch (err) { console.error(err); }
+                }
+
+                cart.push({ ...product, quantity: 1, cakeOptions });
+                saveCart();
+                closeCakeModal();
+
+                const card = document.querySelector(`.product-card[data-id="${product.id}"], .product-item[data-id="${product.id}"]`);
+                if (card) {
+                    const img = card.querySelector('.product-image img');
+                    if (img) animateFlyToCart(img);
+                }
+            });
+        }
+        if (cakeModal) {
+            cakeModal.addEventListener('click', function(e) {
+                if (e.target === cakeModal) closeCakeModal();
+            });
+            const attInput = document.getElementById('cakeAttachment');
+            if (attInput) attInput.addEventListener('change', function() {
+                document.getElementById('cakeFileName').textContent = this.files[0] ? this.files[0].name : '';
+            });
+        }
+    })();
+
+    // Helper: Fly Animation - انيميشن طيران المنتج للسلة
     function animateFlyToCart(sourceElement) {
         if(!sourceElement) return;
 
-        // Clone the image
         const clone = sourceElement.cloneNode(true);
         const rect = sourceElement.getBoundingClientRect();
         const cartBtn = document.getElementById('cartBtn');
         
-        // If cart button is not visible (e.g. desktop topbar), target the topbar cart link
         let targetRect;
-        // Check if floating btn is visible
         if(cartBtn && window.getComputedStyle(cartBtn).display !== 'none') {
-             targetRect = cartBtn.getBoundingClientRect();
+            targetRect = cartBtn.getBoundingClientRect();
         } else {
-             // Fallback to topbar cart icon
-             const topCart = document.querySelector('.nav-links a[href="/cart"] i');
-             if(topCart) targetRect = topCart.getBoundingClientRect();
-             else targetRect = { top: 50, left: 50, width: 0, height: 0 }; // Fallback
+            const topCart = document.querySelector('.nav-links a[href="/cart"]');
+            if(topCart) targetRect = topCart.getBoundingClientRect();
+            else targetRect = { top: 50, left: 50, width: 40, height: 40 };
         }
 
+        const targetX = targetRect.left + (targetRect.width / 2) - 25;
+        const targetY = targetRect.top + (targetRect.height / 2) - 25;
+
         clone.classList.add('fly-item');
-        clone.style.top = `${rect.top}px`;
-        clone.style.left = `${rect.left}px`;
-        clone.style.width = `${rect.width}px`;
-        clone.style.height = `${rect.height}px`;
+        clone.style.cssText = 'position:fixed;top:' + rect.top + 'px;left:' + rect.left + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;z-index:99999;border-radius:12px;object-fit:cover;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.2);transition:all 0.7s cubic-bezier(0.25,0.46,0.45,0.94);';
         
         document.body.appendChild(clone);
+        clone.offsetHeight;
 
-        // Trigger animation
-        setTimeout(() => {
-            clone.style.top = `${targetRect.top}px`;
-            clone.style.left = `${targetRect.left}px`;
+        requestAnimationFrame(function() {
+            clone.style.top = targetY + 'px';
+            clone.style.left = targetX + 'px';
             clone.style.width = '50px';
             clone.style.height = '50px';
-            clone.style.opacity = '0.5';
-        }, 10);
+            clone.style.borderRadius = '50%';
+            clone.style.opacity = '0.4';
+        });
 
-        // Cleanup
-        setTimeout(() => {
+        setTimeout(function() {
             clone.remove();
-            // Optional: Shake cart button
             if(cartBtn) {
-                cartBtn.style.transform = 'scale(1.2)';
-                setTimeout(() => cartBtn.style.transform = 'scale(1)', 200);
+                cartBtn.style.transform = 'scale(1.25)';
+                cartBtn.style.transition = 'transform 0.2s ease';
+                setTimeout(function() { cartBtn.style.transform = 'scale(1)'; }, 200);
             }
-        }, 810);
+        }, 750);
     }
 
     // 3. Update Quantity (From Card or Cart Page)
     window.updateItemQty = function(id, change) {
         const itemIndex = cart.findIndex(item => item.id === id);
         if (itemIndex === -1) return;
-
         cart[itemIndex].quantity += change;
+        if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1);
+        saveCart();
+    };
 
-        if (cart[itemIndex].quantity <= 0) {
-            cart.splice(itemIndex, 1);
-        }
-
+    window.updateItemQtyByIndex = function(index, change) {
+        if (index < 0 || index >= cart.length) return;
+        cart[index].quantity += change;
+        if (cart[index].quantity <= 0) cart.splice(index, 1);
         saveCart();
     };
 
@@ -315,6 +391,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     : 'https://via.placeholder.com/200x200?text=صورة';
                 const safeName = (item.name || '').replace(/"/g, '&quot;');
                 
+                const cakeInfo = item.cakeOptions ? '<div class="cart-item-cake-options"><small>' +
+                    [item.cakeOptions.size && 'الحجم: ' + item.cakeOptions.size,
+                     item.cakeOptions.sponge && 'السبونج: ' + item.cakeOptions.sponge,
+                     item.cakeOptions.date && 'الموعد: ' + item.cakeOptions.date].filter(Boolean).join(' | ') +
+                    '</small></div>' : '';
                 itemEl.innerHTML = `
                     <div class="cart-item-image">
                         <img src="${imgUrl}" alt="${safeName}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/200x200?text=صورة';this.onerror=null;">
@@ -323,13 +404,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="cart-item-details">
                         <h4 class="item-name">${item.name}</h4>
                         <span class="item-price-unit">${item.price} ر.س × ${item.quantity}</span>
+                        ${cakeInfo}
                     </div>
 
                     <div class="cart-item-actions">
                         <div class="qty-selector">
-                            <button class="qty-btn minus" onclick="updateItemQty(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+                            <button class="qty-btn minus" onclick="updateItemQtyByIndex(${index}, -1)"><i class="fas fa-minus"></i></button>
                             <span class="qty-val">${item.quantity}</span>
-                            <button class="qty-btn plus" onclick="updateItemQty(${item.id}, 1)"><i class="fas fa-plus"></i></button>
+                            <button class="qty-btn plus" onclick="updateItemQtyByIndex(${index}, 1)"><i class="fas fa-plus"></i></button>
                         </div>
                     </div>
 
@@ -351,30 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if(finalTotalElement) finalTotalElement.textContent = total.toFixed(2) + ' ر.س';
     }
 
-    // Checkout via WhatsApp
-    if(pageCheckoutBtn) {
-        pageCheckoutBtn.addEventListener('click', () => {
-            if(cart.length === 0) return;
-
-            let message = "مرحباً، أود طلب المنتجات التالية:\n\n";
-            let total = 0;
-
-            cart.forEach(item => {
-                message += `- *${item.name}* (العدد: ${item.quantity}) - السعر: ${item.price * item.quantity} ر.س\n`;
-                total += item.price * item.quantity;
-            });
-
-            message += `\n*الإجمالي: ${total} ر.س*`;
-            message += "\n\nالرجاء تأكيد الطلب.";
-
-            const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-            window.open(url, '_blank');
-        });
-    }
-
     // Update Product Cards (Switch between "Add" and "Qty Controls")
     function updateProductCards() {
-        const cards = document.querySelectorAll('.product-card');
+        const cards = document.querySelectorAll('.product-card, .product-item');
         
         cards.forEach(card => {
             const id = parseInt(card.dataset.id);
@@ -401,46 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Animation Effect
-    function animateFlyToCart(sourceElement) {
-        if (!sourceElement) return;
-        
-        // Target the cart icon in the topbar or floating button
-        let cartIcon = document.querySelector('.topbar .fa-shopping-cart');
-        // If on mobile or if floating button is visible, maybe target that instead?
-        // For now, let's target the nav icon.
-        
-        if (!cartIcon) return;
-
-        const flyer = sourceElement.cloneNode();
-        flyer.classList.add('flying-img');
-        
-        const srcRect = sourceElement.getBoundingClientRect();
-        const destRect = cartIcon.getBoundingClientRect();
-
-        flyer.style.left = `${srcRect.left}px`;
-        flyer.style.top = `${srcRect.top}px`;
-        flyer.style.width = `${srcRect.width}px`;
-        flyer.style.height = `${srcRect.height}px`;
-
-        document.body.appendChild(flyer);
-
-        // Force reflow
-        flyer.offsetHeight;
-
-        // Start animation
-        requestAnimationFrame(() => {
-            flyer.style.transform = `translate(${destRect.left - srcRect.left}px, ${destRect.top - srcRect.top}px) scale(0.1)`;
-            flyer.style.opacity = '0.5';
-        });
-
-        setTimeout(() => {
-            flyer.remove();
-            cartIcon.parentElement.classList.add('bump');
-            setTimeout(() => cartIcon.parentElement.classList.remove('bump'), 300);
-        }, 800); // Match CSS transition time
-    }
-
     // === Event Listeners ===
 
     // Checkout Button (Cart Page)
@@ -450,13 +471,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let message = "*طلب جديد من موقع حلويات بقداش* 🧁\n\n";
             message += "*تفاصيل الطلب:*\n";
+            const baseUrl = window.location.origin;
             
             cart.forEach(item => {
                 message += `- ${item.name} (${item.quantity}x): ${(item.price * item.quantity).toFixed(2)} ر.س\n`;
+                if (item.cakeOptions) {
+                    const co = item.cakeOptions;
+                    if (co.size) message += `  • الحجم: ${co.size}\n`;
+                    if (co.sponge) message += `  • السبونج: ${co.sponge}\n`;
+                    if (co.filling) message += `  • الحشوة: ${co.filling}\n`;
+                    if (co.addon) message += `  • الإضافة: ${co.addon}\n`;
+                    if (co.date) message += `  • الموعد: ${co.date}\n`;
+                    if (co.writing) message += `  • الكتابة على القاعدة: ${co.writing}\n`;
+                    if (co.note) message += `  • ملاحظة: ${co.note}\n`;
+                    if (co.imageUrl) message += `  • صورة التصميم: ${baseUrl}${co.imageUrl}\n`;
+                }
             });
 
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             message += `\n*المجموع الكلي: ${total.toFixed(2)} ر.س*`;
+            message += "\n\nالرجاء تأكيد الطلب.";
             
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
@@ -468,46 +502,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize UI on load
     updateAllUI();
 
-    // === Stories Logic ===
-    window.openStory = function(videoUrl, title) {
-        const modal = document.getElementById('storyModal');
-        const video = document.getElementById('storyVideo');
-        const titleEl = document.getElementById('storyTitle');
-
-        if(modal && video) {
-            video.src = videoUrl;
-            if(titleEl) titleEl.textContent = title;
-            modal.classList.add('active');
-            
-            // Play video
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("Auto-play prevented");
-                });
-            }
-        }
-    };
-
-    window.closeStory = function() {
-        const modal = document.getElementById('storyModal');
-        const video = document.getElementById('storyVideo');
-        
-        if(modal && video) {
-            modal.classList.remove('active');
-            video.pause();
-            video.currentTime = 0;
-            video.src = "";
-        }
-    };
-
-    // Close modal when clicking outside video
-    const storyModal = document.getElementById('storyModal');
-    if(storyModal) {
-        storyModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeStory();
-            }
-        });
-    }
 });

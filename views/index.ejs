@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حلويات بقداش - Baqdash sweets</title>
+    <title>حلويات بقداش - Bagdash sweets</title>
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <!-- إضافة أيقونات Font Awesome للسلة -->
@@ -22,7 +22,7 @@
         <div class="container topbar-content">
             <div class="logo-area">
                 <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                <a href="/" class="brand-name"> حلويات بقداش - Baqdash sweets</a>
+                <a href="/" class="brand-name"> حلويات بقداش - Bagdash sweets</a>
             </div>
             <ul class="nav-links">
                 <li><a href="/" class="active">الرئيسية</a></li>
@@ -70,22 +70,6 @@
         </div>
     </section>
 
-    <!-- Stories Section -->
-    <% if (locals.stories && stories.length > 0) { %>
-    <section class="stories-section">
-        <div class="stories-scroll-container">
-            <% stories.forEach(story => { %>
-                <div class="story-item" onclick="openStory('<%= story.video_url %>', '<%= story.title %>')">
-                    <div class="story-circle">
-                        <img src="<%= story.cover_url %>" alt="<%= story.title %>">
-                    </div>
-                    <div class="story-title"><%= story.title %></div>
-                </div>
-            <% }); %>
-        </div>
-    </section>
-    <% } %>
-
     <!-- قسم المنتجات حسب التصنيف -->
     <main class="container" id="products-section">
         <% if (locals.error) { %>
@@ -100,14 +84,36 @@
             </div>
         <% } else { %>
             <% 
-                // عرض المنتجات حسب التصنيفات الموجودة في قاعدة البيانات
-                // إذا لم تكن هناك تصنيفات، نستخدم التجميع القديم كاحتياط
                 let catsToRender = categories;
                 if (!catsToRender || catsToRender.length === 0) {
                     const uniqueCats = [...new Set(products.map(p => p.category))];
                     catsToRender = uniqueCats.map(c => ({ name: c, id: c }));
                 }
+                const catsWithProducts = catsToRender.filter(cat => products.some(p => p.category === cat.name));
             %>
+            
+            <!-- التصنيفات أعلى المنتجات -->
+            <% const _otherProducts = products.filter(p => !catsToRender.map(c => c.name).includes(p.category)); %>
+            <% if (catsWithProducts.length > 0 || _otherProducts.length > 0) { %>
+            <section class="home-categories-bar">
+                <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> تصفح حسب التصنيف</h2>
+                <div class="home-categories-list">
+                    <% catsWithProducts.forEach(function(cat) { %>
+                        <% const cp = products.filter(p => p.category === cat.name); %>
+                        <a href="#cat-<%= cat.id %>" class="home-category-item">
+                            <span class="pill-name"><%= cat.name %></span>
+                            <span class="pill-count">(<%= cp.length %>)</span>
+                        </a>
+                    <% }); %>
+                    <% if (_otherProducts.length > 0) { %>
+                    <a href="#cat-other" class="home-category-item">
+                        <span class="pill-name">أخرى</span>
+                        <span class="pill-count">(<%= _otherProducts.length %>)</span>
+                    </a>
+                    <% } %>
+                </div>
+            </section>
+            <% } %>
             
             <% catsToRender.forEach(function(cat) { %>
                 <% const catProducts = products.filter(p => p.category === cat.name); %>
@@ -231,28 +237,37 @@
         <% } %>
     </main>
 
-    <!-- قسم آراء العملاء -->
+    <!-- آراء الناس من الدمام والخبر والقطيف -->
     <section class="reviews-section">
         <div class="container">
-            <h2 class="section-title">ماذا يقول عملاؤنا</h2>
+            <span class="reviews-badge"><i class="fas fa-quote-right"></i> آراء عملائنا</span>
             <div class="reviews-grid">
                 <div class="review-card">
-                    <div class="review-avatar"><i class="fas fa-user"></i></div>
-                    <div class="stars">★★★★★</div>
-                    <p>"أطيب بوظة ذقتها في حياتي! الطعم الأصلي فعلاً والخدمة ممتازة جداً."</p>
-                    <h4>أحمد محمد</h4>
+                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> الدمام</span>
+                    <div class="review-stars">★★★★★</div>
+                    <blockquote class="review-text">"أطيب بوظة جربتها! الطعم أصلي وذا والخدمة نار، والله يمدحون."</blockquote>
+                    <div class="review-author">
+                        <div class="review-avatar"><i class="fas fa-user"></i></div>
+                        <h4>أحمد محمد</h4>
+                    </div>
                 </div>
                 <div class="review-card">
-                    <div class="review-avatar"><i class="fas fa-user-circle"></i></div>
-                    <div class="stars">★★★★★</div>
-                    <p>"تعامل راقي وتوصيل سريع، والكيك كان خيالي والكل سألني عنه."</p>
-                    <h4>سارة العلي</h4>
+                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> الخبر</span>
+                    <div class="review-stars">★★★★★</div>
+                    <blockquote class="review-text">"تعاملهم حلو والتوصيل سريع، والكيك خطير والجميع سألني من وين جبته."</blockquote>
+                    <div class="review-author">
+                        <div class="review-avatar"><i class="fas fa-user"></i></div>
+                        <h4>سارة العلي</h4>
+                    </div>
                 </div>
                 <div class="review-card">
-                    <div class="review-avatar"><i class="fas fa-user-tie"></i></div>
-                    <div class="stars">★★★★☆</div>
-                    <p>"الحلويات الشرقية ممتازة جداً وتواجه في العزايم، شكراً لكم."</p>
-                    <h4>خالد فهد</h4>
+                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> القطيف</span>
+                    <div class="review-stars">★★★★★</div>
+                    <blockquote class="review-text">"الحلويات الشرقية زينه وتسدّ النفس في العزايم، الله يعطيكم العافية."</blockquote>
+                    <div class="review-author">
+                        <div class="review-avatar"><i class="fas fa-user"></i></div>
+                        <h4>خالد فهد</h4>
+                    </div>
                 </div>
             </div>
         </div>
@@ -275,12 +290,12 @@
             </div>
             <div class="footer-col">
                 <h3>تواصل معنا</h3>
-                <p><i class="fas fa-phone"></i> 920005031 | واتساب : 0502975175</p>
+                <p><i class="fas fa-phone"></i> 920005031</p>
                 <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Baqdash sweets</p>
+            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Bagdash sweets</p>
         </div>
     </footer>
 
@@ -289,18 +304,7 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- Story Viewer Modal -->
-    <div class="story-modal" id="storyModal">
-        <span class="close-story" onclick="closeStory()">&times;</span>
-        <div class="story-video-container">
-            <video class="story-video" id="storyVideo" controls autoplay>
-                <source src="" type="video/mp4">
-                متصفحك لا يدعم تشغيل الفيديو.
-            </video>
-        </div>
-        <h3 class="story-modal-title" id="storyTitle"></h3>
-    </div>
-
+    <%- include('partials/cake-form-modal') %>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
 </body>
 </html>
