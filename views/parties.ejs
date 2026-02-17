@@ -11,8 +11,10 @@
 <body>
     <!-- Offers Banner -->
     <div class="offers-banner">
-        <div class="offers-text">
-            <%= typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉' %>
+        <div class="offers-marquee-wrap">
+            <% const partiesOfferText = typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉'; %>
+            <span class="offers-text"><%= partiesOfferText %></span>
+            <span class="offers-text"><%= partiesOfferText %></span>
         </div>
     </div>
 
@@ -21,7 +23,7 @@
         <div class="container topbar-content">
             <div class="logo-area">
                 <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                <a href="/" class="brand-name">حلويات بقداش</a>
+                <a href="/" class="brand-name">حلويات بقداش - Bagdash sweets</a>
             </div>
             <ul class="nav-links">
                 <li><a href="/">الرئيسية</a></li>

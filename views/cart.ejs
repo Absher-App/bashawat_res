@@ -11,8 +11,10 @@
 <body>
     <!-- Offers Banner -->
     <div class="offers-banner">
-        <div class="offers-text">
-            <%= typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉' %>
+        <div class="offers-marquee-wrap">
+            <% const cartOfferText = typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉'; %>
+            <span class="offers-text"><%= cartOfferText %></span>
+            <span class="offers-text"><%= cartOfferText %></span>
         </div>
     </div>
 

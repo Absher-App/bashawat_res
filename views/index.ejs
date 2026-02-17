@@ -10,10 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Offers Banner -->
+    <!-- Offers Banner - شريط متحرك -->
     <div class="offers-banner">
-        <div class="offers-text">
-            <%= offer_text || '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰' %>
+        <div class="offers-marquee-wrap">
+            <span class="offers-text"><%= offer_text || '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰' %></span>
+            <span class="offers-text"><%= offer_text || '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰' %></span>
         </div>
     </div>
 
@@ -69,6 +70,34 @@
             <button class="next-slide">&#10095;</button>
         </div>
     </section>
+
+    <!-- قسم الستوريات / الفيديوهات -->
+    <% if (stories && stories.length > 0) { %>
+    <section class="stories-section">
+        <div class="container">
+            <div class="stories-scroll-wrapper">
+                <div class="stories-scroll-container">
+                    <% stories.forEach(function(story) { %>
+                    <div class="story-item" onclick="openStoryModal('<%= story.video_url %>', '<%= story.title %>')">
+                        <div class="story-circle">
+                            <img src="<%= story.cover_url %>" alt="<%= story.title %>">
+                        </div>
+                        <span class="story-title"><%= story.title || 'ستوري' %></span>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- مودال عرض الفيديو -->
+    <div class="story-video-modal" id="storyVideoModal" onclick="closeStoryModal(event)">
+        <button class="story-modal-close" onclick="closeStoryModal(event)">&times;</button>
+        <div class="story-modal-content" onclick="event.stopPropagation()">
+            <h3 class="story-modal-title" id="storyModalTitle"></h3>
+            <video id="storyVideoPlayer" controls playsinline></video>
+        </div>
+    </div>
+    <% } %>
 
     <!-- قسم المنتجات حسب التصنيف -->
     <main class="container" id="products-section">
@@ -306,5 +335,31 @@
 
     <%- include('partials/cake-form-modal') %>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
+    <% if (stories && stories.length > 0) { %>
+    <script>
+        function openStoryModal(videoUrl, title) {
+            const modal = document.getElementById('storyVideoModal');
+            const player = document.getElementById('storyVideoPlayer');
+            const titleEl = document.getElementById('storyModalTitle');
+            if (modal && player) {
+                titleEl.textContent = title || '';
+                player.src = videoUrl;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        function closeStoryModal(e) {
+            if (!e) return;
+            const modal = document.getElementById('storyVideoModal');
+            const player = document.getElementById('storyVideoPlayer');
+            if (modal && player && (e.target.classList.contains('story-modal-close') || e.target.id === 'storyVideoModal')) {
+                modal.classList.remove('active');
+                player.pause();
+                player.src = '';
+                document.body.style.overflow = '';
+            }
+        }
+    </script>
+    <% } %>
 </body>
 </html>
