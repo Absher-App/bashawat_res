@@ -120,8 +120,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>صورة المنتج</label>
-                        <input type="file" name="image" accept="image/*" class="form-control" required>
+                        <label>صور المنتج (يمكن إضافة أكثر من صورة)</label>
+                        <input type="file" name="images" accept="image/*" class="form-control" multiple required>
+                        <small class="form-text text-muted">اختر صورة واحدة أو عدة صور (حتى 10)</small>
                     </div>
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
@@ -129,6 +130,30 @@
                             <span>منتج كيك (يظهر نموذج التفاصيل عند الطلب)</span>
                         </label>
                     </div>
+                    <div class="form-group variants-section">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="has_variants" id="addHasVariants" value="1" onchange="toggleVariants('add', this.checked)">
+                            <span>يوجد أحجام أو أوزان بأسعار مختلفة</span>
+                        </label>
+                        <div id="addVariantsBox" class="variants-box" style="display:none;">
+                            <div class="form-group">
+                                <label>نوع الخيار</label>
+                                <select name="variant_type" id="addVariantType" class="form-control">
+                                    <option value="size">أحجام (للكيك)</option>
+                                    <option value="weight">أوزان (للحلويات)</option>
+                                </select>
+                            </div>
+                            <div class="variants-rows" id="addVariantsRows">
+                                <div class="variant-row">
+                                    <input type="text" name="variant_names[]" placeholder="مثال: صغير" class="form-control">
+                                    <input type="number" name="variant_prices[]" step="0.01" placeholder="السعر" class="form-control">
+                                    <button type="button" class="btn-remove-variant" onclick="removeVariantRow(this)">&times;</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-variant" onclick="addVariantRow('add')"><i class="fas fa-plus"></i> إضافة خيار</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="variants_json" id="addVariantsJson">
                     <button id="addProductBtn" type="submit" class="btn-primary">
                         <i class="fas fa-plus"></i> إضافة المنتج
                     </button>
@@ -212,8 +237,17 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>صورة جديدة (اختياري - اتركه فارغاً للإبقاء على الصورة الحالية)</label>
+                        <label>صور المنتج الحالية</label>
+                        <div id="editProductImagesList" class="product-images-thumbs"></div>
+                        <input type="hidden" name="existing_images" id="editExistingImages">
+                    </div>
+                    <div class="form-group">
+                        <label>صورة الغلاف الجديدة (اختياري - لاستبدال الصورة الرئيسية)</label>
                         <input type="file" name="image" accept="image/*" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>إضافة صور إضافية (اختياري)</label>
+                        <input type="file" name="images" accept="image/*" class="form-control" multiple>
                     </div>
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
@@ -221,6 +255,24 @@
                             <span>منتج كيك (يظهر نموذج التفاصيل عند الطلب)</span>
                         </label>
                     </div>
+                    <div class="form-group variants-section">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="has_variants" id="editHasVariants" value="1" onchange="toggleVariants('edit', this.checked)">
+                            <span>يوجد أحجام أو أوزان بأسعار مختلفة</span>
+                        </label>
+                        <div id="editVariantsBox" class="variants-box" style="display:none;">
+                            <div class="form-group">
+                                <label>نوع الخيار</label>
+                                <select name="variant_type" id="editVariantType" class="form-control">
+                                    <option value="size">أحجام (للكيك)</option>
+                                    <option value="weight">أوزان (للحلويات)</option>
+                                </select>
+                            </div>
+                            <div class="variants-rows" id="editVariantsRows"></div>
+                            <button type="button" class="btn-add-variant" onclick="addVariantRow('edit')"><i class="fas fa-plus"></i> إضافة خيار</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="variants_json" id="editVariantsJson">
                     <button id="editProductBtn" type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> حفظ التغييرات
                     </button>
@@ -231,13 +283,20 @@
     </main>
 
     <script>
-        const productsData = { <% products.forEach((p, i) => { %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||'',is_cake:!!p.is_cake}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
+        const productsData = { <% products.forEach((p, i) => { 
+            let imgs = [];
+            try { imgs = p.images ? (typeof p.images==='string' ? JSON.parse(p.images) : p.images) : []; } catch(e){}
+            if (!imgs.length && p.image_url) imgs = [p.image_url];
+            let vars = [];
+            try { vars = p.variants ? (typeof p.variants==='string' ? JSON.parse(p.variants) : p.variants) : []; } catch(e){}
+        %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||'',image_url:p.image_url||'',images:imgs,variant_type:p.variant_type||'',variants:vars,is_cake:!!p.is_cake}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
+        let currentEditImages = [];
         function openEditProduct(id) {
             const product = productsData[id];
             if (!product) return;
@@ -248,7 +307,62 @@
             document.getElementById('editProductIsCake').checked = product.is_cake || false;
             document.getElementById('editProductPrice').value = product.price;
             document.getElementById('editProductCategory').value = product.category || '';
+            currentEditImages = Array.isArray(product.images) ? [...product.images] : (product.image_url ? [product.image_url] : []);
+            renderEditImages();
+            document.querySelector('#editProductModal input[name="image"]').value = '';
+            document.querySelector('#editProductModal input[name="images"]').value = '';
+
+            document.getElementById('editHasVariants').checked = product.variants && product.variants.length > 0;
+            toggleVariants('edit', product.variants && product.variants.length > 0);
+            document.getElementById('editVariantType').value = product.variant_type || 'size';
+            const editRows = document.getElementById('editVariantsRows');
+            editRows.innerHTML = '';
+            if (product.variants && product.variants.length) {
+                product.variants.forEach(v => {
+                    const row = document.createElement('div');
+                    row.className = 'variant-row';
+                    row.innerHTML = '<input type="text" name="variant_names[]" placeholder="الاسم" value="' + (v.name || '').replace(/"/g,'&quot;') + '" class="form-control">' +
+                        '<input type="number" name="variant_prices[]" step="0.01" placeholder="السعر" value="' + (v.price || '') + '" class="form-control">' +
+                        '<button type="button" class="btn-remove-variant" onclick="removeVariantRow(this)">&times;</button>';
+                    editRows.appendChild(row);
+                });
+            } else {
+                addVariantRow('edit');
+            }
+
             openModal('editProductModal');
+        }
+        function toggleVariants(prefix, show) {
+            const box = document.getElementById(prefix + 'VariantsBox');
+            box.style.display = show ? 'block' : 'none';
+        }
+        function addVariantRow(prefix) {
+            const container = document.getElementById(prefix + 'VariantsRows');
+            const row = document.createElement('div');
+            row.className = 'variant-row';
+            row.innerHTML = '<input type="text" name="variant_names[]" placeholder="مثال: صغير أو نصف كيلو" class="form-control">' +
+                '<input type="number" name="variant_prices[]" step="0.01" placeholder="السعر" class="form-control">' +
+                '<button type="button" class="btn-remove-variant" onclick="removeVariantRow(this)">&times;</button>';
+            container.appendChild(row);
+        }
+        function removeVariantRow(btn) {
+            const rows = btn.closest('.variants-rows').querySelectorAll('.variant-row');
+            if (rows.length <= 1) return;
+            btn.closest('.variant-row').remove();
+        }
+        function renderEditImages() {
+            const list = document.getElementById('editProductImagesList');
+            document.getElementById('editExistingImages').value = JSON.stringify(currentEditImages);
+            list.innerHTML = currentEditImages.map((url, i) => `
+                <span class="product-img-thumb">
+                    <img src="${url}" alt="">
+                    <button type="button" class="remove-img-btn" onclick="removeEditImage(${i})" title="حذف">&times;</button>
+                </span>
+            `).join('') || '<span class="no-images-msg">لا توجد صور</span>';
+        }
+        function removeEditImage(idx) {
+            currentEditImages.splice(idx, 1);
+            renderEditImages();
         }
         window.onclick = function(event) {
             if (event.target.classList.contains('admin-modal')) {
@@ -290,6 +404,18 @@
 
         if(form) {
             form.addEventListener('submit', function() {
+                if (document.getElementById('addHasVariants').checked) {
+                    const rows = document.querySelectorAll('#addVariantsRows .variant-row');
+                    const vars = [];
+                    rows.forEach(r => {
+                        const name = (r.querySelector('input[name="variant_names[]"]') || {}).value;
+                        const price = parseFloat((r.querySelector('input[name="variant_prices[]"]') || {}).value);
+                        if (name && !isNaN(price)) vars.push({name: name.trim(), price});
+                    });
+                    document.getElementById('addVariantsJson').value = JSON.stringify(vars);
+                } else {
+                    document.getElementById('addVariantsJson').value = '';
+                }
                 if(form.checkValidity()) {
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';
                     btn.disabled = true;
@@ -310,6 +436,18 @@
         const editBtn = document.getElementById('editProductBtn');
         if(editForm) {
             editForm.addEventListener('submit', function() {
+                if (document.getElementById('editHasVariants').checked) {
+                    const rows = document.querySelectorAll('#editVariantsRows .variant-row');
+                    const vars = [];
+                    rows.forEach(r => {
+                        const name = (r.querySelector('input[name="variant_names[]"]') || {}).value;
+                        const price = parseFloat((r.querySelector('input[name="variant_prices[]"]') || {}).value);
+                        if (name && !isNaN(price)) vars.push({name: name.trim(), price});
+                    });
+                    document.getElementById('editVariantsJson').value = JSON.stringify(vars);
+                } else {
+                    document.getElementById('editVariantsJson').value = '';
+                }
                 if(editForm.checkValidity()) {
                     editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
                     editBtn.disabled = true;

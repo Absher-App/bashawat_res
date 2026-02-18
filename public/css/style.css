@@ -1287,6 +1287,35 @@ html[dir="rtl"] .search-box button {
     white-space: pre-line;
 }
 
+.hover-variants-block {
+    margin-bottom: 12px;
+}
+
+.hover-variants-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+}
+
+.hover-variants-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.hover-variants-list .v-name {
+    color: rgba(255,255,255,0.95);
+}
+
+.hover-variants-list .v-price {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
 .hover-card-footer {
     display: flex;
     align-items: center;
@@ -1521,6 +1550,53 @@ html[dir="rtl"] .search-box button {
     align-items: center;
     justify-content: center;
     gap: 10px;
+}
+
+.variant-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.variant-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.variant-option:hover,
+.variant-option:has(input:checked) {
+    border-color: var(--primary-color);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.variant-option input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+}
+
+.variant-option .v-opt-name {
+    font-weight: 700;
+    flex: 1;
+}
+
+.variant-option .v-opt-price {
+    color: var(--primary-color);
+    font-weight: 800;
+}
+
+.cart-item-variant {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
 .cake-submit-btn:hover {

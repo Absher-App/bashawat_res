@@ -146,18 +146,29 @@ document.addEventListener('DOMContentLoaded', function() {
         return ['كيك', 'كيكات'].some(c => cat.includes(c));
     }
 
-    window.addToCart = function(product) {
+    window.addToCart = function(product, selectedVariant) {
         if (isCakeProduct(product)) {
             openCakeModal(product);
             return;
         }
 
-        const existingItem = cart.find(item => item.id === product.id && !item.cakeOptions);
+        if (product.variants && product.variants.length > 0 && !selectedVariant) {
+            openVariantModal(product);
+            return;
+        }
+
+        const cartItem = selectedVariant 
+            ? { ...product, quantity: 1, selectedVariant: { name: selectedVariant.name, price: selectedVariant.price } }
+            : { ...product, quantity: 1 };
+        const itemPrice = selectedVariant ? selectedVariant.price : product.price;
+        const matchFn = item => item.id === product.id && !item.cakeOptions && 
+            (JSON.stringify(item.selectedVariant || {}) === JSON.stringify(cartItem.selectedVariant || {}));
+        const existingItem = cart.find(matchFn);
         
         if (existingItem) {
             existingItem.quantity++;
         } else {
-            cart.push({ ...product, quantity: 1 });
+            cart.push(cartItem);
             const card = document.querySelector(`.product-card[data-id="${product.id}"], .product-item[data-id="${product.id}"]`);
             if(card) {
                 const img = card.querySelector('.product-image img');
@@ -182,12 +193,72 @@ document.addEventListener('DOMContentLoaded', function() {
         saveCart();
     };
 
+    window.openVariantModal = function(product) {
+        window._pendingVariantProduct = product;
+        const modal = document.getElementById('variantModal');
+        const label = document.getElementById('variantModalLabel');
+        const nameEl = document.getElementById('variantModalProductName');
+        const listEl = document.getElementById('variantOptionsList');
+        label.textContent = product.variant_type === 'weight' ? 'الوزن' : 'الحجم';
+        nameEl.textContent = product.name;
+        listEl.innerHTML = product.variants.map((v, i) => 
+            '<label class="variant-option"><input type="radio" name="variant_sel" value="' + i + '"><span class="v-opt-name">' + v.name + '</span> <span class="v-opt-price">' + v.price + ' ر.س</span></label>'
+        ).join('');
+        listEl.querySelector('input') && listEl.querySelector('input').setAttribute('checked', 'checked');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeVariantModal = function() {
+        document.getElementById('variantModal').classList.remove('active');
+        window._pendingVariantProduct = null;
+        document.body.style.overflow = '';
+    };
+
+    (function initVariantModal() {
+        const modal = document.getElementById('variantModal');
+        const addBtn = document.getElementById('variantModalAddBtn');
+        if (modal) {
+            modal.addEventListener('click', function(e) { if (e.target === modal) closeVariantModal(); });
+        }
+        if (addBtn) {
+            addBtn.addEventListener('click', function() {
+                const product = window._pendingVariantProduct;
+                if (!product) return;
+                const sel = document.querySelector('input[name="variant_sel"]:checked');
+                if (!sel) return;
+                const v = product.variants[parseInt(sel.value, 10)];
+                addToCart(product, v);
+                closeVariantModal();
+            });
+        }
+    })();
+
     window.openCakeModal = function(product) {
         window._pendingCakeProduct = product;
         document.getElementById('cakeModalProductName').textContent = product.name;
         document.getElementById('cakeProductData').value = JSON.stringify(product);
         document.getElementById('cakeOrderForm').reset();
         document.getElementById('cakeFileName').textContent = '';
+
+        const sizeSelect = document.getElementById('cakeSize');
+        sizeSelect.innerHTML = '<option value="">اختر</option>';
+        if (product.variants && product.variants.length > 0) {
+            product.variants.forEach(function(v, i) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = v.name + ' - ' + v.price + ' ر.س';
+                sizeSelect.appendChild(opt);
+            });
+        } else {
+            ['صغير', 'وسط', 'كبير'].forEach(function(s) {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                sizeSelect.appendChild(opt);
+            });
+        }
+
         document.getElementById('cakeFormModal').classList.add('active');
     };
 
@@ -205,8 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const product = window._pendingCakeProduct;
                 if (!product) return;
 
+                const sizeVal = document.getElementById('cakeSize').value;
                 const cakeOptions = {
-                    size: document.getElementById('cakeSize').value,
+                    size: product.variants && product.variants.length ? product.variants[parseInt(sizeVal, 10)].name : sizeVal,
                     sponge: document.getElementById('cakeSponge').value,
                     filling: document.getElementById('cakeFilling').value,
                     addon: document.getElementById('cakeAddon').value,
@@ -227,7 +299,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     } catch (err) { console.error(err); }
                 }
 
-                cart.push({ ...product, quantity: 1, cakeOptions });
+                const selectedVariant = product.variants && product.variants.length ? product.variants[parseInt(sizeVal, 10)] : null;
+                const cartItem = { ...product, quantity: 1, cakeOptions };
+                if (selectedVariant) cartItem.selectedVariant = { name: selectedVariant.name, price: selectedVariant.price };
+                cart.push(cartItem);
                 saveCart();
                 closeCakeModal();
 
@@ -381,16 +456,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = false;
             
             cart.forEach((item, index) => {
-                total += item.price * item.quantity;
+                const unitPrice = item.selectedVariant ? item.selectedVariant.price : item.price;
+                total += unitPrice * item.quantity;
 
                 const itemEl = document.createElement('div');
                 itemEl.classList.add('cart-item-row');
                 const baseUrl = window.location.origin;
-                const imgUrl = item.image_url 
-                    ? (item.image_url.startsWith('http') ? item.image_url : baseUrl + (item.image_url.startsWith('/') ? '' : '/') + item.image_url)
+                const mainImg = (item.images && item.images[0]) || item.image_url;
+                const imgUrl = mainImg 
+                    ? (mainImg.startsWith('http') ? mainImg : baseUrl + (mainImg.startsWith('/') ? '' : '/') + mainImg)
                     : 'https://via.placeholder.com/200x200?text=صورة';
                 const safeName = (item.name || '').replace(/"/g, '&quot;');
-                
+                const variantInfo = item.selectedVariant ? '<div class="cart-item-variant"><small>' + item.selectedVariant.name + ' - ' + item.selectedVariant.price + ' ر.س</small></div>' : '';
                 const cakeInfo = item.cakeOptions ? '<div class="cart-item-cake-options"><small>' +
                     [item.cakeOptions.size && 'الحجم: ' + item.cakeOptions.size,
                      item.cakeOptions.sponge && 'السبونج: ' + item.cakeOptions.sponge,
@@ -403,7 +480,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <div class="cart-item-details">
                         <h4 class="item-name">${item.name}</h4>
-                        <span class="item-price-unit">${item.price} ر.س × ${item.quantity}</span>
+                        ${variantInfo}
+                        <span class="item-price-unit">${unitPrice} ر.س × ${item.quantity}</span>
                         ${cakeInfo}
                     </div>
 
@@ -416,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
 
                     <div class="cart-item-subtotal">
-                        ${(item.price * item.quantity).toFixed(2)} <small>ر.س</small>
+                        ${(unitPrice * item.quantity).toFixed(2)} <small>ر.س</small>
                     </div>
 
                     <button onclick="removeItem(${index})" class="remove-btn" title="حذف المنتج">
@@ -474,7 +552,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const baseUrl = window.location.origin;
             
             cart.forEach(item => {
-                message += `- ${item.name} (${item.quantity}x): ${(item.price * item.quantity).toFixed(2)} ر.س\n`;
+                const unitPrice = item.selectedVariant ? item.selectedVariant.price : item.price;
+                const lineName = item.selectedVariant ? `${item.name} - ${item.selectedVariant.name}` : item.name;
+                message += `- ${lineName} (${item.quantity}x): ${(unitPrice * item.quantity).toFixed(2)} ر.س\n`;
                 if (item.cakeOptions) {
                     const co = item.cakeOptions;
                     if (co.size) message += `  • الحجم: ${co.size}\n`;
@@ -484,11 +564,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (co.date) message += `  • الموعد: ${co.date}\n`;
                     if (co.writing) message += `  • الكتابة على القاعدة: ${co.writing}\n`;
                     if (co.note) message += `  • ملاحظة: ${co.note}\n`;
-                    if (co.imageUrl) message += `  • صورة التصميم: ${baseUrl}${co.imageUrl}\n`;
+                    if (co.imageUrl) {
+                        const imgFullUrl = co.imageUrl.startsWith('http') ? co.imageUrl : (baseUrl + (co.imageUrl.startsWith('/') ? '' : '/') + co.imageUrl);
+                        message += `  • 🖼️ صورة التصميم (اضغط الرابط لمشاهدة الصورة):\n     ${imgFullUrl}\n`;
+                    }
                 }
             });
 
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = cart.reduce((sum, item) => {
+                const unitPrice = item.selectedVariant ? item.selectedVariant.price : item.price;
+                return sum + (unitPrice * item.quantity);
+            }, 0);
             message += `\n*المجموع الكلي: ${total.toFixed(2)} ر.س*`;
             message += "\n\nالرجاء تأكيد الطلب.";
             

@@ -115,6 +115,27 @@ async function runAutoMigrations() {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود is_cake موجود مسبقاً');
         else console.error('تحذير:', err.message);
     }
+    try {
+        await queryDb("ALTER TABLE products ADD COLUMN images TEXT DEFAULT NULL");
+        console.log('✓ تم إضافة عمود صور متعددة (images)');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود images موجود مسبقاً');
+        else console.error('تحذير:', err.message);
+    }
+    try {
+        await queryDb("ALTER TABLE products ADD COLUMN variant_type VARCHAR(50) DEFAULT NULL");
+        console.log('✓ تم إضافة عمود variant_type (أحجام/أوزان)');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود variant_type موجود مسبقاً');
+        else console.error('تحذير:', err.message);
+    }
+    try {
+        await queryDb("ALTER TABLE products ADD COLUMN variants TEXT DEFAULT NULL");
+        console.log('✓ تم إضافة عمود variants (الأحجام/الأوزان والأسعار)');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود variants موجود مسبقاً');
+        else console.error('تحذير:', err.message);
+    }
 }
 
 // رفع صورة تصميم الكيك (لعملاء الموقع)
@@ -126,10 +147,31 @@ app.post('/api/upload-cake-image', upload.single('image'), (req, res) => {
     res.json({ success: true, url });
 });
 
+// مساعد: تحويل صور المنتج والأحجام/الأوزان من JSON
+function parseProductImages(products) {
+    return (products || []).map(p => {
+        let images = [];
+        try {
+            images = p.images ? (typeof p.images === 'string' ? JSON.parse(p.images) : p.images) : [];
+        } catch (e) {}
+        if (!images.length && p.image_url) images = [p.image_url];
+        p.images = images;
+
+        let variants = [];
+        try {
+            variants = p.variants ? (typeof p.variants === 'string' ? JSON.parse(p.variants) : p.variants) : [];
+        } catch (e) {}
+        p.variants = variants;
+        p.variant_type = p.variant_type || null;
+        return p;
+    });
+}
+
 // الصفحة الرئيسية - عرض المينو
 app.get('/', async (req, res) => {
     try {
-        const products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        let products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        products = parseProductImages(products);
         const categories = await queryDb('SELECT * FROM categories');
         const slides = await queryDb('SELECT * FROM slides ORDER BY display_order');
         const stories = await queryDb('SELECT * FROM stories ORDER BY created_at DESC');
@@ -147,7 +189,8 @@ app.get('/', async (req, res) => {
 // صفحة المنتجات
 app.get('/products', async (req, res) => {
     try {
-        const products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        let products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        products = parseProductImages(products);
         const categories = await queryDb('SELECT * FROM categories');
         const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
         const offer_text = settings.length > 0 ? settings[0].setting_value : '';
@@ -313,10 +356,11 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
             const price = parseFloat(prices[i]) || 0;
             const category = (categories[i] || '').trim();
             const image_url = files[i] ? '/uploads/' + files[i].filename : '';
+            const imagesJson = image_url ? JSON.stringify([image_url]) : null;
             const is_cake = (req.body['is_cake_' + i] === '1') ? 1 : 0;
             if (!name || !category) continue;
-            await queryDb('INSERT INTO products (name, description, details, price, category, image_url, is_cake) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [name, description, productDetails, price, category, image_url, is_cake]);
+            await queryDb('INSERT INTO products (name, description, details, price, category, image_url, images, is_cake) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [name, description, productDetails, price, category, image_url, imagesJson, is_cake]);
         }
         res.redirect('/admin/products');
     } catch (err) {
@@ -325,14 +369,42 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
     }
 });
 
-// إضافة منتج جديد
-app.post('/admin/add-product', requireAuth, upload.single('image'), (req, res) => {
-    const { name, description, details, price, category } = req.body;
-    const image_url = req.file ? '/uploads/' + req.file.filename : '';
+// إضافة منتج جديد (صور متعددة + أحجام/أوزان)
+app.post('/admin/add-product', requireAuth, upload.array('images', 10), (req, res) => {
+    const { name, description, details, price, category, variants_json, variant_type } = req.body;
+    const files = req.files || [];
     const is_cake = req.body.is_cake === 'on' || req.body.is_cake === '1' ? 1 : 0;
 
-    const query = 'INSERT INTO products (name, description, details, price, category, image_url, is_cake) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    db.query(query, [name, description || '', details || '', price, category, image_url, is_cake], (err, result) => {
+    let image_url = '';
+    const imagesArr = [];
+    if (files.length > 0) {
+        files.forEach(f => {
+            const url = '/uploads/' + f.filename;
+            imagesArr.push(url);
+            if (!image_url) image_url = url;
+        });
+    }
+    const imagesJson = imagesArr.length > 0 ? JSON.stringify(imagesArr) : null;
+
+    let variantsJson = null;
+    let variantTypeVal = null;
+    let finalPrice = price;
+    if (variants_json && req.body.has_variants === '1') {
+        try {
+            const v = typeof variants_json === 'string' ? JSON.parse(variants_json) : variants_json;
+            if (Array.isArray(v) && v.length > 0) {
+                variantsJson = JSON.stringify(v);
+                variantTypeVal = (variant_type === 'weight' ? 'weight' : 'size');
+                if (!finalPrice || parseFloat(finalPrice) === 0) {
+                    const minP = Math.min(...v.map(x => parseFloat(x.price) || 0));
+                    if (minP > 0) finalPrice = minP;
+                }
+            }
+        } catch (e) {}
+    }
+
+    const query = 'INSERT INTO products (name, description, details, price, category, image_url, images, variant_type, variants, is_cake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(query, [name, description || '', details || '', finalPrice, category, image_url, imagesJson, variantTypeVal, variantsJson, is_cake], (err, result) => {
         if (err) console.error(err);
         res.redirect('/admin/products');
     });
@@ -348,24 +420,50 @@ app.post('/admin/delete-product/:id', requireAuth, (req, res) => {
     });
 });
 
-// تحديث منتج
-app.post('/admin/update-product/:id', requireAuth, upload.single('image'), (req, res) => {
-    const { name, description, details, price, category } = req.body;
+// تحديث منتج (صور متعددة + أحجام/أوزان)
+app.post('/admin/update-product/:id', requireAuth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'images', maxCount: 9 }]), async (req, res) => {
+    const { name, description, details, price, category, existing_images, variants_json, variant_type } = req.body;
     const productId = req.params.id;
     const is_cake = req.body.is_cake === 'on' || req.body.is_cake === '1' ? 1 : 0;
-    let query, params;
-    if (req.file) {
-        const image_url = '/uploads/' + req.file.filename;
-        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, image_url = ?, is_cake = ? WHERE id = ?';
-        params = [name, description || '', details || '', price, category, image_url, is_cake, productId];
-    } else {
-        query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, is_cake = ? WHERE id = ?';
-        params = [name, description || '', details || '', price, category, is_cake, productId];
+
+    let existingArr = [];
+    if (existing_images) {
+        try {
+            existingArr = typeof existing_images === 'string' ? JSON.parse(existing_images) : (Array.isArray(existing_images) ? existing_images : []);
+        } catch (e) { existingArr = []; }
     }
-    db.query(query, params, (err, result) => {
-        if (err) console.error(err);
-        res.redirect('/admin/products');
-    });
+
+    const newUrls = [];
+    if (req.files) {
+        if (req.files['image'] && req.files['image'][0]) {
+            newUrls.unshift('/uploads/' + req.files['image'][0].filename);
+        }
+        if (req.files['images']) {
+            req.files['images'].forEach(f => newUrls.push('/uploads/' + f.filename));
+        }
+    }
+
+    const allImages = [...existingArr, ...newUrls];
+    const image_url = allImages.length > 0 ? allImages[0] : '';
+    const imagesJson = allImages.length > 0 ? JSON.stringify(allImages) : null;
+
+    let variantsJson = null;
+    let variantTypeVal = null;
+    if (variants_json && req.body.has_variants === '1') {
+        try {
+            const v = typeof variants_json === 'string' ? JSON.parse(variants_json) : variants_json;
+            if (Array.isArray(v) && v.length > 0) {
+                variantsJson = JSON.stringify(v);
+                variantTypeVal = (variant_type === 'weight' ? 'weight' : 'size');
+            }
+        } catch (e) {}
+    }
+
+    const query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, image_url = ?, images = ?, variant_type = ?, variants = ?, is_cake = ? WHERE id = ?';
+    try {
+        await queryDb(query, [name, description || '', details || '', price, category, image_url, imagesJson, variantTypeVal, variantsJson, is_cake, productId]);
+    } catch (err) { console.error(err); }
+    res.redirect('/admin/products');
 });
 
 // إدارة الستوريات (Stories)
