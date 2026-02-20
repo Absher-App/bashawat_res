@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حلويات بقداش - Bagdash sweets</title>
+    <title>حلويات بقداش - Bagdash sweets | حلويات القطيف وسيهات</title>
+    <meta name="description" content="حلويات بقداش - أفضل حلويات عربية وكيك في القطيف وسيهات والدمام. طلب أونلاين وتوصيل. كنافة، بقلاوة، بسبوسة، كيك مناسبات.">
+    <meta name="keywords" content="حلويات بقداش، بقداش، حلويات القطيف، حلويات سيهات، حلويات الدمام، كيك قطيف، حلويات عربية، كنافة، بقلاوة، توصيل حلويات">
+    <meta name="author" content="حلويات بقداش">
+    <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
+    <link rel="canonical" href="<%= siteUrl %>/">
+    <meta property="og:url" content="<%= siteUrl %>/">
+    <% } %>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="حلويات بقداش - Bagdash sweets | حلويات القطيف وسيهات">
+    <meta property="og:description" content="أفضل حلويات عربية وكيك في القطيف وسيهات. طلب أونلاين وتوصيل.">
+    <meta property="og:locale" content="ar_SA">
+    <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <!-- إضافة أيقونات Font Awesome للسلة -->
@@ -31,6 +43,12 @@
                 <li><a href="/parties">الحفلات</a></li>
                 <li><a href="/cart">السلة <i class="fas fa-shopping-cart"></i></a></li>
             </ul>
+            <div class="topbar-social">
+                <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+            </div>
         </div>
     </nav>
 
@@ -71,6 +89,25 @@
         </div>
     </section>
 
+    <!-- البانرين -->
+    <% const _b1 = typeof banner1 !== 'undefined' && banner1; const _b2 = typeof banner2 !== 'undefined' && banner2; %>
+    <% if (_b1 || _b2) { %>
+    <section class="home-banners">
+        <div class="container home-banners-inner">
+            <% if (_b1) { %>
+            <div class="home-banner-item">
+                <img src="<%= banner1 %>" alt="بانر 1" loading="lazy">
+            </div>
+            <% } %>
+            <% if (_b2) { %>
+            <div class="home-banner-item">
+                <img src="<%= banner2 %>" alt="بانر 2" loading="lazy">
+            </div>
+            <% } %>
+        </div>
+    </section>
+    <% } %>
+
     <!-- قسم الستوريات / الفيديوهات -->
     <% if (stories && stories.length > 0) { %>
     <section class="stories-section">
@@ -97,6 +134,76 @@
             <video id="storyVideoPlayer" controls playsinline></video>
         </div>
     </div>
+    <% } %>
+
+    <!-- قسم الأكثر طلباً -->
+    <% const _mostRequested = (typeof mostRequestedProducts !== 'undefined' && mostRequestedProducts) ? mostRequestedProducts : []; %>
+    <% if (_mostRequested.length > 0) { %>
+    <section class="most-requested-section">
+        <div class="container">
+            <div class="most-requested-header">
+                <span class="most-requested-badge"><i class="fas fa-fire"></i> الأكثر طلباً</span>
+                <h2 class="most-requested-title">المنتجات الأكثر طلباً</h2>
+                <p class="most-requested-desc">اختر من بين الأصناف الأكثر إقبالاً من زبائننا</p>
+            </div>
+            <div class="products-grid most-requested-grid">
+                <% _mostRequested.forEach(function(product) { %>
+                <div class="product-card product-has-hover" data-id="<%= product.id %>">
+                    <div class="product-image">
+                        <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
+                        <span class="price"><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %></span>
+                    </div>
+                    <div class="product-info">
+                        <h3><%= product.name %></h3>
+                        <p><%= product.description %></p>
+                        <div class="product-actions">
+                            <button class="order-btn add-to-cart-btn" onclick="addToCart(<%= JSON.stringify(product) %>)">
+                                <i class="fas fa-cart-plus"></i> أضف للسلة
+                            </button>
+                            <div class="qty-control-widget" style="display: none;">
+                                <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
+                                <span class="qty-display">1</span>
+                                <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-hover-card">
+                        <div class="hover-card-content">
+                            <div class="hover-card-header">
+                                <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" class="hover-card-img">
+                                <div class="hover-card-title-block">
+                                    <h4><%= product.name %></h4>
+                                    <span class="hover-category"><i class="fas fa-tag"></i> <%= product.category %></span>
+                                </div>
+                            </div>
+                            <p class="hover-desc"><%= product.description || '—' %></p>
+                            <% if (product.details && product.details.trim()) { %>
+                            <div class="hover-details-block">
+                                <span class="hover-details-label"><i class="fas fa-info-circle"></i> التفاصيل</span>
+                                <p class="hover-details"><%= product.details %></p>
+                            </div>
+                            <% } %>
+                            <% if (product.variants && product.variants.length > 0) { %>
+                            <div class="hover-variants-block">
+                                <span class="hover-details-label"><i class="fas fa-<%= product.variant_type === 'weight' ? 'weight-hanging' : 'ruler-combined' %>"></i> <%= product.variant_type === 'weight' ? 'الأوزان' : 'الأحجام' %></span>
+                                <ul class="hover-variants-list">
+                                    <% product.variants.forEach(v => { %>
+                                    <li><span class="v-name"><%= v.name %></span> <span class="v-price"><%= v.price %> ر.س</span></li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                            <% } %>
+                            <div class="hover-card-footer">
+                                <span class="hover-price"><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %></span>
+                                <button type="button" class="hover-add-btn" onclick="event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
     <% } %>
 
     <!-- قسم المنتجات حسب التصنيف -->
@@ -129,15 +236,25 @@
                 <div class="home-categories-list">
                     <% catsWithProducts.forEach(function(cat) { %>
                         <% const cp = products.filter(p => p.category === cat.name); %>
-                        <a href="#cat-<%= cat.id %>" class="home-category-item">
-                            <span class="pill-name"><%= cat.name %></span>
-                            <span class="pill-count">(<%= cp.length %>)</span>
+                        <a href="#cat-<%= cat.id %>" class="home-category-card">
+                            <span class="home-category-card-bg">
+                                <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
+                            </span>
+                            <span class="home-category-card-text">
+                                <span class="pill-name"><%= cat.name %></span>
+                                <span class="pill-count">(<%= cp.length %>)</span>
+                            </span>
                         </a>
                     <% }); %>
                     <% if (_otherProducts.length > 0) { %>
-                    <a href="#cat-other" class="home-category-item">
-                        <span class="pill-name">أخرى</span>
-                        <span class="pill-count">(<%= _otherProducts.length %>)</span>
+                    <a href="#cat-other" class="home-category-card">
+                        <span class="home-category-card-bg">
+                            <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
+                        </span>
+                        <span class="home-category-card-text">
+                            <span class="pill-name">أخرى</span>
+                            <span class="pill-count">(<%= _otherProducts.length %>)</span>
+                        </span>
                     </a>
                     <% } %>
                 </div>
@@ -341,6 +458,19 @@
                 <h3>تواصل معنا</h3>
                 <p><i class="fas fa-phone"></i> 920005031</p>
                 <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-commercial-reg">
+                <h3>السجل التجاري</h3>
+                <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - السجل: 2053033300">
+                    <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
+                </a>
+                <p class="commercial-reg-num">2053033300</p>
             </div>
         </div>
         <div class="footer-bottom">
@@ -380,6 +510,22 @@
                 document.body.style.overflow = '';
             }
         }
+    </script>
+    <% } %>
+    <!-- بيانات منظمة لـ Google (حلويات بقداش) -->
+    <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Bakery",
+        "name": "حلويات بقداش - Bagdash sweets",
+        "description": "أفضل حلويات عربية وكيك في القطيف وسيهات والدمام. كنافة، بقلاوة، بسبوسة، كيك مناسبات.",
+        "url": "<%= siteUrl %>",
+        "telephone": "+966920005031",
+        "address": { "@type": "PostalAddress", "addressLocality": "القطيف", "addressRegion": "المنطقة الشرقية", "addressCountry": "SA" },
+        "servesCuisine": "حلويات عربية",
+        "priceRange": "ريال"
+    }
     </script>
     <% } %>
 </body>

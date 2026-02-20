@@ -1,5 +1,7 @@
 node_modules
 .env
 .DS_Store
+
+# مجلد الرفع: لا يُرفع إلى GitHub حتى لا يُستبدل على السيرفر (صور العملاء تبقى كما هي)
 public/uploads/*
 !public/uploads/.gitkeep

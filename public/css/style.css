@@ -100,6 +100,36 @@ ul {
     letter-spacing: -0.5px;
 }
 
+.topbar-social {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-social a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary-color);
+    background: rgba(212, 175, 55, 0.1);
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.topbar-social a:hover {
+    color: #fff;
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.topbar-social .fa-instagram:hover { background: #E4405F !important; }
+.topbar-social .fa-twitter:hover { background: #1DA1F2 !important; }
+.topbar-social .fa-snapchat-ghost:hover { background: #FFFC00 !important; color: #000 !important; }
+.topbar-social .fa-facebook-f:hover { background: #1877F2 !important; }
+
 .nav-links {
     display: flex;
     gap: 30px;
@@ -310,6 +340,34 @@ ul {
 .next-slide { right: 20px; }
 
 /* Stories Section - أعلى التصنيفات */
+/* البانرين (تحت السلايدر) */
+.home-banners {
+    padding: 0 15px 24px;
+    background: #fff;
+}
+
+.home-banners-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.home-banner-item {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.home-banner-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    vertical-align: middle;
+}
+
 .stories-section {
     margin: 0 0 32px;
     padding: 24px 0;
@@ -377,6 +435,50 @@ ul {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* قسم الأكثر طلباً */
+.most-requested-section {
+    padding: 48px 15px 56px;
+    background: linear-gradient(180deg, #fefdf9 0%, #faf8f0 100%);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+    margin-bottom: 8px;
+}
+
+.most-requested-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.most-requested-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.08) 100%);
+    color: var(--primary-color);
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+}
+
+.most-requested-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    margin: 0 0 8px;
+}
+
+.most-requested-desc {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.most-requested-grid {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* مودال عرض فيديو الستوري */
@@ -662,6 +764,17 @@ ul {
     .nav-links a {
         color: var(--secondary-color);
         font-size: 0.9rem;
+    }
+
+    .topbar-social {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .topbar-social a {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
     }
 
     .hero-slider {
@@ -989,8 +1102,85 @@ html[dir="rtl"] .search-box button {
 .home-categories-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 20px;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.home-category-card {
+    position: relative;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    width: 180px;
+    min-height: 200px;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.35s ease;
+    box-shadow: none;
+    border: none;
+    outline: none;
+}
+
+.home-category-card:focus {
+    outline: none;
+}
+
+.home-category-card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+}
+
+.home-category-card-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 106%;
+    height: 106%;
+    object-fit: cover;
+    object-position: center center;
+    transform: translate(-50%, -50%);
+    display: block;
+    image-rendering: auto;
+}
+
+.home-category-card-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.home-category-card:hover {
+    transform: translateY(-6px);
+}
+
+.home-category-card .pill-name {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 1px 3px rgba(0,0,0,0.8);
+    letter-spacing: 0.02em;
+}
+
+.home-category-card .pill-count {
+    color: rgba(255,255,255,0.95);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
 }
 
 .home-category-item {
@@ -1084,7 +1274,14 @@ html[dir="rtl"] .search-box button {
         padding: 20px 0 28px;
     }
     .home-categories-list {
-        gap: 12px;
+        gap: 16px;
+    }
+    .home-category-card {
+        width: 150px;
+        min-height: 180px;
+    }
+    .home-category-card .pill-name {
+        font-size: 1.1rem;
     }
     .home-category-item {
         flex-direction: column;
@@ -2351,6 +2548,70 @@ html[dir="rtl"] .search-box button {
     margin-left: 8px;
     color: var(--primary-color);
     font-size: 0.8rem;
+}
+
+.footer-social {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.footer-social a {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b0b0b0;
+    background: rgba(255, 255, 255, 0.06);
+    transition: var(--transition);
+    font-size: 1.1rem;
+}
+
+.footer-social a:hover {
+    color: #fff;
+    background: var(--primary-color);
+    transform: translateY(-3px);
+}
+
+.footer-social .fa-instagram:hover { background: #E4405F !important; }
+.footer-social .fa-twitter:hover { background: #1DA1F2 !important; }
+.footer-social .fa-snapchat-ghost:hover { background: #FFFC00 !important; color: #000 !important; }
+.footer-social .fa-facebook-f:hover { background: #1877F2 !important; }
+
+/* السجل التجاري في الفوتر */
+.footer-commercial-reg {
+    text-align: center;
+}
+
+.footer-commercial-reg .commercial-reg-link {
+    display: inline-block;
+    margin-top: 8px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: var(--transition);
+}
+
+.footer-commercial-reg .commercial-reg-link:hover {
+    border-color: rgba(212, 175, 55, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.footer-commercial-reg .commercial-reg-img {
+    display: block;
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+    background: #fff;
+}
+
+.footer-commercial-reg .commercial-reg-num {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #b0b0b0;
 }
 
 .footer-bottom {

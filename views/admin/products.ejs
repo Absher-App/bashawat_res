@@ -104,7 +104,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>السعر (ريال)</label>
-                            <input type="number" name="price" class="form-control" step="0.01" required placeholder="0.00">
+                            <input type="text" name="price" class="form-control" inputmode="decimal" required placeholder="0.00" pattern="[0-9]+\.?[0-9]*" title="أدخل رقماً (مثال: 25 أو 19.50)">
                         </div>
                         <div class="form-group">
                             <label>التصنيف</label>
@@ -130,6 +130,12 @@
                             <span>منتج كيك (يظهر نموذج التفاصيل عند الطلب)</span>
                         </label>
                     </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_most_requested" value="1">
+                            <span>الأكثر طلباً (يظهر في قسم «الأكثر طلباً» بالصفحة الرئيسية)</span>
+                        </label>
+                    </div>
                     <div class="form-group variants-section">
                         <label class="checkbox-label">
                             <input type="checkbox" name="has_variants" id="addHasVariants" value="1" onchange="toggleVariants('add', this.checked)">
@@ -146,7 +152,7 @@
                             <div class="variants-rows" id="addVariantsRows">
                                 <div class="variant-row">
                                     <input type="text" name="variant_names[]" placeholder="مثال: صغير" class="form-control">
-                                    <input type="number" name="variant_prices[]" step="0.01" placeholder="السعر" class="form-control">
+                                    <input type="text" name="variant_prices[]" inputmode="decimal" placeholder="السعر" class="form-control" pattern="[0-9]+\.?[0-9]*">
                                     <button type="button" class="btn-remove-variant" onclick="removeVariantRow(this)">&times;</button>
                                 </div>
                             </div>
@@ -173,7 +179,7 @@
                         <div class="bulk-product-row">
                             <div class="bulk-product-num">1</div>
                             <input type="text" name="names[]" class="form-control" placeholder="اسم المنتج" required>
-                            <input type="number" name="prices[]" class="form-control" step="0.01" placeholder="السعر" required style="max-width:100px;">
+                            <input type="text" name="prices[]" class="form-control" inputmode="decimal" placeholder="السعر" required style="max-width:100px;" pattern="[0-9]+\.?[0-9]*">
                             <select name="categories[]" class="form-control" required style="max-width:140px;">
                                 <% if (categories && categories.length > 0) { %>
                                     <% categories.forEach(cat => { %>
@@ -187,6 +193,7 @@
                             <textarea name="descriptions[]" class="form-control" rows="1" placeholder="الوصف" style="flex:1;min-width:120px;"></textarea>
                             <textarea name="details[]" class="form-control" rows="1" placeholder="التفاصيل" style="flex:1;min-width:120px;"></textarea>
                             <label class="bulk-cake-check"><input type="checkbox" name="is_cake_0" value="1"> كيك</label>
+                            <label class="bulk-most-requested-check"><input type="checkbox" name="is_most_requested_0" value="1"> الأكثر طلباً</label>
                             <button type="button" class="bulk-remove-btn" onclick="removeBulkProductRow(this)" title="حذف"><i class="fas fa-times"></i></button>
                         </div>
                     </div>
@@ -223,7 +230,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>السعر (ريال)</label>
-                            <input type="number" name="price" id="editProductPrice" class="form-control" step="0.01" required>
+                            <input type="text" name="price" id="editProductPrice" class="form-control" inputmode="decimal" required placeholder="0.00" pattern="[0-9]+\.?[0-9]*" title="أدخل رقماً">
                         </div>
                         <div class="form-group">
                             <label>التصنيف</label>
@@ -253,6 +260,12 @@
                         <label class="checkbox-label">
                             <input type="checkbox" name="is_cake" value="1" id="editProductIsCake">
                             <span>منتج كيك (يظهر نموذج التفاصيل عند الطلب)</span>
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_most_requested" value="1" id="editProductIsMostRequested">
+                            <span>الأكثر طلباً (يظهر في قسم «الأكثر طلباً» بالصفحة الرئيسية)</span>
                         </label>
                     </div>
                     <div class="form-group variants-section">
@@ -289,7 +302,7 @@
             if (!imgs.length && p.image_url) imgs = [p.image_url];
             let vars = [];
             try { vars = p.variants ? (typeof p.variants==='string' ? JSON.parse(p.variants) : p.variants) : []; } catch(e){}
-        %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||'',image_url:p.image_url||'',images:imgs,variant_type:p.variant_type||'',variants:vars,is_cake:!!p.is_cake}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
+        %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||'',image_url:p.image_url||'',images:imgs,variant_type:p.variant_type||'',variants:vars,is_cake:!!p.is_cake,is_most_requested:!!p.is_most_requested}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -305,6 +318,7 @@
             document.getElementById('editProductDesc').value = product.description || '';
             document.getElementById('editProductDetails').value = product.details || '';
             document.getElementById('editProductIsCake').checked = product.is_cake || false;
+            document.getElementById('editProductIsMostRequested').checked = product.is_most_requested || false;
             document.getElementById('editProductPrice').value = product.price;
             document.getElementById('editProductCategory').value = product.category || '';
             currentEditImages = Array.isArray(product.images) ? [...product.images] : (product.image_url ? [product.image_url] : []);
@@ -322,7 +336,7 @@
                     const row = document.createElement('div');
                     row.className = 'variant-row';
                     row.innerHTML = '<input type="text" name="variant_names[]" placeholder="الاسم" value="' + (v.name || '').replace(/"/g,'&quot;') + '" class="form-control">' +
-                        '<input type="number" name="variant_prices[]" step="0.01" placeholder="السعر" value="' + (v.price || '') + '" class="form-control">' +
+                        '<input type="text" name="variant_prices[]" inputmode="decimal" placeholder="السعر" value="' + (v.price || '') + '" class="form-control" pattern="[0-9]+\.?[0-9]*">' +
                         '<button type="button" class="btn-remove-variant" onclick="removeVariantRow(this)">&times;</button>';
                     editRows.appendChild(row);
                 });
@@ -341,7 +355,7 @@
             const row = document.createElement('div');
             row.className = 'variant-row';
             row.innerHTML = '<input type="text" name="variant_names[]" placeholder="مثال: صغير أو نصف كيلو" class="form-control">' +
-                '<input type="number" name="variant_prices[]" step="0.01" placeholder="السعر" class="form-control">' +
+                '<input type="text" name="variant_prices[]" inputmode="decimal" placeholder="السعر" class="form-control" pattern="[0-9]+\.?[0-9]*">' +
                 '<button type="button" class="btn-remove-variant" onclick="removeVariantRow(this)">&times;</button>';
             container.appendChild(row);
         }
@@ -390,6 +404,8 @@
             clone.querySelector('.bulk-product-num').textContent = newIdx + 1;
             const cakeCb = clone.querySelector('.bulk-cake-check input');
             if (cakeCb) cakeCb.name = 'is_cake_' + newIdx;
+            const mostReqCb = clone.querySelector('.bulk-most-requested-check input');
+            if (mostReqCb) mostReqCb.name = 'is_most_requested_' + newIdx;
             container.appendChild(clone);
         }
         function removeBulkProductRow(btn) {
