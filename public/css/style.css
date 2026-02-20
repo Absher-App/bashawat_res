@@ -362,6 +362,12 @@ ul {
     margin: 0 auto;
 }
 
+.home-banner-single .home-banners-inner {
+    grid-template-columns: 1fr;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 .home-banner-item {
     width: 100%;
     overflow: hidden;

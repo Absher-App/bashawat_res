@@ -244,26 +244,19 @@
             </section>
             <% } %>
             
-            <!-- البانرين بين التصنيفات -->
+            <!-- البانر 1: بعد شريط التصنيفات مباشرة -->
             <% const _b1 = typeof banner1 !== 'undefined' && banner1; const _b2 = typeof banner2 !== 'undefined' && banner2; %>
-            <% if (_b1 || _b2) { %>
-            <section class="home-banners home-banners-between-cats">
+            <% if (_b1) { %>
+            <section class="home-banners home-banners-between-cats home-banner-single">
                 <div class="container home-banners-inner">
-                    <% if (_b1) { %>
                     <div class="home-banner-item">
                         <img src="<%= banner1 %>" alt="بانر 1" loading="lazy">
                     </div>
-                    <% } %>
-                    <% if (_b2) { %>
-                    <div class="home-banner-item">
-                        <img src="<%= banner2 %>" alt="بانر 2" loading="lazy">
-                    </div>
-                    <% } %>
                 </div>
             </section>
             <% } %>
             
-            <% catsToRender.forEach(function(cat) { %>
+            <% catsToRender.forEach(function(cat, catIndex) { %>
                 <% const catProducts = products.filter(p => p.category === cat.name); %>
                 <% if (catProducts.length > 0) { %>
                     <section class="category-block" id="cat-<%= cat.id %>">
@@ -332,6 +325,16 @@
                             <% }); %>
                         </div>
                     </section>
+                    <!-- البانر 2: بعد أول قسم تصنيف (بين التصنيفات) -->
+                    <% if (catIndex === 0 && _b2) { %>
+                    <section class="home-banners home-banners-between-cats home-banner-single">
+                        <div class="container home-banners-inner">
+                            <div class="home-banner-item">
+                                <img src="<%= banner2 %>" alt="بانر 2" loading="lazy">
+                            </div>
+                        </div>
+                    </section>
+                    <% } %>
                 <% } %>
             <% }); %>
             
