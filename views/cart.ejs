@@ -9,36 +9,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Offers Banner -->
-    <div class="offers-banner">
-        <div class="offers-marquee-wrap">
-            <% const cartOfferText = typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ عروض حصرية لفترة محدودة! اطلب الآن واحصل على توصيل مجاني للطلبات فوق 200 ريال 🍰 خصم 10% على كيكات المناسبات عند الحجز المبكر 🎉'; %>
-            <span class="offers-text"><%= cartOfferText %></span>
-            <span class="offers-text"><%= cartOfferText %></span>
-        </div>
-    </div>
-
-    <!-- Topbar Navigation -->
-    <nav class="topbar">
-        <div class="container topbar-content">
-            <div class="logo-area">
-                <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                <a href="/" class="brand-name"> حلويات بقداش - Bagdash sweets</a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="/">الرئيسية</a></li>
-                <li><a href="/products">المنتجات</a></li>
-                <li><a href="/parties">الحفلات</a></li>
-                <li><a href="/cart" class="active">السلة <i class="fas fa-shopping-cart"></i></a></li>
-            </ul>
-            <div class="topbar-social">
-                <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
-                <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
-                <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
-                <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+    <header class="site-header">
+        <div class="offers-banner">
+            <% const cartOfferText = typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ توصيل مجاني للطلبات فوق 200 ريال — عروض حصرية لفترة محدودة'; %>
+            <div class="offers-marquee-wrap" aria-hidden="true">
+                <span class="offers-text"><%= cartOfferText %></span>
+                <span class="offers-text"><%= cartOfferText %></span>
             </div>
         </div>
-    </nav>
+        <nav class="topbar">
+            <div class="container topbar-content">
+                <a href="/" class="logo-area">
+                    <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
+                    <span class="brand-name">حلويات بقداش <em class="brand-en">Bagdash sweets</em></span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">الرئيسية</a></li>
+                    <li><a href="/products" class="nav-link">المنتجات</a></li>
+                    <li><a href="/parties" class="nav-link">الحفلات</a></li>
+                    <li><a href="/cart" class="nav-link nav-cart active">السلة <i class="fas fa-shopping-cart"></i></a></li>
+                </ul>
+                <div class="topbar-social">
+                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <header class="page-header cart-page-header" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
         <div class="overlay"></div>
