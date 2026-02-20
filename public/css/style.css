@@ -282,13 +282,14 @@ ul {
     font-weight: bold;
 }
 
-/* Hero Slider — توسيط ثابت بغض النظر عن RTL */
+/* Hero Slider — عرض الصورة كما هي (contain) + زر من لوحة التحكم */
 .hero-slider {
     height: 500px;
     position: relative;
     overflow: hidden;
     margin-bottom: 40px;
     direction: ltr;
+    background: #1a1a1a;
 }
 
 .slider-container {
@@ -305,9 +306,10 @@ ul {
     width: 100%;
     height: 100%;
     margin: 0 auto;
-    background-size: cover;
+    background-size: contain;
     background-position: 50% 50%;
     background-repeat: no-repeat;
+    background-color: #1a1a1a;
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
     display: flex;
@@ -323,7 +325,8 @@ ul {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.35);
+    pointer-events: none;
 }
 
 .slide.active {
@@ -335,35 +338,45 @@ ul {
     z-index: 1;
     text-align: center;
     color: var(--white);
-    padding: 20px;
+    padding: 24px;
     direction: rtl;
+    max-width: 640px;
 }
 
 .slide-content h2 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: 2.75rem;
+    margin-bottom: 12px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    font-weight: 800;
 }
 
 .slide-content p {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    font-size: 1.35rem;
+    margin-bottom: 24px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    opacity: 0.95;
 }
 
 .cta-btn {
-    display: inline-block;
-    padding: 12px 30px;
-    background-color: var(--primary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #c9a227 100%);
     color: var(--secondary-color);
-    font-weight: bold;
-    border-radius: 5px;
-    transition: var(--transition);
+    font-weight: 800;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.35);
 }
 
 .cta-btn:hover {
-    background-color: #fff;
-    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.45);
+    color: var(--secondary-color);
 }
 
 .prev-slide, .next-slide {
@@ -841,6 +854,11 @@ ul {
 
     .slide-content p {
         font-size: 1rem;
+    }
+
+    .cta-btn {
+        padding: 12px 24px;
+        font-size: 0.95rem;
     }
     
     .prev-slide, .next-slide {

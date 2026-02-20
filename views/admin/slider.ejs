@@ -41,6 +41,7 @@
                                 <th>الصورة</th>
                                 <th>العنوان</th>
                                 <th>العنوان الفرعي</th>
+                                <th>الزر</th>
                                 <th>الترتيب</th>
                                 <th>إجراءات</th>
                             </tr>
@@ -53,6 +54,7 @@
                                 </td>
                                 <td><%= slide.title %></td>
                                 <td><%= slide.subtitle %></td>
+                                <td><% if(slide.link_url) { %><span class="slide-btn-preview"><%= (slide.button_text && slide.button_text.trim()) ? slide.button_text : 'تصفح المزيد' %></span><% } else { %>—<% } %></td>
                                 <td><%= slide.display_order %></td>
                                 <td>
                                     <div class="action-btns">
@@ -91,7 +93,11 @@
                     </div>
                     <div class="form-group">
                         <label>رابط الزر (اختياري)</label>
-                        <input type="text" name="link_url" class="form-control" placeholder="مثال: #products-section">
+                        <input type="text" name="link_url" class="form-control" placeholder="مثال: #products-section أو /parties أو رابط الحجز">
+                    </div>
+                    <div class="form-group">
+                        <label>نص الزر (اختياري — يظهر عند وجود رابط)</label>
+                        <input type="text" name="button_text" class="form-control" placeholder="مثال: احجز الآن — تصفح المزيد">
                     </div>
                     <div class="form-group">
                         <label>الترتيب</label>
@@ -126,7 +132,11 @@
                     </div>
                     <div class="form-group">
                         <label>رابط الزر (اختياري)</label>
-                        <input type="text" name="link_url" id="editSlideLink" class="form-control">
+                        <input type="text" name="link_url" id="editSlideLink" class="form-control" placeholder="رابط الحجز أو القسم">
+                    </div>
+                    <div class="form-group">
+                        <label>نص الزر (اختياري)</label>
+                        <input type="text" name="button_text" id="editSlideButtonText" class="form-control" placeholder="احجز الآن — تصفح المزيد">
                     </div>
                     <div class="form-group">
                         <label>الترتيب</label>
@@ -146,7 +156,7 @@
     </main>
 
     <script>
-        const slidesData = { <% slides.forEach((s, i) => { %><%= s.id %>: <%- JSON.stringify({id:s.id,title:s.title||'',subtitle:s.subtitle||'',link_url:s.link_url||'',display_order:s.display_order||0}) %><%= i < slides.length-1 ? ',' : '' %><% }); %> };
+        const slidesData = { <% slides.forEach((s, i) => { %><%= s.id %>: <%- JSON.stringify({id:s.id,title:s.title||'',subtitle:s.subtitle||'',link_url:s.link_url||'',button_text:s.button_text||'',display_order:s.display_order||0}) %><%= i < slides.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -160,6 +170,7 @@
             document.getElementById('editSlideTitle').value = slide.title || '';
             document.getElementById('editSlideSubtitle').value = slide.subtitle || '';
             document.getElementById('editSlideLink').value = slide.link_url || '';
+            document.getElementById('editSlideButtonText').value = slide.button_text || '';
             document.getElementById('editSlideOrder').value = slide.display_order || 0;
             openModal('editSlideModal');
         }

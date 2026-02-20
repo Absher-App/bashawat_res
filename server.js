@@ -165,6 +165,13 @@ async function runAutoMigrations() {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود sale_price موجود مسبقاً');
         else console.error('تحذير:', err.message);
     }
+    try {
+        await queryDb("ALTER TABLE slides ADD COLUMN button_text VARCHAR(255) DEFAULT NULL");
+        console.log('✓ تم إضافة عمود button_text للسلايدر');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود button_text موجود مسبقاً');
+        else console.error('تحذير:', err.message);
+    }
 }
 
 // رفع صورة تصميم الكيك (لعملاء الموقع)
@@ -727,11 +734,11 @@ app.post('/admin/delete-category/:id', requireAuth, (req, res) => {
 
 // إضافة سلايد
 app.post('/admin/add-slide', requireAuth, upload.single('image'), (req, res) => {
-    const { title, subtitle, link_url, display_order } = req.body;
+    const { title, subtitle, link_url, button_text, display_order } = req.body;
     const image_url = req.file ? '/uploads/' + req.file.filename : '';
 
-    const query = 'INSERT INTO slides (title, subtitle, image_url, link_url, display_order) VALUES (?, ?, ?, ?, ?)';
-    db.query(query, [title, subtitle, image_url, link_url, display_order || 0], (err, result) => {
+    const query = 'INSERT INTO slides (title, subtitle, image_url, link_url, button_text, display_order) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(query, [title, subtitle, image_url, link_url || null, (button_text && button_text.trim()) || null, display_order || 0], (err, result) => {
         if (err) console.error(err);
         res.redirect('/admin/slider');
     });
@@ -739,16 +746,17 @@ app.post('/admin/add-slide', requireAuth, upload.single('image'), (req, res) => 
 
 // تحديث سلايد
 app.post('/admin/update-slide/:id', requireAuth, upload.single('image'), (req, res) => {
-    const { title, subtitle, link_url, display_order } = req.body;
+    const { title, subtitle, link_url, button_text, display_order } = req.body;
     const slideId = req.params.id;
+    const btnText = (button_text && button_text.trim()) || null;
     let query, params;
     if (req.file) {
         const image_url = '/uploads/' + req.file.filename;
-        query = 'UPDATE slides SET title = ?, subtitle = ?, link_url = ?, display_order = ?, image_url = ? WHERE id = ?';
-        params = [title, subtitle, link_url, display_order || 0, image_url, slideId];
+        query = 'UPDATE slides SET title = ?, subtitle = ?, link_url = ?, button_text = ?, display_order = ?, image_url = ? WHERE id = ?';
+        params = [title, subtitle, link_url || null, btnText, display_order || 0, image_url, slideId];
     } else {
-        query = 'UPDATE slides SET title = ?, subtitle = ?, link_url = ?, display_order = ? WHERE id = ?';
-        params = [title, subtitle, link_url, display_order || 0, slideId];
+        query = 'UPDATE slides SET title = ?, subtitle = ?, link_url = ?, button_text = ?, display_order = ? WHERE id = ?';
+        params = [title, subtitle, link_url || null, btnText, display_order || 0, slideId];
     }
     db.query(query, params, (err, result) => {
         if (err) console.error(err);

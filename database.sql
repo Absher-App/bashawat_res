@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS slides (
     title VARCHAR(255),
     subtitle VARCHAR(255),
     link_url VARCHAR(255),
+    button_text VARCHAR(255) DEFAULT NULL,
     display_order INT DEFAULT 0,
     image_url VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

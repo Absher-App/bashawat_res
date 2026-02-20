@@ -68,7 +68,7 @@
                         <% if(slide.title) { %><h2><%= slide.title %></h2><% } %>
                         <% if(slide.subtitle) { %><p><%= slide.subtitle %></p><% } %>
                         <% if(slide.link_url) { %>
-                            <a href="<%= slide.link_url %>" class="cta-btn">تصفح المزيد</a>
+                            <a href="<%= slide.link_url %>" class="cta-btn"><%= (slide.button_text && slide.button_text.trim()) ? slide.button_text : 'تصفح المزيد' %></a>
                         <% } %>
                     </div>
                 </div>
