@@ -1099,15 +1099,41 @@ html[dir="rtl"] .search-box button {
     color: var(--primary-color);
 }
 
+/* سكرول أفقي للتصنيفات */
+.home-categories-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 0 16px;
+    margin: 0 -15px;
+}
+
+.home-categories-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.home-categories-scroll::-webkit-scrollbar-thumb {
+    background: rgba(212, 175, 55, 0.4);
+    border-radius: 4px;
+}
+
+.home-categories-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+}
+
 .home-categories-list {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 20px;
     align-items: stretch;
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 0 15px;
+    width: max-content;
 }
 
 .home-category-card {
+    flex-shrink: 0;
     position: relative;
     display: flex;
     align-items: center;
@@ -1273,8 +1299,13 @@ html[dir="rtl"] .search-box button {
     .home-categories-bar {
         padding: 20px 0 28px;
     }
+    .home-categories-scroll {
+        margin: 0 -12px;
+        padding: 8px 0 12px;
+    }
     .home-categories-list {
-        gap: 16px;
+        gap: 14px;
+        padding: 0 12px;
     }
     .home-category-card {
         width: 150px;
@@ -2581,37 +2612,77 @@ html[dir="rtl"] .search-box button {
 .footer-social .fa-snapchat-ghost:hover { background: #FFFC00 !important; color: #000 !important; }
 .footer-social .fa-facebook-f:hover { background: #1877F2 !important; }
 
-/* السجل التجاري في الفوتر */
+/* السجل التجاري في الفوتر — تصميم احترافي */
 .footer-commercial-reg {
     text-align: center;
 }
 
+.footer-commercial-reg .commercial-reg-card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 12px;
+    padding: 16px 20px 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    transition: var(--transition);
+}
+
+.footer-commercial-reg .commercial-reg-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(212, 175, 55, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
 .footer-commercial-reg .commercial-reg-link {
-    display: inline-block;
-    margin-top: 8px;
-    border-radius: 10px;
+    display: block;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #fff;
+    padding: 8px;
     transition: var(--transition);
 }
 
 .footer-commercial-reg .commercial-reg-link:hover {
-    border-color: rgba(212, 175, 55, 0.5);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .footer-commercial-reg .commercial-reg-img {
     display: block;
     width: 100%;
-    max-width: 120px;
+    max-width: 110px;
     height: auto;
-    background: #fff;
+    border-radius: 6px;
+}
+
+.footer-commercial-reg .commercial-reg-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-commercial-reg .commercial-reg-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .footer-commercial-reg .commercial-reg-num {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    color: #b0b0b0;
+    font-size: 1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+    letter-spacing: 0.08em;
 }
 
 .footer-bottom {

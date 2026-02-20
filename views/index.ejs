@@ -233,6 +233,7 @@
             <% if (catsWithProducts.length > 0 || _otherProducts.length > 0) { %>
             <section class="home-categories-bar">
                 <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> تصفح حسب التصنيف</h2>
+                <div class="home-categories-scroll">
                 <div class="home-categories-list">
                     <% catsWithProducts.forEach(function(cat) { %>
                         <% const cp = products.filter(p => p.category === cat.name); %>
@@ -257,6 +258,7 @@
                         </span>
                     </a>
                     <% } %>
+                </div>
                 </div>
             </section>
             <% } %>
@@ -467,10 +469,15 @@
             </div>
             <div class="footer-col footer-commercial-reg">
                 <h3>السجل التجاري</h3>
-                <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - السجل: 2053033300">
-                    <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
-                </a>
-                <p class="commercial-reg-num">2053033300</p>
+                <div class="commercial-reg-card">
+                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - اضغط للتحقق">
+                        <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
+                    </a>
+                    <div class="commercial-reg-info">
+                        <span class="commercial-reg-label">رقم السجل</span>
+                        <span class="commercial-reg-num">2053033300</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
