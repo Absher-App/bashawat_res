@@ -475,6 +475,16 @@ body {
     background: #f8f9fa;
 }
 
+.old-price-admin {
+    color: #c0392b;
+    text-decoration: line-through;
+    margin-left: 4px;
+}
+.sale-price-admin {
+    color: #27ae60;
+    font-weight: 700;
+}
+
 .product-img-sm {
     width: 48px;
     height: 48px;

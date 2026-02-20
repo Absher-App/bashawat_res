@@ -158,6 +158,13 @@ async function runAutoMigrations() {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود is_most_requested موجود مسبقاً');
         else console.error('تحذير:', err.message);
     }
+    try {
+        await queryDb("ALTER TABLE products ADD COLUMN sale_price DECIMAL(10, 2) DEFAULT NULL");
+        console.log('✓ تم إضافة عمود sale_price (سعر بعد الخصم)');
+    } catch (err) {
+        if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود sale_price موجود مسبقاً');
+        else console.error('تحذير:', err.message);
+    }
 }
 
 // رفع صورة تصميم الكيك (لعملاء الموقع)
@@ -523,7 +530,7 @@ app.post('/admin/add-products-bulk', requireAuth, upload.array('images', 50), as
 
 // إضافة منتج جديد (صور متعددة + أحجام/أوزان)
 app.post('/admin/add-product', requireAuth, upload.array('images', 10), (req, res) => {
-    const { name, description, details, price, category, variants_json, variant_type } = req.body;
+    const { name, description, details, price, category, variants_json, variant_type, sale_price } = req.body;
     const files = req.files || [];
     const is_cake = req.body.is_cake === 'on' || req.body.is_cake === '1' ? 1 : 0;
     const is_most_requested = req.body.is_most_requested === 'on' || req.body.is_most_requested === '1' ? 1 : 0;
@@ -556,8 +563,9 @@ app.post('/admin/add-product', requireAuth, upload.array('images', 10), (req, re
         } catch (e) {}
     }
 
-    const query = 'INSERT INTO products (name, description, details, price, category, image_url, images, variant_type, variants, is_cake, is_most_requested) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(query, [name, description || '', details || '', finalPrice, category, image_url, imagesJson, variantTypeVal, variantsJson, is_cake, is_most_requested], (err, result) => {
+    const salePriceVal = (sale_price != null && String(sale_price).trim() !== '') ? parseFloat(sale_price) : null;
+    const query = 'INSERT INTO products (name, description, details, price, sale_price, category, image_url, images, variant_type, variants, is_cake, is_most_requested) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    db.query(query, [name, description || '', details || '', finalPrice, salePriceVal, category, image_url, imagesJson, variantTypeVal, variantsJson, is_cake, is_most_requested], (err, result) => {
         if (err) console.error(err);
         res.redirect('/admin/products');
     });
@@ -575,7 +583,7 @@ app.post('/admin/delete-product/:id', requireAuth, (req, res) => {
 
 // تحديث منتج (صور متعددة + أحجام/أوزان)
 app.post('/admin/update-product/:id', requireAuth, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'images', maxCount: 9 }]), async (req, res) => {
-    const { name, description, details, price, category, existing_images, variants_json, variant_type } = req.body;
+    const { name, description, details, price, category, existing_images, variants_json, variant_type, sale_price } = req.body;
     const productId = req.params.id;
     const is_cake = req.body.is_cake === 'on' || req.body.is_cake === '1' ? 1 : 0;
     const is_most_requested = req.body.is_most_requested === 'on' || req.body.is_most_requested === '1' ? 1 : 0;
@@ -613,9 +621,10 @@ app.post('/admin/update-product/:id', requireAuth, upload.fields([{ name: 'image
         } catch (e) {}
     }
 
-    const query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, category = ?, image_url = ?, images = ?, variant_type = ?, variants = ?, is_cake = ?, is_most_requested = ? WHERE id = ?';
+    const salePriceVal = (sale_price != null && String(sale_price).trim() !== '') ? parseFloat(sale_price) : null;
+    const query = 'UPDATE products SET name = ?, description = ?, details = ?, price = ?, sale_price = ?, category = ?, image_url = ?, images = ?, variant_type = ?, variants = ?, is_cake = ?, is_most_requested = ? WHERE id = ?';
     try {
-        await queryDb(query, [name, description || '', details || '', price, category, image_url, imagesJson, variantTypeVal, variantsJson, is_cake, is_most_requested, productId]);
+        await queryDb(query, [name, description || '', details || '', price, salePriceVal, category, image_url, imagesJson, variantTypeVal, variantsJson, is_cake, is_most_requested, productId]);
     } catch (err) { console.error(err); }
     res.redirect('/admin/products');
 });

@@ -121,7 +121,7 @@
                         <div class="product-card product-item product-has-hover" data-id="<%= product.id %>" data-category-id="<%= catId %>" data-category-name="<%= product.category %>">
                             <div class="product-image">
                                 <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                <span class="price"><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %></span>
+                                <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
                             </div>
                             <div class="product-info">
                                 <h3><%= product.name %></h3>
@@ -164,7 +164,7 @@
                                     </div>
                                     <% } %>
                                     <div class="hover-card-footer">
-                                        <span class="hover-price"><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %></span>
+                                        <span class="hover-price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
                                         <button type="button" class="hover-add-btn" onclick="event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
                                     </div>
                                 </div>

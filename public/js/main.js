@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = false;
             
             cart.forEach((item, index) => {
-                const unitPrice = item.selectedVariant ? item.selectedVariant.price : item.price;
+                const unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
                 total += unitPrice * item.quantity;
 
                 const itemEl = document.createElement('div');
@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const baseUrl = window.location.origin;
             
             cart.forEach(item => {
-                const unitPrice = item.selectedVariant ? item.selectedVariant.price : item.price;
+                const unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
                 const lineName = item.selectedVariant ? `${item.name} - ${item.selectedVariant.name}` : item.name;
                 message += `- ${lineName} (${item.quantity}x): ${(unitPrice * item.quantity).toFixed(2)} ر.س\n`;
                 if (item.cakeOptions) {
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const total = cart.reduce((sum, item) => {
-                const unitPrice = item.selectedVariant ? item.selectedVariant.price : item.price;
+                const unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
                 return sum + (unitPrice * item.quantity);
             }, 0);
             message += `\n*المجموع الكلي: ${total.toFixed(2)} ر.س*`;

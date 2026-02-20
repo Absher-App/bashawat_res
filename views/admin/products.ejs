@@ -59,7 +59,7 @@
                                     <% } %>
                                 </td>
                                 <td><%= product.name %></td>
-                                <td><%= product.price %> ريال</td>
+                                <td><% if (product.sale_price != null && product.sale_price !== '') { %><span class="old-price-admin"><%= product.price %></span> → <span class="sale-price-admin"><%= product.sale_price %></span> ريال<% } else { %><%= product.price %> ريال<% } %></td>
                                 <td><%= product.category %></td>
                                 <td>
                                     <div class="action-btns">
@@ -106,6 +106,12 @@
                             <label>السعر (ريال)</label>
                             <input type="text" name="price" class="form-control" inputmode="decimal" required placeholder="0.00" pattern="[0-9]+\.?[0-9]*" title="أدخل رقماً (مثال: 25 أو 19.50)">
                         </div>
+                        <div class="form-group">
+                            <label>سعر بعد الخصم (اختياري)</label>
+                            <input type="text" name="sale_price" class="form-control" inputmode="decimal" placeholder="اتركه فارغاً إن لم يكن هناك عرض" pattern="[0-9]+\.?[0-9]*" title="أدخل السعر بعد الخصم لعرض التخفيض">
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label>التصنيف</label>
                             <select name="category" class="form-control" required>
@@ -233,6 +239,12 @@
                             <input type="text" name="price" id="editProductPrice" class="form-control" inputmode="decimal" required placeholder="0.00" pattern="[0-9]+\.?[0-9]*" title="أدخل رقماً">
                         </div>
                         <div class="form-group">
+                            <label>سعر بعد الخصم (اختياري)</label>
+                            <input type="text" name="sale_price" id="editProductSalePrice" class="form-control" inputmode="decimal" placeholder="اتركه فارغاً لإلغاء العرض" pattern="[0-9]+\.?[0-9]*">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
                             <label>التصنيف</label>
                             <select name="category" id="editProductCategory" class="form-control" required>
                                 <% if (categories && categories.length > 0) { %>
@@ -302,7 +314,7 @@
             if (!imgs.length && p.image_url) imgs = [p.image_url];
             let vars = [];
             try { vars = p.variants ? (typeof p.variants==='string' ? JSON.parse(p.variants) : p.variants) : []; } catch(e){}
-        %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,category:p.category||'',image_url:p.image_url||'',images:imgs,variant_type:p.variant_type||'',variants:vars,is_cake:!!p.is_cake,is_most_requested:!!p.is_most_requested}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
+        %><%= p.id %>: <%- JSON.stringify({id:p.id,name:p.name,description:p.description||'',details:p.details||'',price:p.price,sale_price:p.sale_price!=null&&p.sale_price!==''?p.sale_price:null,category:p.category||'',image_url:p.image_url||'',images:imgs,variant_type:p.variant_type||'',variants:vars,is_cake:!!p.is_cake,is_most_requested:!!p.is_most_requested}) %><%= i < products.length-1 ? ',' : '' %><% }); %> };
         function openModal(id) {
             document.getElementById(id).classList.add('active');
         }
@@ -320,6 +332,7 @@
             document.getElementById('editProductIsCake').checked = product.is_cake || false;
             document.getElementById('editProductIsMostRequested').checked = product.is_most_requested || false;
             document.getElementById('editProductPrice').value = product.price;
+            document.getElementById('editProductSalePrice').value = (product.sale_price != null && product.sale_price !== '') ? product.sale_price : '';
             document.getElementById('editProductCategory').value = product.category || '';
             currentEditImages = Array.isArray(product.images) ? [...product.images] : (product.image_url ? [product.image_url] : []);
             renderEditImages();

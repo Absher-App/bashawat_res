@@ -340,45 +340,49 @@ ul {
 .next-slide { right: 20px; }
 
 /* Stories Section - أعلى التصنيفات */
-/* البانرين (بين شريط التصنيفات وأقسام المنتجات) */
+/* البانرين (بين شريط التصنيفات وأقسام المنتجات) — بعرض الشاشة كاملاً */
 .home-banners {
-    padding: 0 15px 24px;
+    padding: 0 0 24px;
     background: #fff;
 }
 
 .home-banners-between-cats {
     margin: 0 0 40px;
-    padding: 28px 15px 32px;
+    padding: 24px 0 28px;
     background: linear-gradient(180deg, #fafaf9 0%, #f5f4f0 100%);
-    border-radius: 0 0 20px 20px;
     border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    /* بعرض الشاشة كاملاً (يكسر حدود الـ container) */
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box;
 }
 
 .home-banners-inner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 15px;
 }
 
 .home-banner-single .home-banners-inner {
     grid-template-columns: 1fr;
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 100%;
+    padding: 0;
 }
 
 .home-banner-item {
     width: 100%;
     overflow: hidden;
-    border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 2px 8px rgba(212, 175, 55, 0.06);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 0;
+    box-shadow: none;
+    transition: opacity 0.25s ease;
 }
 
 .home-banner-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.08), 0 4px 12px rgba(212, 175, 55, 0.1);
+    opacity: 0.98;
 }
 
 .home-banner-item img {
@@ -386,6 +390,19 @@ ul {
     height: auto;
     display: block;
     vertical-align: middle;
+    object-fit: cover;
+    object-position: center;
+}
+
+@media (max-width: 768px) {
+    .home-banners-between-cats {
+        padding: 16px 0 20px;
+        margin-bottom: 28px;
+    }
+    .home-banner-item img {
+        max-width: 100%;
+        min-height: 120px;
+    }
 }
 
 .stories-section {
@@ -1627,6 +1644,19 @@ html[dir="rtl"] .search-box button {
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(212, 175, 55, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.price-old {
+    color: #c0392b;
+    text-decoration: line-through;
+    font-weight: 700;
+}
+.price-sale {
+    color: #27ae60;
+    font-weight: 800;
 }
 
 /* 2. Professional Add to Cart Button */
