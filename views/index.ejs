@@ -89,25 +89,6 @@
         </div>
     </section>
 
-    <!-- البانرين -->
-    <% const _b1 = typeof banner1 !== 'undefined' && banner1; const _b2 = typeof banner2 !== 'undefined' && banner2; %>
-    <% if (_b1 || _b2) { %>
-    <section class="home-banners">
-        <div class="container home-banners-inner">
-            <% if (_b1) { %>
-            <div class="home-banner-item">
-                <img src="<%= banner1 %>" alt="بانر 1" loading="lazy">
-            </div>
-            <% } %>
-            <% if (_b2) { %>
-            <div class="home-banner-item">
-                <img src="<%= banner2 %>" alt="بانر 2" loading="lazy">
-            </div>
-            <% } %>
-        </div>
-    </section>
-    <% } %>
-
     <!-- قسم الستوريات / الفيديوهات -->
     <% if (stories && stories.length > 0) { %>
     <section class="stories-section">
@@ -259,6 +240,25 @@
                     </a>
                     <% } %>
                 </div>
+                </div>
+            </section>
+            <% } %>
+            
+            <!-- البانرين بين التصنيفات -->
+            <% const _b1 = typeof banner1 !== 'undefined' && banner1; const _b2 = typeof banner2 !== 'undefined' && banner2; %>
+            <% if (_b1 || _b2) { %>
+            <section class="home-banners home-banners-between-cats">
+                <div class="container home-banners-inner">
+                    <% if (_b1) { %>
+                    <div class="home-banner-item">
+                        <img src="<%= banner1 %>" alt="بانر 1" loading="lazy">
+                    </div>
+                    <% } %>
+                    <% if (_b2) { %>
+                    <div class="home-banner-item">
+                        <img src="<%= banner2 %>" alt="بانر 2" loading="lazy">
+                    </div>
+                    <% } %>
                 </div>
             </section>
             <% } %>
