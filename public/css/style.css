@@ -1596,19 +1596,42 @@ html[dir="rtl"] .search-box button {
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     min-height: 90px;
     padding: 10px 0 0 0;
 }
 
+/* كرات آيسكريم واقعية — شكل كروي مع تدرج وإضاءة */
 .ice-cream-scoop-ball {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.2), inset 0 -5px 12px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.3);
+    position: relative;
     transform: scale(0);
     opacity: 0;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    /* الظل أسفل الكرة لإحساس الواقع */
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.25),
+        0 4px 8px rgba(0,0,0,0.15),
+        inset -8px -12px 20px rgba(0,0,0,0.2),
+        inset 4px 4px 16px rgba(255,255,255,0.4),
+        inset 0 -2px 6px rgba(0,0,0,0.08);
+}
+
+/* تدرج كروي فوق لون الخلفية (يُضاف من JS كمتغير --scoop-color) */
+.ice-cream-scoop-ball::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle at 35% 30%,
+        rgba(255,255,255,0.75) 0%,
+        rgba(255,255,255,0.2) 40%,
+        transparent 70%
+    );
+    pointer-events: none;
 }
 
 .ice-cream-scoop-ball.scoop-visible {
@@ -1632,15 +1655,39 @@ html[dir="rtl"] .search-box button {
     }
 }
 
+/* كوب زجاجي واقعي — شكل ترابيزي مع انعكاس زجاج */
 .ice-cream-cup-body {
-    width: 76px;
-    height: 54px;
-    background: linear-gradient(180deg, #fff 0%, #f5f5f5 40%, #eee 100%);
-    border: 3px solid rgba(212, 175, 55, 0.45);
-    border-top: none;
-    border-radius: 0 0 14px 14px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+    width: 88px;
+    height: 58px;
     margin-top: -2px;
+    position: relative;
+    /* شكل الكوب: أوسع من الأعلى، أضيق من الأسفل */
+    clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+    background: linear-gradient(
+        165deg,
+        rgba(255,255,255,0.9) 0%,
+        rgba(248,252,255,0.75) 30%,
+        rgba(235,245,252,0.6) 60%,
+        rgba(220,238,248,0.5) 100%
+    );
+    box-shadow:
+        inset 3px 0 14px rgba(255,255,255,0.5),
+        inset -3px 0 14px rgba(200,220,240,0.25),
+        inset 0 -10px 18px rgba(0,0,0,0.08),
+        0 8px 22px rgba(0,0,0,0.14);
+    border: 1px solid rgba(255,255,255,0.6);
+}
+
+/* حافة الكوب العلوية (طوق الكوب) */
+.ice-cream-cup-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
 .ice-cream-flavors-grid {
