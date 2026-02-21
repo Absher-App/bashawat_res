@@ -28,7 +28,33 @@
                     <h3>أحجام الكوب والنكهات</h3>
                     <p style="color: #666; font-size: 0.95rem; margin-top: 8px;">حدد أحجام الكوب (صغير، وسط، كبير) مع السعر وعدد الكرات المسموح، ثم قائمة النكهات. العميل يختار الكوب أولاً ثم يضيف النكهات حسب العدد المسموح.</p>
                 </div>
-                <form action="/admin/icecream" method="POST" id="iceCreamForm">
+                <form action="/admin/icecream" method="POST" id="iceCreamForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>صور الكوب (صغير، وسط، كبير) — تظهر في السلة ورسالة واتساب</label>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
+                            <div>
+                                <label class="form-label" style="font-weight:600;">كوب صغير</label>
+                                <input type="file" name="cup_image_small" accept="image/*" class="form-control">
+                                <% if (iceCreamOptions.cupImages && iceCreamOptions.cupImages['صغير']) { %>
+                                <img src="<%= iceCreamOptions.cupImages['صغير'] %>" alt="كوب صغير" style="max-width:120px;max-height:80px;object-fit:contain;margin-top:8px;border-radius:8px;border:1px solid #ddd;">
+                                <% } %>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-weight:600;">كوب وسط</label>
+                                <input type="file" name="cup_image_medium" accept="image/*" class="form-control">
+                                <% if (iceCreamOptions.cupImages && iceCreamOptions.cupImages['وسط']) { %>
+                                <img src="<%= iceCreamOptions.cupImages['وسط'] %>" alt="كوب وسط" style="max-width:120px;max-height:80px;object-fit:contain;margin-top:8px;border-radius:8px;border:1px solid #ddd;">
+                                <% } %>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-weight:600;">كوب كبير</label>
+                                <input type="file" name="cup_image_large" accept="image/*" class="form-control">
+                                <% if (iceCreamOptions.cupImages && iceCreamOptions.cupImages['كبير']) { %>
+                                <img src="<%= iceCreamOptions.cupImages['كبير'] %>" alt="كوب كبير" style="max-width:120px;max-height:80px;object-fit:contain;margin-top:8px;border-radius:8px;border:1px solid #ddd;">
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label>أحجام الكوب (الاسم، السعر، عدد الكرات)</label>
                         <table class="admin-table" style="width: 100%; max-width: 500px;">

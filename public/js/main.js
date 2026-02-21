@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 'ice_' + Date.now(),
             name: 'آيسكريم',
             quantity: 1,
-            iceCup: { name_ar: iceCup.name_ar, price: iceCup.price, max_scoops: iceCup.max_scoops },
+            iceCup: { name_ar: iceCup.name_ar, price: iceCup.price, max_scoops: iceCup.max_scoops, imageUrl: iceCup.imageUrl || '' },
             flavors: flavors.map(function(name_ar) { return { name_ar }; })
         };
         cart.push(cartItem);
@@ -559,7 +559,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     '</small></div>' : '';
                 const iceCreamInfo = (item.type === 'ice_cream' && item.iceCup && item.flavors) ? '<div class="cart-item-ice-cream"><small>كوب ' + item.iceCup.name_ar + ': ' + item.flavors.map(function(f) { return f.name_ar; }).join('، ') + '</small></div>' : '';
                 const displayName = item.type === 'ice_cream' ? (item.name || 'آيسكريم') : item.name;
-                const displayImg = item.type === 'ice_cream' ? 'https://via.placeholder.com/200x200?text=🍦' : imgUrl;
+                const displayImg = item.type === 'ice_cream' && item.iceCup && item.iceCup.imageUrl
+                    ? (item.iceCup.imageUrl.startsWith('http') ? item.iceCup.imageUrl : baseUrl + (item.iceCup.imageUrl.startsWith('/') ? '' : '/') + item.iceCup.imageUrl)
+                    : (item.type === 'ice_cream' ? 'https://via.placeholder.com/200x200?text=🍦' : imgUrl);
                 itemEl.innerHTML = `
                     <div class="cart-item-image">
                         <img src="${displayImg}" alt="${safeName}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/200x200?text=صورة';this.onerror=null;">
@@ -645,6 +647,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     unitPrice = parseFloat(item.iceCup.price) || 0;
                     const flavorsStr = item.flavors && item.flavors.length ? item.flavors.map(f => f.name_ar).join('، ') : '';
                     lineName = 'آيسكريم - كوب ' + item.iceCup.name_ar + (flavorsStr ? ': ' + flavorsStr : '');
+                    if (item.iceCup.imageUrl) {
+                        const cupImgUrl = item.iceCup.imageUrl.startsWith('http') ? item.iceCup.imageUrl : (baseUrl + (item.iceCup.imageUrl.startsWith('/') ? '' : '/') + item.iceCup.imageUrl);
+                        message += `  • صورة الكوب: ${cupImgUrl}\n`;
+                    }
                 } else {
                     unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
                     lineName = item.selectedVariant ? `${item.name} - ${item.selectedVariant.name}` : item.name;

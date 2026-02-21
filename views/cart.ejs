@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سلة المشتريات - حلويات بقداش - Bagdash sweets</title>
+    <title>سلة المشتريات - حلويات بقداش - Bagdash sweets | إتمام الطلب</title>
+    <meta name="description" content="سلة مشترياتك من حلويات بقداش. راجع طلبك وأتمم الشراء عبر واتساب. توصيل القطيف وسيهات والدمام.">
+    <meta name="robots" content="noindex, follow">
+    <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
+    <link rel="canonical" href="<%= siteUrl %>/cart">
+    <meta property="og:url" content="<%= siteUrl %>/cart">
+    <% } %>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="سلة المشتريات - حلويات بقداش">
+    <meta property="og:description" content="سلة مشترياتك من حلويات بقداش. إتمام الطلب عبر واتساب.">
+    <meta property="og:locale" content="ar_SA">
+    <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <link rel="icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">

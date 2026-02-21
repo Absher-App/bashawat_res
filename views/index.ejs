@@ -16,6 +16,10 @@
     <meta property="og:description" content="أفضل حلويات عربية وكيك في القطيف وسيهات. طلب أونلاين وتوصيل.">
     <meta property="og:locale" content="ar_SA">
     <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="حلويات بقداش - Bagdash sweets | حلويات القطيف وسيهات">
+    <meta name="twitter:description" content="أفضل حلويات عربية وكيك في القطيف وسيهات. طلب أونلاين وتوصيل.">
+    <meta name="twitter:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <link rel="icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
@@ -463,7 +467,7 @@
                     <p class="ice-cream-step-label">١. اختر حجم الكوب</p>
                     <div class="ice-cream-cup-sizes" id="iceCreamCupSizes">
                         <% (iceCreamOptions.cupSizes || []).forEach(function(cup) { %>
-                        <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>"><%= cup.name_ar %> — <%= cup.price %> ر.س (<%= cup.max_scoops %> كرات)</button>
+                        <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>" data-image-url="<%= (iceCreamOptions.cupImages && iceCreamOptions.cupImages[cup.name_ar]) ? iceCreamOptions.cupImages[cup.name_ar] : '' %>"><%= cup.name_ar %> — <%= cup.price %> ر.س (<%= cup.max_scoops %> كرات)</button>
                         <% }); %>
                     </div>
                     <div class="ice-cream-flavors-wrap" id="iceCreamFlavorsWrap" style="display: none;">
@@ -509,7 +513,7 @@
                     if (!btn) return;
                     document.querySelectorAll('.ice-cream-cup-btn').forEach(function(b) { b.classList.remove('active'); });
                     btn.classList.add('active');
-                    selectedCup = { name_ar: btn.dataset.name, price: parseFloat(btn.dataset.price), max_scoops: parseInt(btn.dataset.maxScoops, 10) };
+                    selectedCup = { name_ar: btn.dataset.name, price: parseFloat(btn.dataset.price), max_scoops: parseInt(btn.dataset.maxScoops, 10), imageUrl: btn.dataset.imageUrl || '' };
                     selectedFlavors = [];
                     wrap.style.display = 'block';
                     if (cupVisual) cupVisual.classList.add('visible');

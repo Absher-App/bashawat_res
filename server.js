@@ -260,24 +260,30 @@ const DEFAULT_ICE_CREAM_OPTIONS = {
 async function getIceCreamOptions() {
     try {
         const rows = await queryDb(
-            "SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('ice_cream_cup_sizes', 'ice_cream_flavors')"
+            "SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('ice_cream_cup_sizes', 'ice_cream_flavors', 'ice_cream_cup_images')"
         );
         const opts = {
             cupSizes: [...DEFAULT_ICE_CREAM_OPTIONS.cupSizes],
-            flavors: [...DEFAULT_ICE_CREAM_OPTIONS.flavors]
+            flavors: [...DEFAULT_ICE_CREAM_OPTIONS.flavors],
+            cupImages: { 'صغير': '', 'وسط': '', 'كبير': '' }
         };
         rows.forEach(r => {
             try {
-                const arr = JSON.parse(r.setting_value || '[]');
-                if (Array.isArray(arr) && arr.length > 0) {
-                    if (r.setting_key === 'ice_cream_cup_sizes') opts.cupSizes = arr;
-                    else if (r.setting_key === 'ice_cream_flavors') opts.flavors = arr;
+                if (r.setting_key === 'ice_cream_cup_images') {
+                    const obj = JSON.parse(r.setting_value || '{}');
+                    if (obj && typeof obj === 'object') opts.cupImages = { ...opts.cupImages, ...obj };
+                } else {
+                    const arr = JSON.parse(r.setting_value || '[]');
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        if (r.setting_key === 'ice_cream_cup_sizes') opts.cupSizes = arr;
+                        else if (r.setting_key === 'ice_cream_flavors') opts.flavors = arr;
+                    }
                 }
             } catch (e) {}
         });
         return opts;
     } catch (err) {
-        return { ...DEFAULT_ICE_CREAM_OPTIONS };
+        return { ...DEFAULT_ICE_CREAM_OPTIONS, cupImages: { 'صغير': '', 'وسط': '', 'كبير': '' } };
     }
 }
 
@@ -454,7 +460,11 @@ app.get(/^\/admin\/icecream\/?$/i, requireAuth, async (req, res) => {
         return res.send('خطأ في جلب البيانات');
     }
 });
-app.post(/^\/admin\/icecream\/?$/i, requireAuth, async (req, res) => {
+app.post(/^\/admin\/icecream\/?$/i, requireAuth, upload.fields([
+    { name: 'cup_image_small', maxCount: 1 },
+    { name: 'cup_image_medium', maxCount: 1 },
+    { name: 'cup_image_large', maxCount: 1 }
+]), async (req, res) => {
     const { cup_sizes_json, flavors } = req.body;
     const toArray = (v) => {
         if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
@@ -474,6 +484,23 @@ app.post(/^\/admin\/icecream\/?$/i, requireAuth, async (req, res) => {
     try {
         await queryDb(query, ['ice_cream_cup_sizes', JSON.stringify(cupSizes), JSON.stringify(cupSizes)]);
         await queryDb(query, ['ice_cream_flavors', JSON.stringify(flavorsObjs), JSON.stringify(flavorsObjs)]);
+
+        let cupImages = { 'صغير': '', 'وسط': '', 'كبير': '' };
+        const existing = await queryDb("SELECT setting_value FROM settings WHERE setting_key = 'ice_cream_cup_images'");
+        if (existing && existing[0] && existing[0].setting_value) {
+            try {
+                cupImages = { ...cupImages, ...JSON.parse(existing[0].setting_value) };
+            } catch (e) {}
+        }
+        if (req.files) {
+            if (req.files.cup_image_small && req.files.cup_image_small[0])
+                cupImages['صغير'] = '/uploads/' + req.files.cup_image_small[0].filename;
+            if (req.files.cup_image_medium && req.files.cup_image_medium[0])
+                cupImages['وسط'] = '/uploads/' + req.files.cup_image_medium[0].filename;
+            if (req.files.cup_image_large && req.files.cup_image_large[0])
+                cupImages['كبير'] = '/uploads/' + req.files.cup_image_large[0].filename;
+        }
+        await queryDb(query, ['ice_cream_cup_images', JSON.stringify(cupImages), JSON.stringify(cupImages)]);
         res.redirect('/admin/icecream');
     } catch (err) {
         console.error(err);
