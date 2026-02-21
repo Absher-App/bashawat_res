@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>قائمة المنتجات - حلويات بقداش</title>
+    <link rel="icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,11 +33,32 @@
                     <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
                     <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
-                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
                 </div>
+                <button type="button" class="burger-btn" id="burgerBtn" aria-label="القائمة"><span></span><span></span><span></span></button>
             </div>
         </nav>
     </header>
+    <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">القائمة</span>
+            <button type="button" class="drawer-close" id="drawerClose" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="/" class="drawer-link">الرئيسية</a>
+            <a href="/products" class="drawer-link active">المنتجات</a>
+            <a href="/parties" class="drawer-link">الحفلات</a>
+            <a href="/cart" class="drawer-link">السلة <i class="fas fa-shopping-cart"></i></a>
+        </nav>
+        <div class="drawer-social">
+            <span class="drawer-social-label">تابعنا</span>
+            <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+            <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+            <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
 
     <!-- Floating Cart Button -->
     <a href="/cart" class="cart-floating-btn" id="cartBtn">
@@ -81,6 +103,100 @@
                 </ul>
             </div>
         </section>
+
+        <!-- قسم الآيسكريم -->
+        <% if (typeof iceCreamOptions !== 'undefined' && iceCreamOptions && (iceCreamOptions.cupSizes || []).length > 0 && (iceCreamOptions.flavors || []).length > 0) { %>
+        <section class="category-block ice-cream-section-products" id="ice-cream-section">
+            <div class="category-header">
+                <div class="category-title-pill">
+                    <h2 class="category-title">آيسكريم</h2>
+                </div>
+            </div>
+            <div class="ice-cream-builder">
+                <p class="ice-cream-step-label">١. اختر حجم الكوب</p>
+                <div class="ice-cream-cup-sizes" id="iceCreamCupSizesProducts">
+                    <% (iceCreamOptions.cupSizes || []).forEach(function(cup) { %>
+                    <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>"><%= cup.name_ar %> — <%= cup.price %> ر.س (<%= cup.max_scoops %> كرات)</button>
+                    <% }); %>
+                </div>
+                <div class="ice-cream-flavors-wrap" id="iceCreamFlavorsWrapProducts" style="display: none;">
+                    <p class="ice-cream-step-label">٢. اختر النكهات (اضغط لإضافة كرة)</p>
+                    <div class="ice-cream-layout">
+                        <div class="ice-cream-cup-visual" id="iceCreamCupVisualProducts">
+                            <div class="ice-cream-scoops-stack" id="iceCreamScoopsStackProducts"></div>
+                            <div class="ice-cream-cup-body" id="iceCreamCupBodyProducts"></div>
+                        </div>
+                        <div class="ice-cream-flavors-grid" id="iceCreamFlavorsGridProducts">
+                            <% (iceCreamOptions.flavors || []).forEach(function(f, fi) { %>
+                            <button type="button" class="ice-cream-flavor-btn" data-name="<%= f.name_ar %>" data-index="<%= fi %>"><%= f.name_ar %></button>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <div class="ice-cream-current-cup" id="iceCreamCurrentCupProducts">
+                        <span class="ice-cream-cup-summary" id="iceCreamCupSummaryProducts"></span>
+                        <span class="ice-cream-cup-price" id="iceCreamCupPriceProducts"></span>
+                    </div>
+                    <button type="button" class="order-btn ice-cream-add-cart-btn" id="iceCreamAddToCartBtnProducts" disabled>
+                        <i class="fas fa-cart-plus"></i> أضف للسلة
+                    </button>
+                </div>
+            </div>
+        </section>
+        <script>
+        (function() {
+            var scoopColors = ['#fff5e6','#ffb3d9','#8b4513','#4a0080','#0066cc','#ffeb99','#ff6b6b','#ff8c42','#d4a574','#98d8aa','#f5deb3','#1a1a1a'];
+            var selectedCup = null, selectedFlavors = [];
+            var wrap = document.getElementById('iceCreamFlavorsWrapProducts');
+            var cupVisual = document.getElementById('iceCreamCupVisualProducts');
+            var scoopsStack = document.getElementById('iceCreamScoopsStackProducts');
+            var summary = document.getElementById('iceCreamCupSummaryProducts');
+            var priceEl = document.getElementById('iceCreamCupPriceProducts');
+            var addBtn = document.getElementById('iceCreamAddToCartBtnProducts');
+            if (!wrap || !addBtn) return;
+            document.getElementById('iceCreamCupSizesProducts').addEventListener('click', function(e) {
+                var btn = e.target.closest('.ice-cream-cup-btn');
+                if (!btn) return;
+                document.querySelectorAll('#iceCreamCupSizesProducts .ice-cream-cup-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                selectedCup = { name_ar: btn.dataset.name, price: parseFloat(btn.dataset.price), max_scoops: parseInt(btn.dataset.maxScoops, 10) };
+                selectedFlavors = [];
+                wrap.style.display = 'block';
+                if (cupVisual) cupVisual.classList.add('visible');
+                if (scoopsStack) scoopsStack.innerHTML = '';
+                summary.textContent = 'كوب ' + selectedCup.name_ar + ': —';
+                priceEl.textContent = selectedCup.price + ' ر.س';
+                addBtn.disabled = true;
+            });
+            document.getElementById('iceCreamFlavorsGridProducts').addEventListener('click', function(e) {
+                var btn = e.target.closest('.ice-cream-flavor-btn');
+                if (!btn || !selectedCup) return;
+                if (selectedFlavors.length >= selectedCup.max_scoops) return;
+                var name = btn.getAttribute('data-name') || btn.dataset.name;
+                var idx = parseInt(btn.getAttribute('data-index'), 10) || selectedFlavors.length;
+                selectedFlavors.push(name);
+                var color = scoopColors[idx % scoopColors.length];
+                var ball = document.createElement('div');
+                ball.className = 'ice-cream-scoop-ball scoop-add';
+                ball.style.backgroundColor = color;
+                ball.setAttribute('title', name);
+                if (scoopsStack) {
+                    scoopsStack.appendChild(ball);
+                    ball.offsetHeight;
+                    ball.classList.add('scoop-visible');
+                }
+                summary.textContent = 'كوب ' + selectedCup.name_ar + ': ' + selectedFlavors.join('، ');
+                addBtn.disabled = false;
+            });
+            addBtn.addEventListener('click', function() {
+                if (!selectedCup || selectedFlavors.length === 0 || typeof window.addIceCreamToCart !== 'function') return;
+                window.addIceCreamToCart(selectedCup, selectedFlavors);
+                addBtn.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
+                addBtn.disabled = true;
+                setTimeout(function() { addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> أضف للسلة'; addBtn.disabled = selectedFlavors.length === 0; }, 2000);
+            });
+        })();
+        </script>
+        <% } %>
 
         <!-- Products Section -->
         <section class="products-main-content">
@@ -198,7 +314,7 @@
                     <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
                     <a href="https://snapchat.com" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
-                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
                 </div>
             </div>
             <div class="footer-col footer-commercial-reg">

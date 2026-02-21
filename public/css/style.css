@@ -208,6 +208,146 @@ ul {
     font-size: 0.9em;
 }
 
+/* زر البرجر — يظهر على الموبايل فقط */
+.burger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.burger-btn span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 1px;
+}
+.burger-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* درج القائمة — يظهر على الموبايل فقط */
+.drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.drawer-overlay.is-open {
+    opacity: 1;
+}
+.drawer {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    max-width: 85vw;
+    height: 100%;
+    background: var(--white);
+    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+    z-index: 9999;
+    padding: 24px 0;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+.drawer.is-open {
+    transform: translateX(0);
+}
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.drawer-title {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+}
+.drawer-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.drawer-close:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+.drawer-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+.drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.drawer-link:hover,
+.drawer-link.active {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--primary-color);
+}
+.drawer-social {
+    padding: 20px 20px 0;
+    border-top: 1px solid rgba(0,0,0,0.08);
+}
+.drawer-social-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 14px;
+}
+.drawer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--secondary-color);
+    margin-left: 10px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.drawer-social a:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+.drawer-social .fa-instagram:hover { background: #E4405F !important; }
+.drawer-social .fa-twitter:hover { background: #1DA1F2 !important; }
+.drawer-social .fa-snapchat-ghost:hover { background: #FFFC00 !important; color: #000 !important; }
+.drawer-social .fa-facebook-f:hover { background: #1877F2 !important; }
+
 .menu-toggle {
     display: none; /* Only visible on mobile */
     font-size: 1.8rem;
@@ -282,9 +422,11 @@ ul {
     font-weight: bold;
 }
 
-/* Hero Slider — عرض الصورة كما هي (contain) + زر من لوحة التحكم */
+/* Hero Slider — نفس حجم وعرض البانرات (نسبة 1920×500)، مع الانتقال التلقائي */
 .hero-slider {
-    height: 500px;
+    width: 100%;
+    aspect-ratio: 1920 / 500;
+    max-height: 500px;
     position: relative;
     overflow: hidden;
     margin-bottom: 40px;
@@ -295,42 +437,37 @@ ul {
 .slider-container {
     height: 100%;
     position: relative;
+    overflow: hidden;
     direction: ltr;
 }
 
-.slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
+.slider-track {
+    display: flex;
     height: 100%;
-    margin: 0 auto;
-    background-size: contain;
-    background-position: 50% 50%;
+    transition: transform 0.5s ease;
+}
+
+.hero-slider .slide {
+    flex: 0 0 calc(100% / var(--slides-count, 1));
+    width: calc(100% / var(--slides-count, 1));
+    min-width: calc(100% / var(--slides-count, 1));
+    height: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: center center;
     background-repeat: no-repeat;
     background-color: #1a1a1a;
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out;
     display: flex;
     justify-content: center;
     align-items: center;
-    direction: ltr;
 }
 
-.slide::before {
+.hero-slider .slide::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.35);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
     pointer-events: none;
-}
-
-.slide.active {
-    opacity: 1;
 }
 
 .slide-content {
@@ -344,17 +481,16 @@ ul {
 }
 
 .slide-content h2 {
-    font-size: 2.75rem;
+    font-size: 2.5rem;
     margin-bottom: 12px;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
     font-weight: 800;
 }
 
 .slide-content p {
-    font-size: 1.35rem;
-    margin-bottom: 24px;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
-    opacity: 0.95;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
 }
 
 .cta-btn {
@@ -362,11 +498,11 @@ ul {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 32px;
+    padding: 14px 28px;
     background: linear-gradient(135deg, var(--primary-color) 0%, #c9a227 100%);
     color: var(--secondary-color);
     font-weight: 800;
-    font-size: 1.05rem;
+    font-size: 1rem;
     border-radius: 12px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-decoration: none;
@@ -379,26 +515,60 @@ ul {
     color: var(--secondary-color);
 }
 
-.prev-slide, .next-slide {
+.slider-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(0,0,0,0.5);
-    color: white;
+    width: 48px;
+    height: 48px;
     border: none;
-    padding: 15px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    font-size: 1.4rem;
     cursor: pointer;
-    font-size: 1.5rem;
-    z-index: 2;
-    transition: var(--transition);
+    z-index: 10;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.prev-slide:hover, .next-slide:hover {
+.slider-arrow:hover {
     background: var(--primary-color);
+    transform: translateY(-50%) scale(1.05);
 }
 
-.prev-slide { left: 20px; }
-.next-slide { right: 20px; }
+.slider-prev { left: 16px; }
+.slider-next { right: 16px; }
+
+.slider-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+.slider-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.slider-dots .dot:hover {
+    background: rgba(255,255,255,0.8);
+}
+
+.slider-dots .dot.active {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
 
 /* Stories Section - أعلى التصنيفات */
 /* البانرين (بين شريط التصنيفات وأقسام المنتجات) — بعرض الشاشة كاملاً */
@@ -790,15 +960,23 @@ ul {
     }
 
     .topbar-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .topbar .nav-links,
+    .topbar .topbar-social {
+        display: none !important;
+    }
+
+    .burger-btn {
+        display: flex;
     }
 
     .topbar .logo-area {
-        justify-content: center;
-        padding-bottom: 10px;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+        padding-bottom: 0;
+        border-bottom: none;
     }
 
     .topbar .nav-logo {
@@ -814,57 +992,45 @@ ul {
         font-size: 0.65rem;
     }
 
-    .topbar .nav-links {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        gap: 6px;
+    .drawer-overlay,
+    .drawer {
+        display: block;
     }
-
-    .topbar .nav-links .nav-link {
-        flex: 1;
-        text-align: center;
-        padding: 10px 6px;
-        font-size: 0.78rem;
+    .drawer-overlay {
+        pointer-events: none;
     }
-
-    .topbar .nav-links .nav-link.active::after {
-        right: 8px;
-        left: 8px;
+    body.drawer-open .drawer-overlay {
+        pointer-events: auto;
     }
-
-    .topbar-social {
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .topbar-social a {
-        width: 36px;
-        height: 36px;
-        font-size: 0.9rem;
-    }
+}
 
     .hero-slider {
+        aspect-ratio: auto;
         height: 300px;
+        max-height: none;
     }
 
     .slide-content h2 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
 
     .slide-content p {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .cta-btn {
-        padding: 12px 24px;
-        font-size: 0.95rem;
+        padding: 10px 20px;
+        font-size: 0.9rem;
     }
-    
-    .prev-slide, .next-slide {
-        padding: 10px;
+
+    .slider-arrow {
+        width: 40px;
+        height: 40px;
         font-size: 1.2rem;
     }
+
+    .slider-prev { left: 8px; }
+    .slider-next { right: 8px; }
 }
 
 /* ===== Products Page - تصميم احترافي ===== */
@@ -1330,22 +1496,292 @@ html[dir="rtl"] .search-box button {
     margin-bottom: 48px;
 }
 
+/* قسم الآيسكريم — تصميم محسّن */
+.ice-cream-builder {
+    background: linear-gradient(165deg, #fdfbf7 0%, #f8f5ef 50%, #f0ebe3 100%);
+    border-radius: 24px;
+    padding: 28px 32px;
+    margin-top: 20px;
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.08), 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.ice-cream-step-label {
+    font-weight: 800;
+    color: #3d3525;
+    margin: 0 0 14px 0;
+    font-size: 1.1rem;
+    letter-spacing: 0.01em;
+}
+
+.ice-cream-cup-sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.ice-cream-cup-btn {
+    padding: 16px 28px;
+    border: 2px solid rgba(212, 175, 55, 0.35);
+    background: #fff;
+    border-radius: 999px;
+    font-weight: 800;
+    color: #5c4a1a;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.ice-cream-cup-btn:hover {
+    border-color: rgba(212, 175, 55, 0.7);
+    background: rgba(212, 175, 55, 0.08);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+    transform: translateY(-2px);
+}
+
+.ice-cream-cup-btn.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #c9a227 100%);
+    border-color: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    transform: translateY(-2px) scale(1.02);
+}
+
+.ice-cream-flavors-wrap {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid rgba(212, 175, 55, 0.12);
+}
+
+.ice-cream-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.ice-cream-cup-visual {
+    flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(253,251,247,0.95) 100%);
+    border-radius: 20px;
+    padding: 24px 28px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.ice-cream-cup-visual::before {
+    content: 'كوبك';
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: 0.02em;
+    margin-bottom: 12px;
+}
+
+.ice-cream-cup-visual.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.ice-cream-scoops-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 4px;
+    min-height: 90px;
+    padding: 10px 0 0 0;
+}
+
+.ice-cream-scoop-ball {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2), inset 0 -5px 12px rgba(0,0,0,0.12), inset 0 2px 4px rgba(255,255,255,0.3);
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.ice-cream-scoop-ball.scoop-visible {
+    transform: scale(1);
+    opacity: 1;
+    animation: scoopDrop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes scoopDrop {
+    0% {
+        transform: translateY(-36px) scale(0.25);
+        opacity: 0;
+    }
+    55% {
+        transform: translateY(6px) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.ice-cream-cup-body {
+    width: 76px;
+    height: 54px;
+    background: linear-gradient(180deg, #fff 0%, #f5f5f5 40%, #eee 100%);
+    border: 3px solid rgba(212, 175, 55, 0.45);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9);
+    margin-top: -2px;
+}
+
+.ice-cream-flavors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+    flex: 1;
+    min-width: 220px;
+}
+
+.ice-cream-flavor-btn {
+    padding: 14px 18px;
+    border: 2px solid rgba(0,0,0,0.06);
+    background: #fff;
+    border-radius: 16px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.ice-cream-flavor-btn:hover {
+    background: rgba(212, 175, 55, 0.12);
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 0 4px 14px rgba(212, 175, 55, 0.15);
+    transform: translateY(-2px);
+}
+
+.ice-cream-current-cup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, #fff 0%, #fdfbf7 100%);
+    border-radius: 18px;
+    border: 2px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.08);
+}
+
+.ice-cream-cup-summary {
+    font-weight: 800;
+    color: #3d3525;
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+.ice-cream-cup-price {
+    color: var(--primary-color);
+    font-weight: 800;
+    font-size: 1.25rem;
+    padding: 6px 14px;
+    background: rgba(212, 175, 55, 0.12);
+    border-radius: 999px;
+}
+
+.ice-cream-add-cart-btn {
+    margin-top: 12px;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ice-cream-add-cart-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.45);
+}
+
+.ice-cream-add-cart-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cart-item-ice-cream {
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .ice-cream-builder {
+        padding: 20px 18px;
+    }
+    .ice-cream-layout {
+        gap: 20px;
+    }
+    .ice-cream-cup-visual {
+        padding: 20px 22px;
+    }
+    .ice-cream-flavors-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .ice-cream-current-cup {
+        padding: 14px 16px;
+    }
+}
+
 .category-header {
+    margin-bottom: 24px;
+}
+
+.category-title-pill {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid rgba(212, 175, 55, 0.25);
+    justify-content: center;
+    width: 100%;
+    min-height: 64px;
+    padding: 16px 24px;
+    background-image: url('/images/category-title-pill.png');
+    background-size: 120% 115%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 999px;
+    box-shadow: 0 2px 12px rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+    border: none;
 }
 
 .category-title {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: var(--secondary-color);
+    color: #ffffff;
     margin: 0;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.35), 0 0 1px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+    .category-title-pill {
+        min-height: 52px;
+        padding: 12px 20px;
+    }
+    .category-title {
+        font-size: 1.25rem;
+    }
 }
 
 .category-viewall-btn {
@@ -1494,16 +1930,13 @@ html[dir="rtl"] .search-box button {
     flex-direction: column;
     width: 100%;
     overflow-y: auto;
-    scrollbar-width: thin;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .hover-card-content::-webkit-scrollbar {
-    width: 5px;
-}
-
-.hover-card-content::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.5);
-    border-radius: 4px;
+    display: none;
 }
 
 .hover-card-header {

@@ -234,6 +234,53 @@ async function getCakeOptions() {
     }
 }
 
+// خيارات الآيسكريم (أحجام الكوب + النكهات) من جدول الإعدادات
+const DEFAULT_ICE_CREAM_OPTIONS = {
+    cupSizes: [
+        { name_ar: 'صغير', price: 10, max_scoops: 2 },
+        { name_ar: 'وسط', price: 15, max_scoops: 3 },
+        { name_ar: 'كبير', price: 20, max_scoops: 4 }
+    ],
+    flavors: [
+        { name_ar: 'فانيلا' },
+        { name_ar: 'رمان' },
+        { name_ar: 'توت أسود' },
+        { name_ar: 'بلوبيري' },
+        { name_ar: 'ليمون' },
+        { name_ar: 'شمام' },
+        { name_ar: 'أمار بيري' },
+        { name_ar: 'فراولة' },
+        { name_ar: 'لوز قطيف' },
+        { name_ar: 'ليمون نعناع' },
+        { name_ar: 'تشيز كيك' },
+        { name_ar: 'أوريو' }
+    ]
+};
+
+async function getIceCreamOptions() {
+    try {
+        const rows = await queryDb(
+            "SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('ice_cream_cup_sizes', 'ice_cream_flavors')"
+        );
+        const opts = {
+            cupSizes: [...DEFAULT_ICE_CREAM_OPTIONS.cupSizes],
+            flavors: [...DEFAULT_ICE_CREAM_OPTIONS.flavors]
+        };
+        rows.forEach(r => {
+            try {
+                const arr = JSON.parse(r.setting_value || '[]');
+                if (Array.isArray(arr) && arr.length > 0) {
+                    if (r.setting_key === 'ice_cream_cup_sizes') opts.cupSizes = arr;
+                    else if (r.setting_key === 'ice_cream_flavors') opts.flavors = arr;
+                }
+            } catch (e) {}
+        });
+        return opts;
+    } catch (err) {
+        return { ...DEFAULT_ICE_CREAM_OPTIONS };
+    }
+}
+
 // الصفحة الرئيسية - عرض المينو
 app.get('/', async (req, res) => {
     try {
@@ -249,12 +296,14 @@ app.get('/', async (req, res) => {
         const banner1 = (settings.find(s => s.setting_key === 'banner_1') || {}).setting_value || '';
         const banner2 = (settings.find(s => s.setting_key === 'banner_2') || {}).setting_value || '';
         const cakeOptions = await getCakeOptions();
+        const iceCreamOptions = await getIceCreamOptions();
 
-        res.render('index', { products, mostRequestedProducts, categories, slides, stories, offer_text, banner1, banner2, cakeOptions, error: null });
+        res.render('index', { products, mostRequestedProducts, categories, slides, stories, offer_text, banner1, banner2, cakeOptions, iceCreamOptions, error: null });
     } catch (err) {
         console.error(err);
         const cakeOptions = await getCakeOptions().catch(() => ({ ...DEFAULT_CAKE_OPTIONS }));
-        res.render('index', { products: [], mostRequestedProducts: [], categories: [], slides: [], stories: [], offer_text: '', banner1: '', banner2: '', cakeOptions, error: 'خطأ في جلب البيانات' });
+        const iceCreamOptions = await getIceCreamOptions().catch(() => ({ ...DEFAULT_ICE_CREAM_OPTIONS }));
+        res.render('index', { products: [], mostRequestedProducts: [], categories: [], slides: [], stories: [], offer_text: '', banner1: '', banner2: '', cakeOptions, iceCreamOptions, error: 'خطأ في جلب البيانات' });
     }
 });
 
@@ -267,12 +316,14 @@ app.get('/products', async (req, res) => {
         const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
         const offer_text = settings.length > 0 ? settings[0].setting_value : '';
         const cakeOptions = await getCakeOptions();
+        const iceCreamOptions = await getIceCreamOptions();
 
-        res.render('products', { products, categories, offer_text, cakeOptions, error: null });
+        res.render('products', { products, categories, offer_text, cakeOptions, iceCreamOptions, error: null });
     } catch (err) {
         console.error(err);
         const cakeOptions = await getCakeOptions().catch(() => ({ ...DEFAULT_CAKE_OPTIONS }));
-        res.render('products', { products: [], categories: [], offer_text: '', cakeOptions, error: 'خطأ في جلب البيانات' });
+        const iceCreamOptions = await getIceCreamOptions().catch(() => ({ ...DEFAULT_ICE_CREAM_OPTIONS }));
+        res.render('products', { products: [], categories: [], offer_text: '', cakeOptions, iceCreamOptions, error: 'خطأ في جلب البيانات' });
     }
 });
 
@@ -389,6 +440,44 @@ app.post(/^\/admin\/cake-options\/?$/i, requireAuth, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.redirect('/admin/cakeoptions');
+    }
+});
+
+// الآيسكريم — أحجام الكوب والنكهات (regex لتفادي Cannot GET في Express 5)
+app.get(/^\/admin\/ice-cream\/?$/i, (req, res) => res.redirect(302, '/admin/icecream'));
+app.get(/^\/admin\/icecream\/?$/i, requireAuth, async (req, res) => {
+    try {
+        const iceCreamOptions = await getIceCreamOptions();
+        return res.render('admin/ice-cream', { iceCreamOptions, activePage: 'ice-cream' });
+    } catch (err) {
+        console.error(err);
+        return res.send('خطأ في جلب البيانات');
+    }
+});
+app.post(/^\/admin\/icecream\/?$/i, requireAuth, async (req, res) => {
+    const { cup_sizes_json, flavors } = req.body;
+    const toArray = (v) => {
+        if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
+        if (typeof v === 'string') return v.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+        return [];
+    };
+    let cupSizes = DEFAULT_ICE_CREAM_OPTIONS.cupSizes;
+    if (cup_sizes_json) {
+        try {
+            const parsed = typeof cup_sizes_json === 'string' ? JSON.parse(cup_sizes_json) : cup_sizes_json;
+            if (Array.isArray(parsed) && parsed.length > 0) cupSizes = parsed;
+        } catch (e) {}
+    }
+    const flavorsArr = toArray(flavors);
+    const flavorsObjs = flavorsArr.length ? flavorsArr.map(name_ar => ({ name_ar })) : DEFAULT_ICE_CREAM_OPTIONS.flavors;
+    const query = "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?";
+    try {
+        await queryDb(query, ['ice_cream_cup_sizes', JSON.stringify(cupSizes), JSON.stringify(cupSizes)]);
+        await queryDb(query, ['ice_cream_flavors', JSON.stringify(flavorsObjs), JSON.stringify(flavorsObjs)]);
+        res.redirect('/admin/icecream');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin/icecream');
     }
 });
 

@@ -1,44 +1,65 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // === Mobile Menu Toggle ===
+    // === Burger Drawer (موبايل) ===
+    const burgerBtn = document.getElementById('burgerBtn');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const drawer = document.getElementById('drawer');
+    const drawerClose = document.getElementById('drawerClose');
+
+    function openDrawer() {
+        document.body.classList.add('drawer-open');
+        if (drawerOverlay) drawerOverlay.classList.add('is-open');
+        if (drawer) drawer.classList.add('is-open');
+        if (drawerOverlay) drawerOverlay.setAttribute('aria-hidden', 'false');
+    }
+    function closeDrawer() {
+        document.body.classList.remove('drawer-open');
+        if (drawerOverlay) drawerOverlay.classList.remove('is-open');
+        if (drawer) drawer.classList.remove('is-open');
+        if (drawerOverlay) drawerOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    if (burgerBtn) burgerBtn.addEventListener('click', openDrawer);
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+    if (drawer) {
+        drawer.querySelectorAll('.drawer-link').forEach(link => {
+            link.addEventListener('click', closeDrawer);
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.body.classList.contains('drawer-open')) closeDrawer();
+    });
+
+    // === Mobile Menu Toggle (fallback إذا وُجد mobile-menu قديم) ===
     const mobileMenuBtn = document.getElementById('mobile-menu');
     const navLinksContainer = document.querySelector('.nav-links');
 
     if (mobileMenuBtn && navLinksContainer) {
         mobileMenuBtn.addEventListener('click', () => {
             navLinksContainer.classList.toggle('active');
-            
-            // Toggle Icon
             const icon = mobileMenuBtn.querySelector('i');
-            if (navLinksContainer.classList.contains('active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
+            if (icon) {
+                if (navLinksContainer.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
             }
         });
-
-        // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!mobileMenuBtn.contains(e.target) && !navLinksContainer.contains(e.target)) {
                 navLinksContainer.classList.remove('active');
                 const icon = mobileMenuBtn.querySelector('i');
-                if (icon) {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
+                if (icon) { icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); }
             }
         });
-
-        // Close menu when clicking a link
         navLinksContainer.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 navLinksContainer.classList.remove('active');
                 const icon = mobileMenuBtn.querySelector('i');
-                if (icon) {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
+                if (icon) { icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); }
             });
         });
     }
@@ -88,27 +109,72 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // === Slider Logic ===
-    const slides = document.querySelectorAll('.slide');
-    const nextBtn = document.querySelector('.next-slide');
-    const prevBtn = document.querySelector('.prev-slide');
+    // === Slider Logic — صورة واحدة بالمنتصف، التحريك يمين للصورة التالية ===
+    const sliderTrack = document.getElementById('sliderTrack');
+    const slides = document.querySelectorAll('.hero-slider .slide');
+    const nextBtn = document.querySelector('.slider-next');
+    const prevBtn = document.querySelector('.slider-prev');
+    const dotsContainer = document.getElementById('sliderDots');
     let currentSlide = 0;
+    let autoplayTimer = null;
+    const AUTOPLAY_INTERVAL = 5000;
 
-    function showSlide(index) {
+    function updateSlider() {
         if (!slides.length) return;
-        slides.forEach(slide => slide.classList.remove('active'));
-        
-        if (index >= slides.length) currentSlide = 0;
-        else if (index < 0) currentSlide = slides.length - 1;
-        else currentSlide = index;
+        const n = slides.length;
+        currentSlide = (currentSlide % n + n) % n;
 
-        slides[currentSlide].classList.add('active');
+        if (sliderTrack) {
+            const heroSlider = document.getElementById('heroSlider');
+            if (heroSlider) heroSlider.style.setProperty('--slides-count', n);
+            sliderTrack.style.width = (n * 100) + '%';
+            const offsetPct = n > 0 ? (currentSlide * (100 / n)) : 0;
+            sliderTrack.style.transform = `translateX(-${offsetPct}%)`;
+        }
+        if (dotsContainer) {
+            dotsContainer.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+        }
     }
 
-    if (nextBtn && prevBtn) {
-        nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
-        prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-        setInterval(() => showSlide(currentSlide + 1), 5000);
+    function goNext() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlider();
+        resetAutoplay();
+    }
+
+    function goPrev() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlider();
+        resetAutoplay();
+    }
+
+    function resetAutoplay() {
+        if (autoplayTimer) clearInterval(autoplayTimer);
+        autoplayTimer = setInterval(goNext, AUTOPLAY_INTERVAL);
+    }
+
+    if (slides.length && sliderTrack) {
+        const heroSliderEl = document.getElementById('heroSlider');
+        if (heroSliderEl) heroSliderEl.style.setProperty('--slides-count', String(slides.length));
+        if (nextBtn) nextBtn.addEventListener('click', goNext);
+        if (prevBtn) prevBtn.addEventListener('click', goPrev);
+
+        if (dotsContainer && slides.length > 1) {
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'شريحة ' + (i + 1));
+                dot.addEventListener('click', () => {
+                    currentSlide = i;
+                    updateSlider();
+                    resetAutoplay();
+                });
+                dotsContainer.appendChild(dot);
+            });
+        }
+        updateSlider();
+        if (slides.length > 1) autoplayTimer = setInterval(goNext, AUTOPLAY_INTERVAL);
     }
 
     // === Cart Logic & State ===
@@ -190,6 +256,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        saveCart();
+    };
+
+    window.addIceCreamToCart = function(iceCup, flavors) {
+        const cartItem = {
+            type: 'ice_cream',
+            id: 'ice_' + Date.now(),
+            name: 'آيسكريم',
+            quantity: 1,
+            iceCup: { name_ar: iceCup.name_ar, price: iceCup.price, max_scoops: iceCup.max_scoops },
+            flavors: flavors.map(function(name_ar) { return { name_ar }; })
+        };
+        cart.push(cartItem);
         saveCart();
     };
 
@@ -456,7 +535,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if(pageCheckoutBtn) pageCheckoutBtn.disabled = false;
             
             cart.forEach((item, index) => {
-                const unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
+                let unitPrice;
+                if (item.type === 'ice_cream' && item.iceCup) {
+                    unitPrice = parseFloat(item.iceCup.price) || 0;
+                } else {
+                    unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
+                }
                 total += unitPrice * item.quantity;
 
                 const itemEl = document.createElement('div');
@@ -473,14 +557,18 @@ document.addEventListener('DOMContentLoaded', function() {
                      item.cakeOptions.sponge && 'السبونج: ' + item.cakeOptions.sponge,
                      item.cakeOptions.date && 'الموعد: ' + item.cakeOptions.date].filter(Boolean).join(' | ') +
                     '</small></div>' : '';
+                const iceCreamInfo = (item.type === 'ice_cream' && item.iceCup && item.flavors) ? '<div class="cart-item-ice-cream"><small>كوب ' + item.iceCup.name_ar + ': ' + item.flavors.map(function(f) { return f.name_ar; }).join('، ') + '</small></div>' : '';
+                const displayName = item.type === 'ice_cream' ? (item.name || 'آيسكريم') : item.name;
+                const displayImg = item.type === 'ice_cream' ? 'https://via.placeholder.com/200x200?text=🍦' : imgUrl;
                 itemEl.innerHTML = `
                     <div class="cart-item-image">
-                        <img src="${imgUrl}" alt="${safeName}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/200x200?text=صورة';this.onerror=null;">
+                        <img src="${displayImg}" alt="${safeName}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/200x200?text=صورة';this.onerror=null;">
                     </div>
                     
                     <div class="cart-item-details">
-                        <h4 class="item-name">${item.name}</h4>
+                        <h4 class="item-name">${displayName}</h4>
                         ${variantInfo}
+                        ${iceCreamInfo}
                         <span class="item-price-unit">${unitPrice} ر.س × ${item.quantity}</span>
                         ${cakeInfo}
                     </div>
@@ -552,8 +640,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const baseUrl = window.location.origin;
             
             cart.forEach(item => {
-                const unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
-                const lineName = item.selectedVariant ? `${item.name} - ${item.selectedVariant.name}` : item.name;
+                let unitPrice, lineName;
+                if (item.type === 'ice_cream' && item.iceCup) {
+                    unitPrice = parseFloat(item.iceCup.price) || 0;
+                    const flavorsStr = item.flavors && item.flavors.length ? item.flavors.map(f => f.name_ar).join('، ') : '';
+                    lineName = 'آيسكريم - كوب ' + item.iceCup.name_ar + (flavorsStr ? ': ' + flavorsStr : '');
+                } else {
+                    unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
+                    lineName = item.selectedVariant ? `${item.name} - ${item.selectedVariant.name}` : item.name;
+                }
                 message += `- ${lineName} (${item.quantity}x): ${(unitPrice * item.quantity).toFixed(2)} ر.س\n`;
                 if (item.cakeOptions) {
                     const co = item.cakeOptions;
@@ -572,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const total = cart.reduce((sum, item) => {
-                const unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
+                const unitPrice = item.type === 'ice_cream' && item.iceCup ? parseFloat(item.iceCup.price) || 0 : (item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price));
                 return sum + (unitPrice * item.quantity);
             }, 0);
             message += `\n*المجموع الكلي: ${total.toFixed(2)} ر.س*`;
