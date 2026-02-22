@@ -422,11 +422,12 @@ ul {
     font-weight: bold;
 }
 
-/* Hero Slider — نفس حجم وعرض البانرات (نسبة 1920×500)، مع الانتقال التلقائي */
+/* Hero Slider — عرض كامل، نسبة مناسبة للصورة (1920×600) مع الانتقال التلقائي */
 .hero-slider {
     width: 100%;
-    aspect-ratio: 1920 / 500;
-    max-height: 500px;
+    min-height: 380px;
+    aspect-ratio: 1920 / 600;
+    max-height: 600px;
     position: relative;
     overflow: hidden;
     margin-bottom: 40px;
@@ -460,6 +461,9 @@ ul {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.slider-container {
+    width: 100%;
 }
 
 .hero-slider .slide::before {
@@ -1005,9 +1009,9 @@ ul {
 }
 
     .hero-slider {
-        aspect-ratio: auto;
-        height: 300px;
-        max-height: none;
+        aspect-ratio: 16 / 9;
+        min-height: 280px;
+        max-height: 70vh;
     }
 
     .slide-content h2 {
