@@ -333,6 +333,25 @@ app.get('/products', async (req, res) => {
     }
 });
 
+// صفحة تفاصيل المنتج (صفحة منفصلة)
+app.get('/product/:id', async (req, res) => {
+    const productId = parseInt(req.params.id, 10);
+    if (!productId) return res.redirect('/products');
+    try {
+        const rows = await queryDb('SELECT * FROM products WHERE id = ?', [productId]);
+        if (!rows || rows.length === 0) return res.status(404).redirect('/products');
+        const [product] = parseProductImages(rows);
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+        const cakeOptions = await getCakeOptions();
+        const iceCreamOptions = await getIceCreamOptions();
+        res.render('product-detail', { product, offer_text, cakeOptions, iceCreamOptions });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/products');
+    }
+});
+
 // صفحة الحفلات
 app.get('/parties', async (req, res) => {
     try {
@@ -354,6 +373,32 @@ app.get('/cart', async (req, res) => {
         res.render('cart', { offer_text: '' });
     }
 });
+
+// Sitemap ديناميكي لتحسين الأرشفة في جوجل (يضم الرئيسية، المنتجات، الحفلات، السلة، وكل صفحة منتج)
+app.get('/sitemap.xml', async (req, res) => {
+    const base = (process.env.SITE_URL || '').replace(/\/$/, '') || (req.protocol + '://' + req.get('host'));
+    const today = new Date().toISOString().slice(0, 10);
+    let urls = [
+        { loc: base + '/', changefreq: 'weekly', priority: '1.0' },
+        { loc: base + '/products', changefreq: 'weekly', priority: '0.9' },
+        { loc: base + '/parties', changefreq: 'monthly', priority: '0.8' },
+        { loc: base + '/cart', changefreq: 'weekly', priority: '0.7' }
+    ];
+    try {
+        const products = await queryDb('SELECT id FROM products ORDER BY id ASC');
+        (products || []).forEach(p => {
+            urls.push({ loc: base + '/product/' + p.id, changefreq: 'weekly', priority: '0.8' });
+        });
+    } catch (e) { /* ignore */ }
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
+        urls.map(u => `<url><loc>${escapeXml(u.loc)}</loc><lastmod>${today}</lastmod><changefreq>${u.changefreq}</changefreq><priority>${u.priority}</priority></url>`).join('') +
+        '</urlset>';
+    res.type('application/xml').send(xml);
+});
+function escapeXml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
 
 // Middleware للتحقق من تسجيل الدخول
 const requireAuth = (req, res, next) => {

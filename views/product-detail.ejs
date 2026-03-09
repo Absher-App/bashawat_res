@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %> - حلويات بقداش - Bagdash sweets</title>
+    <meta name="description" content="<%= product.description || product.name %> - حلويات بقداش. طلب أونلاين وتوصيل في القطيف وسيهات.">
+    <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
+    <link rel="canonical" href="<%= siteUrl %>/product/<%= product.id %>">
+    <meta property="og:url" content="<%= siteUrl %>/product/<%= product.id %>">
+    <% } %>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= product.name %> - حلويات بقداش">
+    <meta property="og:description" content="<%= product.description || product.name %>">
+    <% const _pdImg = (product.images && product.images[0]) || product.image_url || '/images/logo.png'; const _pdImgFull = (_pdImg && _pdImg.indexOf('http') === 0) ? _pdImg : (typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '') + (_pdImg || ''); %>
+    <meta property="og:image" content="<%= _pdImgFull %>">
+    <meta property="og:locale" content="ar_SA">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="offers-banner">
+            <div class="offers-marquee-wrap" aria-hidden="true">
+                <span class="offers-text"><%= offer_text || '✨ توصيل مجاني للطلبات فوق 200 ريال' %></span>
+                <span class="offers-text"><%= offer_text || '✨ توصيل مجاني للطلبات فوق 200 ريال' %></span>
+            </div>
+        </div>
+        <nav class="topbar">
+            <div class="container topbar-content">
+                <a href="/" class="logo-area">
+                    <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
+                    <span class="brand-name">حلويات بقداش <em class="brand-en">Bagdash sweets</em></span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">الرئيسية</a></li>
+                    <li><a href="/products" class="nav-link active">المنتجات</a></li>
+                    <li><a href="/parties" class="nav-link">الحفلات</a></li>
+                    <li><a href="/cart" class="nav-link nav-cart">السلة <i class="fas fa-shopping-cart"></i></a></li>
+                </ul>
+                <div class="topbar-social">
+                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                    <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                </div>
+                <button type="button" class="burger-btn" id="burgerBtn" aria-label="القائمة"><span></span><span></span><span></span></button>
+            </div>
+        </nav>
+    </header>
+    <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">القائمة</span>
+            <button type="button" class="drawer-close" id="drawerClose" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="/" class="drawer-link">الرئيسية</a>
+            <a href="/products" class="drawer-link active">المنتجات</a>
+            <a href="/parties" class="drawer-link">الحفلات</a>
+            <a href="/cart" class="drawer-link">السلة <i class="fas fa-shopping-cart"></i></a>
+        </nav>
+        <div class="drawer-social">
+            <span class="drawer-social-label">تابعنا</span>
+            <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+            <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+            <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+
+    <a href="/cart" class="cart-floating-btn" id="cartBtn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </a>
+
+    <main class="container product-detail-main">
+        <nav class="product-detail-breadcrumb" aria-label="مسار التنقل">
+            <a href="/">الرئيسية</a>
+            <span class="breadcrumb-sep"><i class="fas fa-chevron-left"></i></span>
+            <a href="/products">المنتجات</a>
+            <span class="breadcrumb-sep"><i class="fas fa-chevron-left"></i></span>
+            <span class="breadcrumb-current"><%= product.name %></span>
+        </nav>
+
+        <div class="product-detail-layout">
+            <div class="product-detail-gallery">
+                <div class="product-detail-image-wrap">
+                    <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x500?text=No+Image' %>" alt="<%= product.name %>" class="product-detail-main-img" id="productDetailMainImg">
+                </div>
+                <% if (product.images && product.images.length > 1) { %>
+                <div class="product-detail-thumbs">
+                    <% product.images.forEach(function(img, i) { %>
+                    <button type="button" class="product-detail-thumb <%= i === 0 ? 'active' : '' %>" data-src="<%= img %>" aria-label="صورة <%= i + 1 %>">
+                        <img src="<%= img %>" alt="">
+                    </button>
+                    <% }); %>
+                </div>
+                <% } %>
+            </div>
+
+            <div class="product-detail-info">
+                <span class="product-detail-category"><i class="fas fa-tag"></i> <%= product.category %></span>
+                <h1 class="product-detail-title"><%= product.name %></h1>
+                <div class="product-detail-price-block">
+                    <% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %>
+                    <span class="price-old"><%= product.price %> ر.س</span>
+                    <span class="price-sale product-detail-price"><%= product.sale_price %> ر.س</span>
+                    <% } else if (product.variants && product.variants.length > 0) { %>
+                    <span class="product-detail-price">من <%= Math.min(...product.variants.map(v => parseFloat(v.price) || 0)) %> ر.س</span>
+                    <% } else { %>
+                    <span class="product-detail-price"><%= product.price %> ر.س</span>
+                    <% } %>
+                </div>
+                <% if (product.description && product.description.trim()) { %>
+                <p class="product-detail-desc"><%= product.description %></p>
+                <% } %>
+                <% if (product.details && product.details.trim()) { %>
+                <div class="product-detail-details-block">
+                    <h3 class="product-detail-subtitle"><i class="fas fa-info-circle"></i> التفاصيل</h3>
+                    <p class="product-detail-details"><%= product.details %></p>
+                </div>
+                <% } %>
+                <% if (product.variants && product.variants.length > 0) { %>
+                <div class="product-detail-variants-block">
+                    <h3 class="product-detail-subtitle"><i class="fas fa-<%= product.variant_type === 'weight' ? 'weight-hanging' : 'ruler-combined' %>"></i> <%= product.variant_type === 'weight' ? 'الأوزان' : 'الأحجام' %></h3>
+                    <ul class="product-detail-variants-list">
+                        <% product.variants.forEach(function(v) { %>
+                        <li><span class="v-name"><%= v.name %></span> <span class="v-price"><%= v.price %> ر.س</span></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <% } %>
+                <div class="product-detail-actions">
+                    <button type="button" class="product-detail-add-btn order-btn" id="productDetailAddBtn">
+                        <i class="fas fa-cart-plus"></i> أضف للسلة
+                    </button>
+                    <a href="/products" class="product-detail-back-link"><i class="fas fa-arrow-right"></i> العودة للمنتجات</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content container">
+            <div class="footer-col">
+                <h3>حلويات بقداش</h3>
+                <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
+            </div>
+            <div class="footer-col">
+                <h3>روابط سريعة</h3>
+                <ul>
+                    <li><a href="/">الرئيسية</a></li>
+                    <li><a href="/products">المنتجات</a></li>
+                    <li><a href="/parties">الحفلات</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>تواصل معنا</h3>
+                <p><i class="fas fa-phone"></i> 920005031</p>
+                <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                    <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-commercial-reg">
+                <h3>السجل التجاري</h3>
+                <div class="commercial-reg-card">
+                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - اضغط للتحقق">
+                        <img src="/images/commercial-registration.png" alt="السجل التجاري" class="commercial-reg-img" loading="lazy">
+                    </a>
+                    <div class="commercial-reg-info">
+                        <span class="commercial-reg-label">رقم السجل</span>
+                        <span class="commercial-reg-num">2053033300</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Bagdash sweets</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/966502975175" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <%- include('partials/cake-form-modal') %>
+    <%- include('partials/variant-modal') %>
+    <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
+    <script>
+        window.__productDetail = <%- JSON.stringify(product) %>;
+        (function() {
+            var btn = document.getElementById('productDetailAddBtn');
+            var product = window.__productDetail;
+            if (!btn || !product) return;
+            btn.addEventListener('click', function() {
+                if (typeof addToCart === 'function') addToCart(product);
+            });
+        })();
+        (function() {
+            var thumbs = document.querySelectorAll('.product-detail-thumb');
+            var mainImg = document.getElementById('productDetailMainImg');
+            if (!mainImg) return;
+            thumbs.forEach(function(t) {
+                t.addEventListener('click', function() {
+                    var src = this.getAttribute('data-src');
+                    if (src) { mainImg.src = src; }
+                    thumbs.forEach(function(x) { x.classList.remove('active'); });
+                    this.classList.add('active');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

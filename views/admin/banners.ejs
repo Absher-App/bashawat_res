@@ -26,21 +26,26 @@
             <div class="card" style="grid-column: span 2;">
                 <div class="card-header">
                     <h3><i class="fas fa-rectangle-ad"></i> بانر 1 و بانر 2</h3>
-                    <p style="color: #666; font-size: 0.95rem; margin-top: 8px;">يظهران في الصفحة الرئيسية تحت السلايدر. ارفع الصورة كما هي (بدون تعديل). يمكنك تحديث أحدهما أو كليهما.</p>
+                    <p style="color: #666; font-size: 0.95rem; margin-top: 8px;">بانر 1: فيديو قصير (mp4 أو webm). بانر 2: صورة. يظهران في الصفحة الرئيسية تحت السلايدر.</p>
                 </div>
                 <form action="/admin/banners" method="POST" enctype="multipart/form-data">
                     <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                         <div class="form-group">
-                            <label>بانر 1</label>
+                            <label>بانر 1 — فيديو قصير</label>
                             <% if (banner1) { %>
                             <div class="banner-preview" style="margin-bottom: 12px;">
+                                <% const b1IsVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(banner1); %>
+                                <% if (b1IsVideo) { %>
+                                <video src="<%= banner1 %>" controls style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;"></video>
+                                <% } else { %>
                                 <img src="<%= banner1 %>" alt="بانر 1" style="max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; border: 1px solid #ddd;">
+                                <% } %>
                             </div>
                             <% } %>
-                            <input type="file" name="banner1" accept="image/*" class="form-control">
+                            <input type="file" name="banner1" accept="video/mp4,video/webm,video/ogg,video/quicktime" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>بانر 2</label>
+                            <label>بانر 2 — صورة</label>
                             <% if (banner2) { %>
                             <div class="banner-preview" style="margin-bottom: 12px;">
                                 <img src="<%= banner2 %>" alt="بانر 2" style="max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; border: 1px solid #ddd;">

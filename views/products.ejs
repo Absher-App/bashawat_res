@@ -251,54 +251,24 @@
                             }
                         %>
                         <div class="product-card product-item product-has-hover" data-id="<%= product.id %>" data-category-id="<%= catId %>" data-category-name="<%= product.category %>">
-                            <div class="product-image">
-                                <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
-                            </div>
-                            <div class="product-info">
-                                <h3><%= product.name %></h3>
-                                <p><%= product.description %></p>
-                                <div class="product-actions">
-                                    <button class="order-btn add-to-cart-btn" onclick="addToCart(<%= JSON.stringify(product) %>)">
-                                        <i class="fas fa-cart-plus"></i> أضف للسلة
-                                    </button>
-                                    <div class="qty-control-widget" style="display: none;">
-                                        <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
-                                        <span class="qty-display">1</span>
-                                        <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)"><i class="fas fa-plus"></i></button>
-                                    </div>
+                            <a href="/product/<%= product.id %>" class="product-card-link">
+                                <div class="product-image">
+                                    <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
+                                    <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
                                 </div>
-                            </div>
-                            <div class="product-hover-card">
-                                <div class="hover-card-content">
-                                    <div class="hover-card-header">
-                                        <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" class="hover-card-img">
-                                        <div class="hover-card-title-block">
-                                            <h4><%= product.name %></h4>
-                                            <span class="hover-category"><i class="fas fa-tag"></i> <%= product.category %></span>
-                                        </div>
-                                    </div>
-                                    <p class="hover-desc"><%= product.description || '—' %></p>
-                                    <% if (product.details && product.details.trim()) { %>
-                                    <div class="hover-details-block">
-                                        <span class="hover-details-label"><i class="fas fa-info-circle"></i> التفاصيل</span>
-                                        <p class="hover-details"><%= product.details %></p>
-                                    </div>
-                                    <% } %>
-                                    <% if (product.variants && product.variants.length > 0) { %>
-                                    <div class="hover-variants-block">
-                                        <span class="hover-details-label"><i class="fas fa-<%= product.variant_type === 'weight' ? 'weight-hanging' : 'ruler-combined' %>"></i> <%= product.variant_type === 'weight' ? 'الأوزان' : 'الأحجام' %></span>
-                                        <ul class="hover-variants-list">
-                                            <% product.variants.forEach(v => { %>
-                                            <li><span class="v-name"><%= v.name %></span> <span class="v-price"><%= v.price %> ر.س</span></li>
-                                            <% }); %>
-                                        </ul>
-                                    </div>
-                                    <% } %>
-                                    <div class="hover-card-footer">
-                                        <span class="hover-price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
-                                        <button type="button" class="hover-add-btn" onclick="event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-                                    </div>
+                                <div class="product-info">
+                                    <h3><%= product.name %></h3>
+                                    <p><%= product.description %></p>
+                                </div>
+                            </a>
+                            <div class="product-actions">
+                                <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
+                                    <i class="fas fa-cart-plus"></i> أضف للسلة
+                                </button>
+                                <div class="qty-control-widget" style="display: none;">
+                                    <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
+                                    <span class="qty-display">1</span>
+                                    <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
                         </div>
