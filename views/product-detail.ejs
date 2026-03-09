@@ -82,9 +82,8 @@
         <nav class="product-detail-breadcrumb" aria-label="مسار التنقل">
             <a href="/">الرئيسية</a>
             <span class="breadcrumb-sep"><i class="fas fa-chevron-left"></i></span>
-            <% const _cat = (typeof productCategory !== 'undefined' && productCategory) ? productCategory : (product.category != null && String(product.category).trim()) ? String(product.category).trim() : ''; %>
-            <% if (_cat) { %><a href="/products?category=<%= encodeURIComponent(_cat) %>"><%= _cat %></a><% } else { %><a href="/products">المنتجات</a><% } %>
-            <span class="breadcrumb-sep"><i class="fas fa-chevron-left"></i></span>
+            <% const _cat = (typeof productCategory !== 'undefined' && productCategory) ? productCategory : ((product.category != null && String(product.category).trim()) ? String(product.category).trim() : ''); %>
+            <% if (_cat) { %><a href="/products?category=<%= encodeURIComponent(_cat) %>"><%= _cat %></a><span class="breadcrumb-sep"><i class="fas fa-chevron-left"></i></span><% } %>
             <span class="breadcrumb-current"><%= product.name %></span>
         </nav>
 

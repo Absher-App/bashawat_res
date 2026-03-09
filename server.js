@@ -340,8 +340,10 @@ app.get('/product/:id', async (req, res) => {
     try {
         const rows = await queryDb('SELECT * FROM products WHERE id = ?', [productId]);
         if (!rows || rows.length === 0) return res.status(404).redirect('/products');
+        const rawRow = rows[0];
         const [product] = parseProductImages(rows);
-        const productCategory = (product.category != null && String(product.category).trim() !== '') ? String(product.category).trim() : '';
+        const categoryFromDb = rawRow.category ?? rawRow.Category ?? product.category ?? '';
+        const productCategory = (categoryFromDb != null && String(categoryFromDb).trim() !== '') ? String(categoryFromDb).trim() : '';
         const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
         const offer_text = settings.length > 0 ? settings[0].setting_value : '';
         const cakeOptions = await getCakeOptions();
