@@ -745,11 +745,10 @@ ul {
     text-overflow: ellipsis;
 }
 
-/* قسم الأكثر طلباً */
+/* قسم الأكثر مبيعاً */
 .most-requested-section {
     padding: 48px 15px 56px;
-    background: linear-gradient(180deg, #fefdf9 0%, #faf8f0 100%);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+    background: #e8e8e8;
     margin-bottom: 8px;
 }
 
@@ -758,30 +757,36 @@ ul {
     margin-bottom: 32px;
 }
 
-.most-requested-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.08) 100%);
-    color: var(--primary-color);
-    padding: 10px 22px;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-}
-
 .most-requested-title {
     font-size: 1.85rem;
-    font-weight: 800;
-    color: var(--secondary-color);
-    margin: 0 0 8px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 14px;
+    letter-spacing: 0.02em;
 }
 
-.most-requested-desc {
-    color: #666;
-    font-size: 1rem;
-    margin: 0;
+.most-requested-decoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+}
+
+.most-requested-decoration .line {
+    display: inline-block;
+    width: 48px;
+    height: 2px;
+    background: #2c3e50;
+}
+
+.most-requested-decoration .circle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #2c3e50;
+    border-radius: 50%;
+    background: transparent;
 }
 
 .most-requested-grid {
@@ -2045,6 +2050,86 @@ html[dir="rtl"] .search-box button {
     margin-bottom: 24px;
 }
 
+/* تصميم احترافي لعنوان التصنيف فوق المنتجات */
+.category-header-pro {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.category-header-pro .category-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #fafaf9 100%);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(212, 175, 55, 0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-header-pro .category-header-accent {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--primary-color) 0%, #c9a227 100%);
+    border-radius: 0 16px 16px 0;
+}
+
+.category-header-pro .category-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    margin: 0;
+    letter-spacing: 0.02em;
+}
+
+.category-header-pro .category-title-icon {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.category-header-pro .category-header-count {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+    padding: 4px 12px;
+    background: rgba(212, 175, 55, 0.12);
+    border-radius: 20px;
+    color: var(--secondary-color);
+}
+
+.category-header-pro .category-header-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.category-header-pro .category-header-line .line {
+    display: inline-block;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color));
+    border-radius: 2px;
+}
+
+.category-header-pro .category-header-line .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    opacity: 0.8;
+}
+
 .category-title-pill {
     display: flex;
     align-items: center;
@@ -2072,6 +2157,16 @@ html[dir="rtl"] .search-box button {
 }
 
 @media (max-width: 768px) {
+    .category-header-pro .category-header-inner {
+        padding: 14px 18px;
+    }
+    .category-header-pro .category-title {
+        font-size: 1.2rem;
+    }
+    .category-header-pro .category-header-count {
+        font-size: 0.8rem;
+        padding: 3px 10px;
+    }
     .category-title-pill {
         min-height: 52px;
         padding: 12px 20px;

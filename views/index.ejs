@@ -150,15 +150,14 @@
     </div>
     <% } %>
 
-    <!-- قسم الأكثر طلباً -->
+    <!-- قسم الأكثر مبيعاً -->
     <% const _mostRequested = (typeof mostRequestedProducts !== 'undefined' && mostRequestedProducts) ? mostRequestedProducts : []; %>
     <% if (_mostRequested.length > 0) { %>
     <section class="most-requested-section">
         <div class="container">
             <div class="most-requested-header">
-                <span class="most-requested-badge"><i class="fas fa-fire"></i> الأكثر طلباً</span>
-                <h2 class="most-requested-title">المنتجات الأكثر طلباً</h2>
-                <p class="most-requested-desc">اختر من بين الأصناف الأكثر إقبالاً من زبائننا</p>
+                <h2 class="most-requested-title">الأكثر مبيعاً</h2>
+                <div class="most-requested-decoration" aria-hidden="true"><span class="line"></span><span class="circle"></span><span class="line"></span></div>
             </div>
             <div class="products-grid most-requested-grid">
                 <% _mostRequested.forEach(function(product) { %>
@@ -211,16 +210,18 @@
                     catsToRender = uniqueCats.map(c => ({ name: c, id: c }));
                 }
                 const catsWithProducts = catsToRender.filter(cat => products.some(p => p.category === cat.name));
+                const MAX_HOME_CATEGORIES = 4;
+                const mainCatsToShow = catsWithProducts.slice(0, MAX_HOME_CATEGORIES);
             %>
             
-            <!-- التصنيفات أعلى المنتجات -->
-            <% const _otherProducts = products.filter(p => !catsToRender.map(c => c.name).includes(p.category)); %>
-            <% if (catsWithProducts.length > 0 || _otherProducts.length > 0) { %>
+            <!-- التصنيفات أعلى المنتجات (أربعة أقسام فقط لتجنب الازدحام) -->
+            <% const _otherProducts = products.filter(p => !mainCatsToShow.map(c => c.name).includes(p.category)); %>
+            <% if (mainCatsToShow.length > 0 || _otherProducts.length > 0) { %>
             <section class="home-categories-bar">
                 <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> تصفح حسب التصنيف</h2>
                 <div class="home-categories-scroll">
                 <div class="home-categories-list">
-                    <% catsWithProducts.forEach(function(cat) { %>
+                    <% mainCatsToShow.forEach(function(cat) { %>
                         <% const cp = products.filter(p => p.category === cat.name); %>
                         <a href="#cat-<%= cat.id %>" class="home-category-card">
                             <span class="home-category-card-bg">
@@ -275,16 +276,18 @@
             </section>
             <% } %>
             
-            <% catsToRender.forEach(function(cat, catIndex) { %>
+            <% mainCatsToShow.forEach(function(cat, catIndex) { %>
                 <% const catProducts = products.filter(p => p.category === cat.name); %>
                 <% if (catProducts.length > 0) { %>
                     <section class="category-block" id="cat-<%= cat.id %>">
-                        <div class="category-header">
-                            <div class="category-title-pill">
-                                <h2 class="category-title"><%= cat.name %></h2>
+                        <div class="category-header category-header-pro">
+                            <div class="category-header-inner">
+                                <span class="category-header-accent" aria-hidden="true"></span>
+                                <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i><%= cat.name %></h2>
+                                <span class="category-header-count"><%= catProducts.length %> منتج</span>
                             </div>
+                            <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                         </div>
-                        
                         <div class="products-grid">
                             <% catProducts.forEach(function(product) { %>
                                 <div class="product-card product-has-hover" data-id="<%= product.id %>">
@@ -325,15 +328,18 @@
                 <% } %>
             <% }); %>
             
-            <!-- Handle Uncategorized Products (optional, if any product doesn't match known categories) -->
-            <% const knownCatNames = catsToRender.map(c => c.name); %>
+            <!-- Handle Uncategorized Products (التصنيفات غير الظاهرة في الـ 4 أقسام الأولى) -->
+            <% const knownCatNames = mainCatsToShow.map(c => c.name); %>
             <% const otherProducts = products.filter(p => !knownCatNames.includes(p.category)); %>
             <% if (otherProducts.length > 0) { %>
                 <section class="category-block" id="cat-other">
-                    <div class="category-header">
-                        <div class="category-title-pill">
-                            <h2 class="category-title">أخرى</h2>
+                    <div class="category-header category-header-pro">
+                        <div class="category-header-inner">
+                            <span class="category-header-accent" aria-hidden="true"></span>
+                            <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i>أخرى</h2>
+                            <span class="category-header-count"><%= otherProducts.length %> منتج</span>
                         </div>
+                        <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                     </div>
                     <div class="products-grid">
                         <% otherProducts.forEach(function(product) { %>
@@ -369,10 +375,12 @@
         <!-- قسم الآيسكريم — يظهر دائماً عند توفر الخيارات (يعمل في الرئيسية والمنتجات) -->
         <% if (typeof iceCreamOptions !== 'undefined' && iceCreamOptions && (iceCreamOptions.cupSizes || []).length > 0 && (iceCreamOptions.flavors || []).length > 0) { %>
             <section class="category-block" id="ice-cream-section">
-                <div class="category-header">
-                    <div class="category-title-pill">
-                        <h2 class="category-title">آيسكريم</h2>
+                <div class="category-header category-header-pro">
+                    <div class="category-header-inner">
+                        <span class="category-header-accent" aria-hidden="true"></span>
+                        <h2 class="category-title"><i class="fas fa-ice-cream category-title-icon"></i>آيسكريم</h2>
                     </div>
+                    <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                 </div>
                 <div class="ice-cream-builder">
                     <p class="ice-cream-step-label">١. اختر حجم الكوب</p>
