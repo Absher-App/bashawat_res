@@ -168,7 +168,7 @@
                 var knownCatNamesAll = catsWithProducts.map(c => c.name);
                 var otherProducts = products.filter(p => !knownCatNamesAll.includes(p.category));
             %>
-            <% if (mainCatsToShow.length > 0 || otherProducts.length > 0 || hasMoreCategories) { %>
+            <% if (mainCatsToShow.length > 0 || hasMoreCategories) { %>
             <section class="home-categories-bar">
                 <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> <%= t.home.browseByCategory %></h2>
                 <div class="home-categories-scroll">
@@ -324,8 +324,8 @@
                 <% } %>
             <% }); %>
             
-            <!-- أخرى: منتجات لا تنتمي لأي تصنيف معروف -->
-            <% if (otherProducts.length > 0) { %>
+            <!-- أخرى: مخفي حسب طلب الموقع -->
+            <% if (false && otherProducts.length > 0) { %>
                 <section class="category-block" id="cat-other">
                     <div class="category-header category-header-pro">
                         <div class="category-header-inner">
@@ -366,8 +366,8 @@
 
         <% } %>
 
-        <!-- قسم الآيسكريم — يظهر دائماً عند توفر الخيارات (يعمل في الرئيسية والمنتجات) -->
-        <% if (typeof iceCreamOptions !== 'undefined' && iceCreamOptions && (iceCreamOptions.cupSizes || []).length > 0 && (iceCreamOptions.flavors || []).length > 0) { %>
+        <!-- قسم الآيسكريم — مخفي من الواجهة العامة -->
+        <% if (false && typeof iceCreamOptions !== 'undefined' && iceCreamOptions && (iceCreamOptions.cupSizes || []).length > 0 && (iceCreamOptions.flavors || []).length > 0) { %>
             <section class="category-block" id="ice-cream-section">
                 <div class="category-header category-header-pro">
                     <div class="category-header-inner">
