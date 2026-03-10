@@ -1,10 +1,13 @@
-<div class="lang-switcher" aria-label="Language">
-    <a href="/set-lang/ar" class="lang-link lang-link-flag <%= locale === 'ar' ? 'active' : '' %>" hreflang="ar" title="<%= t.nav.browseInArabic %>">
-        <span class="lang-flag lang-flag-sa" aria-hidden="true"></span>
-        <span class="lang-text"><%= t.nav.browseInArabic %></span>
-    </a>
-    <a href="/set-lang/en" class="lang-link lang-link-flag <%= locale === 'en' ? 'active' : '' %>" hreflang="en" title="<%= t.nav.browseInEnglish %>">
+<div class="lang-switcher lang-switcher-single" aria-label="Switch language">
+    <% if (locale === 'ar') { %>
+    <a href="/set-lang/en" class="lang-link lang-link-flag" hreflang="en" title="<%= t.nav.browseInEnglish %>">
         <span class="lang-flag lang-flag-gb" aria-hidden="true"></span>
         <span class="lang-text"><%= t.nav.browseInEnglish %></span>
     </a>
+    <% } else { %>
+    <a href="/set-lang/ar" class="lang-link lang-link-flag" hreflang="ar" title="<%= t.nav.browseInArabic %>">
+        <span class="lang-flag lang-flag-sa" aria-hidden="true"></span>
+        <span class="lang-text"><%= t.nav.browseInArabic %></span>
+    </a>
+    <% } %>
 </div>
