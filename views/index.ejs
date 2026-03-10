@@ -161,13 +161,14 @@
                     catsToRender = uniqueCats.map(c => ({ name: c, id: c }));
                 }
                 var catsWithProducts = catsToRender.filter(cat => products.some(p => p.category === cat.name));
-                var MAX_HOME_CATEGORIES = 5;
+                var MAX_HOME_CATEGORIES = 4;
                 var mainCatsToShow = catsWithProducts.slice(0, MAX_HOME_CATEGORIES);
                 var restCats = catsWithProducts.slice(MAX_HOME_CATEGORIES);
+                var hasMoreCategories = (restCats && restCats.length > 0);
                 var knownCatNamesAll = catsWithProducts.map(c => c.name);
                 var otherProducts = products.filter(p => !knownCatNamesAll.includes(p.category));
             %>
-            <% if (mainCatsToShow.length > 0 || otherProducts.length > 0 || (restCats && restCats.length > 0)) { %>
+            <% if (mainCatsToShow.length > 0 || otherProducts.length > 0 || hasMoreCategories) { %>
             <section class="home-categories-bar">
                 <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> <%= t.home.browseByCategory %></h2>
                 <div class="home-categories-scroll">
@@ -184,36 +185,15 @@
                             </span>
                         </a>
                     <% }); %>
-                    <% if (typeof iceCreamOptions !== 'undefined' && iceCreamOptions && (iceCreamOptions.cupSizes || []).length > 0) { %>
-                    <a href="#ice-cream-section" class="home-category-card">
+                    <% if (hasMoreCategories) { %>
+                    <a href="/categories" class="home-category-card home-category-card-more">
                         <span class="home-category-card-bg">
                             <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
                         </span>
                         <span class="home-category-card-text">
-                            <span class="pill-name"><%= t.home.iceCream %></span>
+                            <span class="pill-name"><i class="fas fa-th-large"></i> <%= t.home.allCategories %></span>
                         </span>
                     </a>
-                    <% } %>
-                    <% if (otherProducts.length > 0) { %>
-                    <a href="#cat-other" class="home-category-card">
-                        <span class="home-category-card-bg">
-                            <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
-                        </span>
-                        <span class="home-category-card-text">
-                            <span class="pill-name"><%= t.home.other %></span>
-                            <span class="pill-count">(<%= otherProducts.length %>)</span>
-                        </span>
-                    </a>
-                    <% } %>
-                    <% if (restCats && restCats.length > 0) { %>
-                    <button type="button" class="home-category-card home-category-card-more" id="btnShowRestCategories" aria-expanded="false" data-count="<%= restCats.length %>">
-                        <span class="home-category-card-bg">
-                            <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
-                        </span>
-                        <span class="home-category-card-text">
-                            <span class="pill-name"><i class="fas fa-chevron-down"></i> <%= t.home.otherCategories %> (<%= restCats.length %>)</span>
-                        </span>
-                    </button>
                     <% } %>
                 </div>
                 </div>
@@ -343,53 +323,6 @@
                     <% } %>
                 <% } %>
             <% }); %>
-            
-            <!-- بقية التصنيفات (تظهر عند الضغط على "بقية التصنيفات") -->
-            <% if (restCats && restCats.length > 0) { %>
-            <div class="rest-categories-wrap" id="restCategoriesBlock" hidden>
-                <% restCats.forEach(function(cat, catIndex) { %>
-                    <% const catProducts = products.filter(p => p.category === cat.name); %>
-                    <% if (catProducts.length > 0) { %>
-                    <section class="category-block" id="cat-<%= cat.id %>">
-                        <div class="category-header category-header-pro">
-                            <div class="category-header-inner">
-                                <span class="category-header-accent" aria-hidden="true"></span>
-                                <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i><%= cat.name %></h2>
-                                <span class="category-header-count"><%= catProducts.length %> <%= t.home.productCount %></span>
-                            </div>
-                            <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
-                        </div>
-                        <div class="products-grid">
-                            <% catProducts.forEach(function(product) { %>
-                                <div class="product-card product-has-hover" data-id="<%= product.id %>">
-                                    <a href="/product/<%= product.id %>" class="product-card-link">
-                                        <div class="product-image">
-                                            <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> <%= t.common.sar %></span> <span class="price-sale"><%= product.sale_price %> <%= t.common.sar %></span><% } else { %><%= (product.variants && product.variants.length) ? (t.common.priceFrom + ' ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ' + t.common.sar) : (product.price + ' ' + t.common.sar) %><% } %></span>
-                                        </div>
-                                        <div class="product-info">
-                                            <h3><%= product.name %></h3>
-                                            <p><%= product.description %></p>
-                                        </div>
-                                    </a>
-                                    <div class="product-actions">
-                                        <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
-                                            <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
-                                        </button>
-                                        <div class="qty-control-widget" style="display: none;">
-                                            <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
-                                            <span class="qty-display">1</span>
-                                            <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)"><i class="fas fa-plus"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            <% }); %>
-                        </div>
-                    </section>
-                    <% } %>
-                <% }); %>
-            </div>
-            <% } %>
             
             <!-- أخرى: منتجات لا تنتمي لأي تصنيف معروف -->
             <% if (otherProducts.length > 0) { %>
@@ -684,21 +617,5 @@
     {"@context":"https://schema.org","@type":"Organization","name":"حلويات بقداش","alternateName":"Bagdash sweets","url":"<%= siteUrl %>","logo":"<%= siteUrl %>/images/logo.png","sameAs":["https://www.instagram.com/bodatbagdash/","https://x.com/BodatBagdash","https://www.facebook.com/bagdashsweet/"]}
     </script>
     <% } %>
-    <script>
-    (function() {
-        var btn = document.getElementById('btnShowRestCategories');
-        var block = document.getElementById('restCategoriesBlock');
-        if (!btn || !block) return;
-        var count = btn.getAttribute('data-count') || '0';
-        btn.addEventListener('click', function() {
-            var isHidden = block.hidden;
-            block.hidden = !isHidden;
-            btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-            var pill = btn.querySelector('.pill-name');
-            if (pill) pill.innerHTML = isHidden ? '<i class=\"fas fa-chevron-up\"></i> <%= t.home.hideCategories %>' : '<i class=\"fas fa-chevron-down\"></i> <%= t.home.otherCategories %> (' + count + ')';
-            if (isHidden) block.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    })();
-    </script>
 </body>
 </html>

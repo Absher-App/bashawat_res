@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="<%= typeof locale !== 'undefined' ? locale : 'ar' %>" dir="<%= typeof dir !== 'undefined' ? dir : 'rtl' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t.home.allCategoriesPageTitle %> - حلويات بقداش - Bagdash sweets</title>
+    <meta name="description" content="<%= t.home.allCategoriesPageTitle %> - حلويات بقداش. تصفح المنتجات حسب التصنيف.">
+    <link rel="icon" href="/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="offers-banner">
+            <div class="offers-marquee-wrap" aria-hidden="true">
+                <span class="offers-text"><%= offer_text || (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : '') %></span>
+                <span class="offers-text"><%= offer_text || (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : '') %></span>
+            </div>
+        </div>
+        <nav class="topbar">
+            <div class="container topbar-content">
+                <a href="/" class="logo-area">
+                    <img src="/images/logo.png" alt="<%= t.common.brandName %>" class="nav-logo">
+                    <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link"><%= t.nav.home %></a></li>
+                    <li><a href="/products" class="nav-link"><%= t.nav.products %></a></li>
+                    <li><a href="/parties" class="nav-link"><%= t.nav.parties %></a></li>
+                    <li><a href="/cart" class="nav-link nav-cart"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
+                </ul>
+                <div class="topbar-social">
+                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                    <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                </div>
+                <%- include('partials/lang-switcher') %>
+                <button type="button" class="burger-btn" id="burgerBtn" aria-label="<%= t.nav.menu %>"><span></span><span></span><span></span></button>
+            </div>
+        </nav>
+    </header>
+    <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="drawer-title"><%= t.nav.menu %></span>
+            <button type="button" class="drawer-close" id="drawerClose" aria-label="<%= t.nav.close %>"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="/" class="drawer-link"><%= t.nav.home %></a>
+            <a href="/products" class="drawer-link"><%= t.nav.products %></a>
+            <a href="/parties" class="drawer-link"><%= t.nav.parties %></a>
+            <a href="/cart" class="drawer-link"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a>
+        </nav>
+        <div class="drawer-lang"><%- include('partials/lang-switcher') %></div>
+        <div class="drawer-social">
+            <span class="drawer-social-label"><%= t.nav.followUs %></span>
+            <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+            <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+            <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+        </div>
+    </div>
+
+    <a href="/cart" class="cart-floating-btn" id="cartBtn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </a>
+
+    <header class="page-header products-page-header" style="background-image: url('https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <div class="overlay"></div>
+        <div class="header-content">
+            <div class="header-icon"><i class="fas fa-th-large"></i></div>
+            <h1><%= t.home.allCategoriesPageTitle %></h1>
+            <p><%= t.home.allCategoriesPageSubtitle %></p>
+        </div>
+    </header>
+
+    <main class="container categories-page-main">
+        <% 
+            const catsWithCount = (categories || []).map(cat => ({
+                ...cat,
+                count: (products || []).filter(p => p.category === cat.name).length
+            })).filter(c => c.count > 0);
+            const otherCount = (products || []).filter(p => !(categories || []).some(c => c.name === p.category)).length;
+        %>
+        <div class="categories-grid">
+            <% catsWithCount.forEach(function(cat) { %>
+            <a href="/products?category=<%= encodeURIComponent(cat.name) %>" class="category-page-card">
+                <span class="category-page-card-bg">
+                    <img src="/images/category-card-bg.png" alt="" class="category-page-card-img">
+                </span>
+                <span class="category-page-card-text">
+                    <span class="pill-name"><%= cat.name %></span>
+                    <span class="pill-count">(<%= cat.count %> <%= t.home.productCount %>)</span>
+                </span>
+            </a>
+            <% }); %>
+            <% if (otherCount > 0) { %>
+            <a href="/products" class="category-page-card">
+                <span class="category-page-card-bg">
+                    <img src="/images/category-card-bg.png" alt="" class="category-page-card-img">
+                </span>
+                <span class="category-page-card-text">
+                    <span class="pill-name"><%= t.home.other %></span>
+                    <span class="pill-count">(<%= otherCount %>)</span>
+                </span>
+            </a>
+            <% } %>
+        </div>
+        <p class="categories-back-wrap">
+            <a href="/" class="products-empty-btn"><i class="fas fa-arrow-right"></i> <%= t.nav.home %></a>
+        </p>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content container">
+            <div class="footer-col">
+                <h3><%= t.footer.brand %></h3>
+                <p><%= t.footer.tagline %></p>
+            </div>
+            <div class="footer-col">
+                <h3><%= t.footer.quickLinks %></h3>
+                <ul>
+                    <li><a href="/"><%= t.nav.home %></a></li>
+                    <li><a href="/products"><%= t.nav.products %></a></li>
+                    <li><a href="/parties"><%= t.nav.parties %></a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3><%= t.footer.contact %></h3>
+                <p><i class="fas fa-phone"></i> 920005031</p>
+                <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات • الخبر</p>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                    <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+            <div class="footer-col footer-commercial-reg">
+                <h3><%= t.footer.commercialReg %></h3>
+                <div class="commercial-reg-card">
+                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="<%= t.footer.commercialReg %>">
+                        <img src="/images/commercial-registration.png" alt="<%= t.footer.commercialReg %>" class="commercial-reg-img" loading="lazy">
+                    </a>
+                    <div class="commercial-reg-info">
+                        <span class="commercial-reg-label"><%= t.footerExtra.commercialRegNum %></span>
+                        <span class="commercial-reg-num">2053033300</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p><%= t.footerExtra.rights %> &copy; 2026 <%= t.common.brandName %> - <%= t.common.brandEn %></p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/966502975175" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>window.__i18n = window.__i18n || {}; window.__i18n.sar = '<%= t.common.sar %>';</script>
+    <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
+</body>
+</html>

@@ -377,6 +377,21 @@ app.get('/product/:id', async (req, res) => {
     }
 });
 
+// صفحة جميع التصنيفات
+app.get('/categories', async (req, res) => {
+    try {
+        let products = await queryDb('SELECT * FROM products ORDER BY id DESC');
+        products = parseProductImages(products);
+        const categories = await queryDb('SELECT * FROM categories');
+        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
+        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
+        res.render('categories', { products, categories, offer_text });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/products');
+    }
+});
+
 // صفحة الحفلات
 app.get('/parties', async (req, res) => {
     try {
@@ -406,6 +421,7 @@ app.get('/sitemap.xml', async (req, res) => {
     let urls = [
         { loc: base + '/', changefreq: 'weekly', priority: '1.0' },
         { loc: base + '/products', changefreq: 'weekly', priority: '0.9' },
+        { loc: base + '/categories', changefreq: 'weekly', priority: '0.85' },
         { loc: base + '/parties', changefreq: 'monthly', priority: '0.8' },
         { loc: base + '/cart', changefreq: 'weekly', priority: '0.7' }
     ];

@@ -93,7 +93,7 @@ ul {
 .logo-area {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     text-decoration: none;
     color: inherit;
     transition: opacity 0.2s ease;
@@ -110,9 +110,13 @@ ul {
     border-radius: 10px;
     object-fit: contain;
 }
+/* إخفاء صورة الشعار — الاعتماد على النص فقط (حلويات بقداش / Bagdash sweets) */
+.topbar .nav-logo {
+    display: none;
+}
 
 .brand-name {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     font-weight: 800;
     color: var(--secondary-color);
     letter-spacing: -0.02em;
@@ -135,28 +139,28 @@ ul {
 }
 
 .topbar-social a {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--secondary-color);
-    background: rgba(212, 175, 55, 0.08);
+    color: #555;
+    background: transparent;
     transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
     font-size: 1rem;
 }
 
 .topbar-social a:hover {
-    color: #fff;
-    background: var(--primary-color);
     transform: translateY(-2px);
 }
 
-.topbar-social .fa-instagram:hover { background: #E4405F !important; }
-.topbar-social .fa-twitter:hover { background: #1DA1F2 !important; }
-.topbar-social .fa-snapchat-ghost:hover { background: #FFFC00 !important; color: #000 !important; }
-.topbar-social .fa-facebook-f:hover { background: #1877F2 !important; }
+.topbar-social a[href*="instagram"]:hover { color: #E4405F; background: rgba(228, 64, 95, 0.12) !important; }
+.topbar-social a[href*="twitter"]:hover,
+.topbar-social a[href*="x.com"]:hover { color: #1DA1F2; background: rgba(29, 161, 242, 0.12) !important; }
+.topbar-social a[href*="snapchat"]:hover { color: #FFFC00; background: rgba(255, 252, 0, 0.15) !important; }
+.topbar-social a[href*="tiktok"]:hover { color: #000; background: rgba(0, 0, 0, 0.08) !important; }
+.topbar-social a[href*="facebook"]:hover { color: #1877F2; background: rgba(24, 119, 242, 0.12) !important; }
 
 .nav-links {
     display: flex;
@@ -332,22 +336,23 @@ ul {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: rgba(212, 175, 55, 0.1);
-    color: var(--secondary-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.05);
+    color: #555;
     margin-left: 10px;
     transition: background 0.2s ease, color 0.2s ease;
 }
 .drawer-social a:hover {
-    background: var(--primary-color);
     color: #fff;
 }
-.drawer-social .fa-instagram:hover { background: #E4405F !important; }
-.drawer-social .fa-twitter:hover { background: #1DA1F2 !important; }
-.drawer-social .fa-snapchat-ghost:hover { background: #FFFC00 !important; color: #000 !important; }
-.drawer-social .fa-facebook-f:hover { background: #1877F2 !important; }
+.drawer-social a[href*="instagram"]:hover { background: #E4405F !important; }
+.drawer-social a[href*="twitter"]:hover,
+.drawer-social a[href*="x.com"]:hover { background: #1DA1F2 !important; }
+.drawer-social a[href*="snapchat"]:hover { background: #FFFC00 !important; color: #000 !important; }
+.drawer-social a[href*="tiktok"]:hover { background: #000 !important; color: #fff !important; }
+.drawer-social a[href*="facebook"]:hover { background: #1877F2 !important; }
 
 .menu-toggle {
     display: none; /* Only visible on mobile */
@@ -831,6 +836,74 @@ ul {
 .home-category-card-more .pill-name {
     color: var(--secondary-color);
     font-weight: 700;
+}
+
+/* صفحة جميع التصنيفات */
+.categories-page-main {
+    padding: 32px 15px 48px;
+}
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto 32px;
+}
+.category-page-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    border-radius: 24px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.category-page-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+}
+.category-page-card-bg {
+    position: absolute;
+    inset: 0;
+}
+.category-page-card-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 106%;
+    height: 106%;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+}
+.category-page-card-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 16px;
+}
+.category-page-card .pill-name {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+}
+.category-page-card .pill-count {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+}
+.categories-back-wrap {
+    text-align: center;
+    margin-top: 24px;
+}
+.categories-back-wrap .products-empty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* مودال عرض فيديو الستوري */
