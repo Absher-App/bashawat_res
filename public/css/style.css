@@ -745,53 +745,91 @@ ul {
     text-overflow: ellipsis;
 }
 
-/* قسم الأكثر مبيعاً */
+/* قسم الأكثر مبيعاً — عنوان واحد احترافي */
 .most-requested-section {
     padding: 48px 15px 56px;
-    background: #e8e8e8;
+    background: #f5f5f5;
     margin-bottom: 8px;
 }
 
-.most-requested-header {
+.section-head-pro {
     text-align: center;
     margin-bottom: 32px;
 }
 
-.most-requested-title {
-    font-size: 1.85rem;
-    font-weight: 700;
+.section-head-pro .section-head-accent {
+    display: none;
+}
+
+.section-head-pro .section-head-title {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.65rem;
+    font-weight: 800;
     color: #2c3e50;
     margin: 0 0 14px;
     letter-spacing: 0.02em;
 }
 
-.most-requested-decoration {
+.section-head-pro .section-head-icon {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.section-head-decoration {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     margin: 0 auto;
 }
 
-.most-requested-decoration .line {
+.section-head-decoration .line {
     display: inline-block;
-    width: 48px;
+    width: 40px;
     height: 2px;
     background: #2c3e50;
+    border-radius: 2px;
 }
 
-.most-requested-decoration .circle {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border: 2px solid #2c3e50;
+.section-head-decoration .dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: transparent;
+    background: var(--primary-color);
+    opacity: 0.9;
 }
 
 .most-requested-grid {
     max-width: 1200px;
     margin: 0 auto;
+}
+
+/* بقية التصنيفات (قسم مخفي يظهر عند الطلب) */
+.rest-categories-wrap {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* زر "بقية التصنيفات" في شريط التصنيفات */
+.home-category-card-more {
+    cursor: pointer;
+    border: 2px dashed rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.06);
+    font-family: inherit;
+}
+
+.home-category-card-more:hover {
+    border-color: var(--primary-color);
+    background: rgba(212, 175, 55, 0.12);
+}
+
+.home-category-card-more .pill-name {
+    color: var(--secondary-color);
+    font-weight: 700;
 }
 
 /* مودال عرض فيديو الستوري */
