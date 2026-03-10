@@ -280,8 +280,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const listEl = document.getElementById('variantOptionsList');
         label.textContent = product.variant_type === 'weight' ? 'الوزن' : 'الحجم';
         nameEl.textContent = product.name;
+        const sar = (window.__i18n && window.__i18n.sar) || 'ر.س';
         listEl.innerHTML = product.variants.map((v, i) => 
-            '<label class="variant-option"><input type="radio" name="variant_sel" value="' + i + '"><span class="v-opt-name">' + v.name + '</span> <span class="v-opt-price">' + v.price + ' ر.س</span></label>'
+            '<label class="variant-option"><input type="radio" name="variant_sel" value="' + i + '"><span class="v-opt-name">' + v.name + '</span> <span class="v-opt-price">' + v.price + ' ' + sar + '</span></label>'
         ).join('');
         listEl.querySelector('input') && listEl.querySelector('input').setAttribute('checked', 'checked');
         modal.classList.add('active');
@@ -326,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
             product.variants.forEach(function(v, i) {
                 const opt = document.createElement('option');
                 opt.value = i;
-                opt.textContent = v.name + ' - ' + v.price + ' ر.س';
+                opt.textContent = v.name + ' - ' + v.price + ' ' + ((window.__i18n && window.__i18n.sar) || 'ر.س');
                 sizeSelect.appendChild(opt);
             });
         } else {
@@ -499,19 +500,24 @@ document.addEventListener('DOMContentLoaded', function() {
         let total = 0;
 
         if (cart.length === 0) {
+                const i18n = window.__i18n || {};
+                const emptyTitle = i18n.cartEmpty || 'سلتك فارغة حالياً';
+                const emptyDesc = i18n.cartEmptyDesc || 'لم تضف أي منتجات بعد. تصفح تشكيلتنا واختر ما يناسب ذوقك';
+                const browseProducts = i18n.continueShopping || 'تصفح المنتجات';
+                const backHome = i18n.backToHome || 'العودة للرئيسية';
             fullCartItemsContainer.innerHTML = `
                 <div class="empty-cart-state">
                     <div class="empty-cart-icon-wrap">
                         <i class="fas fa-shopping-basket"></i>
                     </div>
-                    <h3>سلتك فارغة حالياً</h3>
-                    <p>لم تضف أي منتجات بعد. تصفح تشكيلتنا واختر ما يناسب ذوقك</p>
+                    <h3>${emptyTitle}</h3>
+                    <p>${emptyDesc}</p>
                     <div class="empty-cart-actions">
                         <a href="/products" class="empty-cart-btn primary">
-                            <i class="fas fa-box-open"></i> تصفح المنتجات
+                            <i class="fas fa-box-open"></i> ${browseProducts}
                         </a>
                         <a href="/" class="empty-cart-btn secondary">
-                            <i class="fas fa-home"></i> العودة للرئيسية
+                            <i class="fas fa-home"></i> ${backHome}
                         </a>
                     </div>
                 </div>
@@ -551,7 +557,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     ? (mainImg.startsWith('http') ? mainImg : baseUrl + (mainImg.startsWith('/') ? '' : '/') + mainImg)
                     : 'https://via.placeholder.com/200x200?text=صورة';
                 const safeName = (item.name || '').replace(/"/g, '&quot;');
-                const variantInfo = item.selectedVariant ? '<div class="cart-item-variant"><small>' + item.selectedVariant.name + ' - ' + item.selectedVariant.price + ' ر.س</small></div>' : '';
+                const sar = (window.__i18n && window.__i18n.sar) || 'ر.س';
+                const variantInfo = item.selectedVariant ? '<div class="cart-item-variant"><small>' + item.selectedVariant.name + ' - ' + item.selectedVariant.price + ' ' + sar + '</small></div>' : '';
                 const cakeInfo = item.cakeOptions ? '<div class="cart-item-cake-options"><small>' +
                     [item.cakeOptions.size && 'الحجم: ' + item.cakeOptions.size,
                      item.cakeOptions.sponge && 'السبونج: ' + item.cakeOptions.sponge,
@@ -571,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h4 class="item-name">${displayName}</h4>
                         ${variantInfo}
                         ${iceCreamInfo}
-                        <span class="item-price-unit">${unitPrice} ر.س × ${item.quantity}</span>
+                        <span class="item-price-unit">${unitPrice} ${sar} × ${item.quantity}</span>
                         ${cakeInfo}
                     </div>
 
@@ -584,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
 
                     <div class="cart-item-subtotal">
-                        ${(unitPrice * item.quantity).toFixed(2)} <small>ر.س</small>
+                        ${(unitPrice * item.quantity).toFixed(2)} <small>${sar}</small>
                     </div>
 
                     <button onclick="removeItem(${index})" class="remove-btn" title="حذف المنتج">
@@ -595,10 +602,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        if(subTotalElement) subTotalElement.textContent = total.toFixed(2) + ' ر.س';
+        const sar2 = (window.__i18n && window.__i18n.sar) || 'ر.س';
+        if(subTotalElement) subTotalElement.textContent = total.toFixed(2) + ' ' + sar2;
         const taxEl = document.getElementById('taxAmount');
-        if(taxEl) taxEl.textContent = '0.00 ر.س';
-        if(finalTotalElement) finalTotalElement.textContent = total.toFixed(2) + ' ر.س';
+        if(taxEl) taxEl.textContent = '0.00 ' + sar2;
+        if(finalTotalElement) finalTotalElement.textContent = total.toFixed(2) + ' ' + sar2;
     }
 
     // Update Product Cards (Switch between "Add" and "Qty Controls")
@@ -655,7 +663,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     unitPrice = item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price);
                     lineName = item.selectedVariant ? `${item.name} - ${item.selectedVariant.name}` : item.name;
                 }
-                message += `- ${lineName} (${item.quantity}x): ${(unitPrice * item.quantity).toFixed(2)} ر.س\n`;
+                const sarMsg = (window.__i18n && window.__i18n.sar) || 'ر.س';
+                message += `- ${lineName} (${item.quantity}x): ${(unitPrice * item.quantity).toFixed(2)} ${sarMsg}\n`;
                 if (item.cakeOptions) {
                     const co = item.cakeOptions;
                     if (co.size) message += `  • الحجم: ${co.size}\n`;
@@ -676,7 +685,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const unitPrice = item.type === 'ice_cream' && item.iceCup ? parseFloat(item.iceCup.price) || 0 : (item.selectedVariant ? item.selectedVariant.price : (item.sale_price != null && item.sale_price !== '' ? parseFloat(item.sale_price) : item.price));
                 return sum + (unitPrice * item.quantity);
             }, 0);
-            message += `\n*المجموع الكلي: ${total.toFixed(2)} ر.س*`;
+            const totalLabel = (window.__i18n && window.__i18n.totalLabel) || 'المجموع الكلي';
+            const sarFinal = (window.__i18n && window.__i18n.sar) || 'ر.س';
+            message += `\n*${totalLabel}: ${total.toFixed(2)} ${sarFinal}*`;
             message += "\n\nالرجاء تأكيد الطلب.";
             
             const encodedMessage = encodeURIComponent(message);

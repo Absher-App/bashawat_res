@@ -3685,3 +3685,177 @@ html[dir="rtl"] .search-box button {
         max-width: 140px;
     }
 }
+
+/* ========== Language switcher (flags + text) ========== */
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-inline: 12px;
+}
+.lang-switcher .lang-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+.lang-switcher .lang-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.3);
+}
+.lang-switcher .lang-link.active {
+    color: var(--primary-color);
+    background: rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 0.4);
+}
+.lang-switcher .lang-flag {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.lang-switcher .lang-flag-sa {
+    background-image: url('https://flagcdn.com/w80/sa.png');
+}
+.lang-switcher .lang-flag-gb {
+    background-image: url('https://flagcdn.com/w80/gb.png');
+}
+.lang-switcher .lang-text {
+    white-space: nowrap;
+}
+.drawer-lang {
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.drawer-lang .lang-switcher {
+    margin: 0;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.drawer-lang .lang-link {
+    color: #fff;
+}
+/* في الدرج (خلفية داكنة) نفس التنسيق */
+.drawer-lang .lang-link {
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+}
+.drawer-lang .lang-link:hover {
+    background: rgba(255,255,255,0.2);
+}
+@media (max-width: 768px) {
+    .topbar .lang-switcher { display: none; }
+}
+
+/* ========== LTR layout (English) ========== */
+[dir="ltr"] {
+    text-align: left;
+}
+[dir="ltr"] .topbar-content,
+[dir="ltr"] .nav-links,
+[dir="ltr"] .drawer-nav,
+[dir="ltr"] .footer-content,
+[dir="ltr"] .products-control-card,
+[dir="ltr"] .category-header-inner,
+[dir="ltr"] .product-detail-layout,
+[dir="ltr"] .cart-layout {
+    direction: ltr;
+    text-align: left;
+}
+[dir="ltr"] .product-detail-breadcrumb .breadcrumb-sep i {
+    transform: rotate(180deg);
+}
+[dir="ltr"] .breadcrumb-sep {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+[dir="ltr"] .section-head-title,
+[dir="ltr"] .category-title,
+[dir="ltr"] .category-header-count,
+[dir="ltr"] .page-header .header-content,
+[dir="ltr"] .parties-header-content,
+[dir="ltr"] .parties-intro,
+[dir="ltr"] .booking-content {
+    text-align: left;
+}
+[dir="ltr"] .slide-content {
+    text-align: left;
+}
+[dir="ltr"] .reviews-badge,
+[dir="ltr"] .reviews-grid {
+    text-align: left;
+}
+[dir="ltr"] .review-card {
+    text-align: left;
+}
+[dir="ltr"] .cart-summary-card,
+[dir="ltr"] .summary-row {
+    text-align: left;
+}
+[dir="ltr"] .summary-row span:last-child {
+    margin-inline-start: auto;
+}
+[dir="ltr"] .continue-shopping i {
+    margin-right: 8px;
+    margin-left: 0;
+}
+[dir="ltr"] .product-detail-back-link i {
+    margin-right: 8px;
+    margin-left: 0;
+    transform: rotate(180deg);
+}
+[dir="ltr"] .home-categories-list,
+[dir="ltr"] .category-filter-pills {
+    flex-direction: row;
+}
+[dir="ltr"] .slider-prev {
+    left: 10px;
+    right: auto;
+}
+[dir="ltr"] .slider-next {
+    right: 10px;
+    left: auto;
+}
+[dir="ltr"] .cart-item-row {
+    text-align: left;
+}
+[dir="ltr"] .cart-item-details {
+    text-align: left;
+}
+[dir="ltr"] .cart-item-subtotal {
+    text-align: right;
+}
+[dir="ltr"] .footer-col {
+    text-align: left;
+}
+[dir="ltr"] .footer-col ul {
+    padding-left: 0;
+    padding-right: 0;
+}
+[dir="ltr"] .offers-marquee-wrap {
+    animation: offersMarqueeLtr 25s linear infinite;
+}
+@keyframes offersMarqueeLtr {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+[dir="rtl"] .offers-marquee-wrap {
+    animation: offersMarqueeRtl 25s linear infinite;
+}
+@keyframes offersMarqueeRtl {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+}

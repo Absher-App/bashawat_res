@@ -83,6 +83,28 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 
+// الترجمة (عربي / إنجليزي) مع RTL و LTR
+const localesPath = path.join(__dirname, 'locales');
+const translations = {
+    ar: require(path.join(localesPath, 'ar.json')),
+    en: require(path.join(localesPath, 'en.json'))
+};
+app.use((req, res, next) => {
+    const lang = (req.query.lang || (req.session && req.session.locale) || 'ar');
+    const locale = (lang === 'en' ? 'en' : 'ar');
+    if (req.session) req.session.locale = locale;
+    res.locals.locale = locale;
+    res.locals.dir = locale === 'ar' ? 'rtl' : 'ltr';
+    res.locals.t = translations[locale] || translations.ar;
+    next();
+});
+app.get('/set-lang/:code', (req, res) => {
+    const code = req.params.code === 'en' ? 'en' : 'ar';
+    if (req.session) req.session.locale = code;
+    const back = req.get('Referer') || '/';
+    res.redirect(back);
+});
+
 // إعداد Multer لرفع الصور
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<%= typeof locale !== 'undefined' ? locale : 'ar' %>" dir="<%= typeof dir !== 'undefined' ? dir : 'rtl' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,22 +28,23 @@
     <header class="site-header">
         <div class="offers-banner">
             <div class="offers-marquee-wrap" aria-hidden="true">
-                <span class="offers-text"><%= offer_text || '✨ توصيل مجاني للطلبات فوق 200 ريال — عروض حصرية لفترة محدودة' %></span>
-                <span class="offers-text"><%= offer_text || '✨ توصيل مجاني للطلبات فوق 200 ريال — عروض حصرية لفترة محدودة' %></span>
+                <span class="offers-text"><%= offer_text || (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : '') %></span>
+                <span class="offers-text"><%= offer_text || (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : '') %></span>
             </div>
         </div>
         <nav class="topbar">
             <div class="container topbar-content">
                 <a href="/" class="logo-area">
-                    <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                    <span class="brand-name">حلويات بقداش <em class="brand-en">Bagdash sweets</em></span>
+                    <img src="/images/logo.png" alt="<%= t.common.brandName %>" class="nav-logo">
+                    <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
                 </a>
                 <ul class="nav-links">
-                    <li><a href="/" class="nav-link">الرئيسية</a></li>
-                    <li><a href="/products" class="nav-link active">المنتجات</a></li>
-                    <li><a href="/parties" class="nav-link">الحفلات</a></li>
-                    <li><a href="/cart" class="nav-link nav-cart">السلة <i class="fas fa-shopping-cart"></i></a></li>
+                    <li><a href="/" class="nav-link"><%= t.nav.home %></a></li>
+                    <li><a href="/products" class="nav-link active"><%= t.nav.products %></a></li>
+                    <li><a href="/parties" class="nav-link"><%= t.nav.parties %></a></li>
+                    <li><a href="/cart" class="nav-link nav-cart"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
                 </ul>
+                <%- include('partials/lang-switcher') %>
                 <div class="topbar-social">
                     <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
@@ -51,24 +52,25 @@
                     <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
                 </div>
-                <button type="button" class="burger-btn" id="burgerBtn" aria-label="القائمة"><span></span><span></span><span></span></button>
+                <button type="button" class="burger-btn" id="burgerBtn" aria-label="<%= t.nav.menu %>"><span></span><span></span><span></span></button>
             </div>
         </nav>
     </header>
     <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-header">
-            <span class="drawer-title">القائمة</span>
-            <button type="button" class="drawer-close" id="drawerClose" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+            <span class="drawer-title"><%= t.nav.menu %></span>
+            <button type="button" class="drawer-close" id="drawerClose" aria-label="<%= t.nav.close %>"><i class="fas fa-times"></i></button>
         </div>
         <nav class="drawer-nav">
-            <a href="/" class="drawer-link">الرئيسية</a>
-            <a href="/products" class="drawer-link active">المنتجات</a>
-            <a href="/parties" class="drawer-link">الحفلات</a>
-            <a href="/cart" class="drawer-link">السلة <i class="fas fa-shopping-cart"></i></a>
+            <a href="/" class="drawer-link"><%= t.nav.home %></a>
+            <a href="/products" class="drawer-link active"><%= t.nav.products %></a>
+            <a href="/parties" class="drawer-link"><%= t.nav.parties %></a>
+            <a href="/cart" class="drawer-link"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a>
         </nav>
+        <div class="drawer-lang"><%- include('partials/lang-switcher') %></div>
         <div class="drawer-social">
-            <span class="drawer-social-label">تابعنا</span>
+            <span class="drawer-social-label"><%= t.nav.followUs %></span>
             <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
             <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
             <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
@@ -88,8 +90,8 @@
         <div class="overlay"></div>
         <div class="header-content">
             <div class="header-icon"><i class="fas fa-box-open"></i></div>
-            <h1>قائمة المنتجات</h1>
-            <p>اكتشف تشكيلتنا الواسعة من الحلويات والبوظة العربية</p>
+            <h1><%= t.products.title %></h1>
+            <p><%= t.products.subtitle %></p>
         </div>
     </header>
 
@@ -100,13 +102,13 @@
         <section class="products-control-card">
             <div class="search-wrapper">
                 <div class="search-box">
-                    <input type="text" id="productSearch" placeholder="ابحث عن منتجك المفضل..." onkeyup="searchProducts()">
+                    <input type="text" id="productSearch" placeholder="<%= t.products.searchPlaceholder %>" onkeyup="searchProducts()">
                     <button type="button" onclick="searchProducts()"><i class="fas fa-search"></i></button>
                 </div>
             </div>
             <div class="categories-filter-wrapper">
                 <ul class="category-filter-pills">
-                    <li><button type="button" class="category-pill active" data-category="all" onclick="filterProducts('all', event)">الكل</button></li>
+                    <li><button type="button" class="category-pill active" data-category="all" onclick="filterProducts('all', event)"><%= t.products.all %></button></li>
                     <% if (categories && categories.length > 0) { %>
                         <% categories.forEach(cat => { %>
                             <li><button type="button" class="category-pill" data-category="<%= cat.name %>" data-category-id="<%= cat.id %>" onclick="filterProducts('<%= cat.name %>', event)"><%= cat.name %></button></li>
@@ -126,18 +128,18 @@
         <section class="category-block ice-cream-section-products" id="ice-cream-section">
             <div class="category-header">
                 <div class="category-title-pill">
-                    <h2 class="category-title">آيسكريم</h2>
+                    <h2 class="category-title"><%= t.home.iceCream %></h2>
                 </div>
             </div>
             <div class="ice-cream-builder">
-                <p class="ice-cream-step-label">١. اختر حجم الكوب</p>
+                <p class="ice-cream-step-label"><%= t.iceCream.step1 %></p>
                 <div class="ice-cream-cup-sizes" id="iceCreamCupSizesProducts">
                     <% (iceCreamOptions.cupSizes || []).forEach(function(cup) { %>
-                    <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>" data-image-url="<%= (iceCreamOptions.cupImages && iceCreamOptions.cupImages[cup.name_ar]) ? iceCreamOptions.cupImages[cup.name_ar] : '' %>"><%= cup.name_ar %> — <%= cup.price %> ر.س (<%= cup.max_scoops %> كرات)</button>
+                    <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>" data-image-url="<%= (iceCreamOptions.cupImages && iceCreamOptions.cupImages[cup.name_ar]) ? iceCreamOptions.cupImages[cup.name_ar] : '' %>"><%= cup.name_ar %> — <%= cup.price %> <%= t.common.sar %> (<%= cup.max_scoops %> <%= t.iceCream.balls %>)</button>
                     <% }); %>
                 </div>
                 <div class="ice-cream-flavors-wrap" id="iceCreamFlavorsWrapProducts" style="display: none;">
-                    <p class="ice-cream-step-label">٢. اختر النكهات (اضغط لإضافة كرة)</p>
+                    <p class="ice-cream-step-label"><%= t.iceCream.step2 %></p>
                     <div class="ice-cream-layout">
                         <div class="ice-cream-cup-visual" id="iceCreamCupVisualProducts">
                             <div class="ice-cream-scoops-stack" id="iceCreamScoopsStackProducts"></div>
@@ -154,7 +156,7 @@
                         <span class="ice-cream-cup-price" id="iceCreamCupPriceProducts"></span>
                     </div>
                     <button type="button" class="order-btn ice-cream-add-cart-btn" id="iceCreamAddToCartBtnProducts" disabled>
-                        <i class="fas fa-cart-plus"></i> أضف للسلة
+                        <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
                     </button>
                 </div>
             </div>
@@ -180,8 +182,8 @@
                 wrap.style.display = 'block';
                 if (cupVisual) cupVisual.classList.add('visible');
                 if (scoopsStack) scoopsStack.innerHTML = '';
-                summary.textContent = 'كوب ' + selectedCup.name_ar + ': —';
-                priceEl.textContent = selectedCup.price + ' ر.س';
+                summary.textContent = '<%= t.iceCream.cupLabel %> ' + selectedCup.name_ar + ': —';
+                priceEl.textContent = selectedCup.price + ' <%= t.common.sar %>';
                 addBtn.disabled = true;
             });
             document.getElementById('iceCreamFlavorsGridProducts').addEventListener('click', function(e) {
@@ -201,15 +203,15 @@
                     ball.offsetHeight;
                     ball.classList.add('scoop-visible');
                 }
-                summary.textContent = 'كوب ' + selectedCup.name_ar + ': ' + selectedFlavors.join('، ');
+                summary.textContent = '<%= t.iceCream.cupLabel %> ' + selectedCup.name_ar + ': ' + selectedFlavors.join(', ');
                 addBtn.disabled = false;
             });
             addBtn.addEventListener('click', function() {
                 if (!selectedCup || selectedFlavors.length === 0 || typeof window.addIceCreamToCart !== 'function') return;
                 window.addIceCreamToCart(selectedCup, selectedFlavors);
-                addBtn.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
+                addBtn.innerHTML = '<i class="fas fa-check"></i> <%= t.iceCream.added %>';
                 addBtn.disabled = true;
-                setTimeout(function() { addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> أضف للسلة'; addBtn.disabled = selectedFlavors.length === 0; }, 2000);
+                setTimeout(function() { addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>'; addBtn.disabled = selectedFlavors.length === 0; }, 2000);
             });
         })();
         </script>
@@ -220,7 +222,7 @@
             <% if (locals.error) { %>
                 <div class="products-error-message">
                     <i class="fas fa-exclamation-circle"></i>
-                    <strong>تنبيه:</strong> <%= error %>
+                    <strong><%= t.error %>:</strong> <%= error %>
                 </div>
             <% } %>
 
@@ -229,9 +231,9 @@
                     <div class="products-empty-icon">
                         <i class="fas fa-shopping-basket"></i>
                     </div>
-                    <h3>لا توجد منتجات متاحة حالياً</h3>
-                    <p>نعمل على إضافة تشكيلة جديدة من الحلويات والبوظة. تفضل بزيارتنا قريباً!</p>
-                    <a href="/" class="products-empty-btn"><i class="fas fa-home"></i> العودة للرئيسية</a>
+                    <h3><%= t.products.empty %></h3>
+                    <p><%= t.products.emptyDesc %></p>
+                    <a href="/" class="products-empty-btn"><i class="fas fa-home"></i> <%= t.products.backToHome %></a>
                 </div>
             <% } else { %>
                 <!-- All Products Container -->
@@ -254,7 +256,7 @@
                             <a href="/product/<%= product.id %>" class="product-card-link">
                                 <div class="product-image">
                                     <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                    <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
+                                    <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> <%= t.common.sar %></span> <span class="price-sale"><%= product.sale_price %> <%= t.common.sar %></span><% } else { %><%= (product.variants && product.variants.length) ? (t.common.priceFrom + ' ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ' + t.common.sar) : (product.price + ' ' + t.common.sar) %><% } %></span>
                                 </div>
                                 <div class="product-info">
                                     <h3><%= product.name %></h3>
@@ -263,7 +265,7 @@
                             </a>
                             <div class="product-actions">
                                 <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
-                                    <i class="fas fa-cart-plus"></i> أضف للسلة
+                                    <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
                                 </button>
                                 <div class="qty-control-widget" style="display: none;">
                                     <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
@@ -282,19 +284,19 @@
     <footer class="main-footer">
         <div class="footer-content container">
             <div class="footer-col">
-                <h3>حلويات بقداش</h3>
-                <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
+                <h3><%= t.footer.brand %></h3>
+                <p><%= t.footer.tagline %></p>
             </div>
             <div class="footer-col">
-                <h3>روابط سريعة</h3>
+                <h3><%= t.footer.quickLinks %></h3>
                 <ul>
-                    <li><a href="/">الرئيسية</a></li>
-                    <li><a href="/products">المنتجات</a></li>
-                    <li><a href="/parties">الحفلات</a></li>
+                    <li><a href="/"><%= t.nav.home %></a></li>
+                    <li><a href="/products"><%= t.nav.products %></a></li>
+                    <li><a href="/parties"><%= t.nav.parties %></a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>تواصل معنا</h3>
+                <h3><%= t.footer.contact %></h3>
                 <p><i class="fas fa-phone"></i> 920005031</p>
                 <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
                 <div class="footer-social">
@@ -306,20 +308,20 @@
                 </div>
             </div>
             <div class="footer-col footer-commercial-reg">
-                <h3>السجل التجاري</h3>
+                <h3><%= t.footer.commercialReg %></h3>
                 <div class="commercial-reg-card">
-                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - اضغط للتحقق">
-                        <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
+                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="<%= t.footer.commercialReg %>">
+                        <img src="/images/commercial-registration.png" alt="<%= t.footer.commercialReg %>" class="commercial-reg-img" loading="lazy">
                     </a>
                     <div class="commercial-reg-info">
-                        <span class="commercial-reg-label">رقم السجل</span>
+                        <span class="commercial-reg-label"><%= t.footerExtra.commercialRegNum %></span>
                         <span class="commercial-reg-num">2053033300</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Bagdash sweets</p>
+            <p><%= t.footerExtra.rights %> &copy; 2026 <%= t.common.brandName %> - <%= t.common.brandEn %></p>
         </div>
     </footer>
 
@@ -330,6 +332,7 @@
 
     <%- include('partials/cake-form-modal') %>
     <%- include('partials/variant-modal') %>
+    <script>window.__i18n = window.__i18n || {}; window.__i18n.sar = '<%= t.common.sar %>';</script>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
     <script>
         // Search Logic
@@ -344,7 +347,7 @@
             });
             // Set 'All' as active (first one usually)
             const allBtn = document.querySelector('.category-pill'); 
-            if(allBtn && allBtn.innerText.includes('الكل')) allBtn.classList.add('active');
+            if(allBtn && allBtn.getAttribute('data-category') === 'all') allBtn.classList.add('active');
 
             products.forEach(product => {
                 const title = product.querySelector('h3').textContent.toLowerCase();

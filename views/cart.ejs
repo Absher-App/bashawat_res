@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<%= typeof locale !== 'undefined' ? locale : 'ar' %>" dir="<%= typeof dir !== 'undefined' ? dir : 'rtl' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +23,7 @@
 <body>
     <header class="site-header">
         <div class="offers-banner">
-            <% const cartOfferText = typeof offer_text !== 'undefined' && offer_text ? offer_text : '✨ توصيل مجاني للطلبات فوق 200 ريال — عروض حصرية لفترة محدودة'; %>
+            <% const cartOfferText = typeof offer_text !== 'undefined' && offer_text ? offer_text : (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : ''); %>
             <div class="offers-marquee-wrap" aria-hidden="true">
                 <span class="offers-text"><%= cartOfferText %></span>
                 <span class="offers-text"><%= cartOfferText %></span>
@@ -32,15 +32,16 @@
         <nav class="topbar">
             <div class="container topbar-content">
                 <a href="/" class="logo-area">
-                    <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                    <span class="brand-name">حلويات بقداش <em class="brand-en">Bagdash sweets</em></span>
+                    <img src="/images/logo.png" alt="<%= t.common.brandName %>" class="nav-logo">
+                    <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
                 </a>
                 <ul class="nav-links">
-                    <li><a href="/" class="nav-link">الرئيسية</a></li>
-                    <li><a href="/products" class="nav-link">المنتجات</a></li>
-                    <li><a href="/parties" class="nav-link">الحفلات</a></li>
-                    <li><a href="/cart" class="nav-link nav-cart active">السلة <i class="fas fa-shopping-cart"></i></a></li>
+                    <li><a href="/" class="nav-link"><%= t.nav.home %></a></li>
+                    <li><a href="/products" class="nav-link"><%= t.nav.products %></a></li>
+                    <li><a href="/parties" class="nav-link"><%= t.nav.parties %></a></li>
+                    <li><a href="/cart" class="nav-link nav-cart active"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
                 </ul>
+                <%- include('partials/lang-switcher') %>
                 <div class="topbar-social">
                     <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
@@ -48,24 +49,25 @@
                     <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
                 </div>
-                <button type="button" class="burger-btn" id="burgerBtn" aria-label="القائمة"><span></span><span></span><span></span></button>
+                <button type="button" class="burger-btn" id="burgerBtn" aria-label="<%= t.nav.menu %>"><span></span><span></span><span></span></button>
             </div>
         </nav>
     </header>
     <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-header">
-            <span class="drawer-title">القائمة</span>
-            <button type="button" class="drawer-close" id="drawerClose" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+            <span class="drawer-title"><%= t.nav.menu %></span>
+            <button type="button" class="drawer-close" id="drawerClose" aria-label="<%= t.nav.close %>"><i class="fas fa-times"></i></button>
         </div>
         <nav class="drawer-nav">
-            <a href="/" class="drawer-link">الرئيسية</a>
-            <a href="/products" class="drawer-link">المنتجات</a>
-            <a href="/parties" class="drawer-link">الحفلات</a>
-            <a href="/cart" class="drawer-link active">السلة <i class="fas fa-shopping-cart"></i></a>
+            <a href="/" class="drawer-link"><%= t.nav.home %></a>
+            <a href="/products" class="drawer-link"><%= t.nav.products %></a>
+            <a href="/parties" class="drawer-link"><%= t.nav.parties %></a>
+            <a href="/cart" class="drawer-link active"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a>
         </nav>
+        <div class="drawer-lang"><%- include('partials/lang-switcher') %></div>
         <div class="drawer-social">
-            <span class="drawer-social-label">تابعنا</span>
+            <span class="drawer-social-label"><%= t.nav.followUs %></span>
             <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
             <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
             <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
@@ -78,8 +80,8 @@
         <div class="overlay"></div>
         <div class="header-content">
             <div class="header-icon"><i class="fas fa-shopping-cart"></i></div>
-            <h1>سلة المشتريات</h1>
-            <p>مراجعة طلبك وإتمامه</p>
+            <h1><%= t.cart.title %></h1>
+            <p><%= t.cart.subtitle %></p>
         </div>
     </header>
 
@@ -87,37 +89,36 @@
         <div class="cart-layout" id="cartLayout">
             <div class="cart-items-section">
                 <div class="cart-items-card">
-                    <h2 class="cart-section-title cart-section-title-products"><i class="fas fa-box-open"></i> منتجاتك</h2>
+                    <h2 class="cart-section-title cart-section-title-products"><i class="fas fa-box-open"></i> <%= t.cart.yourProducts %></h2>
                     <div id="fullCartItems">
-                    <!-- سيتم ملء المنتجات هنا بواسطة JavaScript -->
-                        <div class="loading-cart">جاري تحميل السلة...</div>
+                        <div class="loading-cart"><%= t.cart.loading %></div>
                     </div>
                 </div>
             </div>
 
             <div class="cart-summary-section">
                 <div class="cart-summary-card">
-                    <h3>ملخص الطلب</h3>
+                    <h3><%= t.cart.orderSummary %></h3>
                     <div class="summary-row">
-                        <span>المجموع الفرعي:</span>
-                        <span id="subTotal">0.00 ر.س</span>
+                        <span><%= t.cart.subtotal %></span>
+                        <span id="subTotal">0.00 <%= t.common.sar %></span>
                     </div>
                     <div class="summary-row summary-tax">
-                        <span>الضريبة (0%):</span>
-                        <span id="taxAmount">0.00 ر.س</span>
+                        <span><%= t.cart.tax %></span>
+                        <span id="taxAmount">0.00 <%= t.common.sar %></span>
                     </div>
                     <hr>
                     <div class="summary-row total">
-                        <span>الإجمالي:</span>
-                        <span id="finalTotal">0.00 ر.س</span>
+                        <span><%= t.cart.total %></span>
+                        <span id="finalTotal">0.00 <%= t.common.sar %></span>
                     </div>
                     
                     <button class="checkout-btn" id="pageCheckoutBtn">
-                        <i class="fab fa-whatsapp"></i> إتمام الطلب عبر واتساب
+                        <i class="fab fa-whatsapp"></i> <%= t.cart.completeViaWhatsApp %>
                     </button>
                     
                     <a href="/products" class="continue-shopping">
-                        <i class="fas fa-arrow-right"></i> متابعة التسوق
+                        <i class="fas fa-arrow-right"></i> <%= t.cart.continueShopping %>
                     </a>
                 </div>
             </div>
@@ -128,19 +129,19 @@
     <footer class="main-footer">
         <div class="footer-content container">
             <div class="footer-col">
-                <h3>بقداش</h3>
-                <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
+                <h3><%= t.footer.brand %></h3>
+                <p><%= t.footer.tagline %></p>
             </div>
             <div class="footer-col">
-                <h3>روابط سريعة</h3>
+                <h3><%= t.footer.quickLinks %></h3>
                 <ul>
-                    <li><a href="/">الرئيسية</a></li>
-                    <li><a href="/#products-section">المنتجات</a></li>
-                    <li><a href="/parties">الحفلات</a></li>
+                    <li><a href="/"><%= t.nav.home %></a></li>
+                    <li><a href="/#products-section"><%= t.nav.products %></a></li>
+                    <li><a href="/parties"><%= t.nav.parties %></a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>تواصل معنا</h3>
+                <h3><%= t.footer.contact %></h3>
                 <p><i class="fas fa-phone"></i> 920005031</p>
                 <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
                 <div class="footer-social">
@@ -152,20 +153,20 @@
                 </div>
             </div>
             <div class="footer-col footer-commercial-reg">
-                <h3>السجل التجاري</h3>
+                <h3><%= t.footer.commercialReg %></h3>
                 <div class="commercial-reg-card">
-                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - اضغط للتحقق">
-                        <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
+                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="<%= t.footer.commercialReg %>">
+                        <img src="/images/commercial-registration.png" alt="<%= t.footer.commercialReg %>" class="commercial-reg-img" loading="lazy">
                     </a>
                     <div class="commercial-reg-info">
-                        <span class="commercial-reg-label">رقم السجل</span>
+                        <span class="commercial-reg-label"><%= t.footerExtra.commercialRegNum %></span>
                         <span class="commercial-reg-num">2053033300</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2026 بقداش للحلويات</p>
+            <p><%= t.footerExtra.rights %> &copy; 2026 <%= t.common.brandName %> - <%= t.common.brandEn %></p>
         </div>
     </footer>
 
@@ -174,6 +175,18 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <script>
+    window.__i18n = window.__i18n || {};
+    window.__i18n.sar = '<%= t.common.sar %>';
+    window.__i18n.cartEmpty = '<%= t.cart.empty %>';
+    window.__i18n.cartEmptyDesc = '<%= t.cart.emptyDesc %>';
+    window.__i18n.continueShopping = '<%= t.cart.continueShopping %>';
+    window.__i18n.backToHome = '<%= t.cart.backToHome %>';
+    window.__i18n.subtotal = '<%= t.cart.subtotal %>';
+    window.__i18n.tax = '<%= t.cart.tax %>';
+    window.__i18n.total = '<%= t.cart.total %>';
+    window.__i18n.totalLabel = '<%= t.cart.totalLabel %>';
+</script>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
 </body>
 </html>

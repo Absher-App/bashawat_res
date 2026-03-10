@@ -1,0 +1,121 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "parties": "Parties",
+    "cart": "Cart",
+    "menu": "Menu",
+    "close": "Close",
+    "followUs": "Follow us",
+    "browseInArabic": "تصفح بالعربية",
+    "browseInEnglish": "Browse in English"
+  },
+  "home": {
+    "mostSold": "Best Sellers",
+    "browseByCategory": "Browse by category",
+    "otherCategories": "More categories",
+    "hideCategories": "Hide categories",
+    "other": "Other",
+    "iceCream": "Ice cream",
+    "productCount": "product",
+    "addToCart": "Add to cart",
+    "viewDetails": "Details",
+    "viewMenu": "View menu",
+    "backToProducts": "Back to products"
+  },
+  "products": {
+    "title": "Products",
+    "subtitle": "Discover our wide range of sweets and ice cream",
+    "searchPlaceholder": "Search for your favorite...",
+    "all": "All",
+    "empty": "No products available",
+    "emptyDesc": "We're adding new items. Visit us again soon!",
+    "backToHome": "Back to home"
+  },
+  "productDetail": {
+    "home": "Home",
+    "products": "Products",
+    "addToCart": "Add to cart",
+    "backToProducts": "Back to products",
+    "details": "Details",
+    "sizes": "Sizes",
+    "weights": "Weights",
+    "from": "From",
+    "sar": "SAR"
+  },
+  "cart": {
+    "title": "Cart",
+    "subtitle": "Review and complete your order",
+    "yourProducts": "Your items",
+    "loading": "Loading cart...",
+    "empty": "Your cart is empty",
+    "emptyDesc": "Add items from the menu, then return here to complete your order.",
+    "continueShopping": "Continue shopping",
+    "orderSummary": "Order summary",
+    "subtotal": "Subtotal:",
+    "tax": "Tax (0%):",
+    "total": "Total:",
+    "completeViaWhatsApp": "Complete order via WhatsApp",
+    "backToHome": "Home",
+    "totalLabel": "Total"
+  },
+  "parties": {
+    "title": "Parties & events",
+    "subtitle": "Make your occasion unforgettable with Bagdash",
+    "quickLinks": "Quick links",
+    "sectionDesc": "We bring luxury and style to your event with an exclusive range of sweets and hospitality",
+    "bookingTitle": "We're here for all your events",
+    "bookingDesc": "Our team is ready to arrange sweets and hospitality to fit your budget and guest count. Contact us now for a custom quote.",
+    "bookingBtn": "Book your event now",
+    "service1Title": "Birthday parties",
+    "service1Desc": "Custom birthday cakes and ice cream treats for kids and guests",
+    "service2Title": "Weddings & engagements",
+    "service2Desc": "Premium Eastern and Western sweets buffets with professional service",
+    "service3Title": "Corporate events",
+    "service3Desc": "Refined hospitality for meetings and conferences: specialty coffee, pastries and fresh sweets",
+    "service4Title": "Ice cream cart",
+    "service4Desc": "Add fun to your event with our mobile ice cream cart and multiple flavors"
+  },
+  "footer": {
+    "brand": "Bagdash Sweets",
+    "tagline": "Finest baklava, chocolate and pastries.",
+    "quickLinks": "Quick links",
+    "contact": "Contact",
+    "commercialReg": "Commercial registration",
+    "rights": "All rights reserved"
+  },
+  "common": {
+    "brandName": "حلويات بقداش",
+    "brandEn": "Bagdash sweets",
+    "sar": "SAR",
+    "priceFrom": "From"
+  },
+  "slider": {
+    "prev": "Previous",
+    "next": "Next",
+    "viewMore": "View more",
+    "viewMenu": "View menu",
+    "heroTitle": "Finest Arabic sweets",
+    "heroSub": "Authentic taste in every bite"
+  },
+  "offer": "Free delivery on orders over 200 SAR — limited time offers",
+  "error": "Notice",
+  "noProducts": "No products available.",
+  "iceCream": {
+    "step1": "1. Choose cup size",
+    "step2": "2. Choose flavors (tap to add a scoop)",
+    "balls": "scoops",
+    "added": "Added",
+    "cupLabel": "Cup"
+  },
+  "reviews": {
+    "title": "What our customers say",
+    "dammam": "Dammam",
+    "khobar": "Khobar",
+    "qatif": "Qatif"
+  },
+  "footerExtra": {
+    "commercialRegNum": "Registration number",
+    "rights": "All rights reserved"
+  }
+}

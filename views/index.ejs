@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="<%= typeof locale !== 'undefined' ? locale : 'ar' %>" dir="<%= typeof dir !== 'undefined' ? dir : 'rtl' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,22 +31,23 @@
     <header class="site-header">
         <div class="offers-banner">
             <div class="offers-marquee-wrap" aria-hidden="true">
-                <span class="offers-text"><%= offer_text || '✨ توصيل مجاني للطلبات فوق 200 ريال — عروض حصرية لفترة محدودة' %></span>
-                <span class="offers-text"><%= offer_text || '✨ توصيل مجاني للطلبات فوق 200 ريال — عروض حصرية لفترة محدودة' %></span>
+                <span class="offers-text"><%= offer_text || (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : '') %></span>
+                <span class="offers-text"><%= offer_text || (typeof t !== 'undefined' && t.offer ? '✨ ' + t.offer : '') %></span>
             </div>
         </div>
         <nav class="topbar">
             <div class="container topbar-content">
                 <a href="/" class="logo-area">
-                    <img src="/images/logo.png" alt="حلويات بقداش" class="nav-logo">
-                    <span class="brand-name">حلويات بقداش <em class="brand-en">Bagdash sweets</em></span>
+                    <img src="/images/logo.png" alt="<%= t.common.brandName %>" class="nav-logo">
+                    <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
                 </a>
                 <ul class="nav-links">
-                    <li><a href="/" class="nav-link active">الرئيسية</a></li>
-                    <li><a href="/products" class="nav-link">المنتجات</a></li>
-                    <li><a href="/parties" class="nav-link">الحفلات</a></li>
-                    <li><a href="/cart" class="nav-link nav-cart">السلة <i class="fas fa-shopping-cart"></i></a></li>
+                    <li><a href="/" class="nav-link active"><%= t.nav.home %></a></li>
+                    <li><a href="/products" class="nav-link"><%= t.nav.products %></a></li>
+                    <li><a href="/parties" class="nav-link"><%= t.nav.parties %></a></li>
+                    <li><a href="/cart" class="nav-link nav-cart"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
                 </ul>
+                <%- include('partials/lang-switcher') %>
                 <div class="topbar-social">
                     <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
@@ -54,7 +55,7 @@
                     <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.facebook.com/bagdashsweet/" target="_blank" rel="noopener" aria-label="فيسبوك"><i class="fab fa-facebook-f"></i></a>
                 </div>
-                <button type="button" class="burger-btn" id="burgerBtn" aria-label="القائمة">
+                <button type="button" class="burger-btn" id="burgerBtn" aria-label="<%= t.nav.menu %>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
@@ -65,17 +66,18 @@
     <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
     <div class="drawer" id="drawer">
         <div class="drawer-header">
-            <span class="drawer-title">القائمة</span>
-            <button type="button" class="drawer-close" id="drawerClose" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+            <span class="drawer-title"><%= t.nav.menu %></span>
+            <button type="button" class="drawer-close" id="drawerClose" aria-label="<%= t.nav.close %>"><i class="fas fa-times"></i></button>
         </div>
         <nav class="drawer-nav">
-            <a href="/" class="drawer-link active">الرئيسية</a>
-            <a href="/products" class="drawer-link">المنتجات</a>
-            <a href="/parties" class="drawer-link">الحفلات</a>
-            <a href="/cart" class="drawer-link">السلة <i class="fas fa-shopping-cart"></i></a>
+            <a href="/" class="drawer-link active"><%= t.nav.home %></a>
+            <a href="/products" class="drawer-link"><%= t.nav.products %></a>
+            <a href="/parties" class="drawer-link"><%= t.nav.parties %></a>
+            <a href="/cart" class="drawer-link"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a>
         </nav>
+        <div class="drawer-lang"><%- include('partials/lang-switcher') %></div>
         <div class="drawer-social">
-            <span class="drawer-social-label">تابعنا</span>
+            <span class="drawer-social-label"><%= t.nav.followUs %></span>
             <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
             <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
             <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
@@ -101,7 +103,7 @@
                             <% if(slide.title) { %><h2><%= slide.title %></h2><% } %>
                             <% if(slide.subtitle) { %><p><%= slide.subtitle %></p><% } %>
                             <% if(slide.link_url) { %>
-                                <a href="<%= slide.link_url %>" class="cta-btn"><%= (slide.button_text && slide.button_text.trim()) ? slide.button_text : 'تصفح المزيد' %></a>
+                                <a href="<%= slide.link_url %>" class="cta-btn"><%= (slide.button_text && slide.button_text.trim()) ? slide.button_text : t.slider.viewMore %></a>
                             <% } %>
                         </div>
                     </div>
@@ -109,15 +111,15 @@
                 <% } else { %>
                     <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1579372786545-d24232daf58c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
                         <div class="slide-content">
-                            <h2>أشهى الحلويات العربية</h2>
-                            <p>طعم الأصالة في كل قطعة</p>
-                            <a href="#products-section" class="cta-btn">تصفح القائمة</a>
+                            <h2><%= t.slider.heroTitle %></h2>
+                            <p><%= t.slider.heroSub %></p>
+                            <a href="#products-section" class="cta-btn"><%= t.slider.viewMenu %></a>
                         </div>
                     </div>
                 <% } %>
             </div>
-            <button type="button" class="slider-arrow slider-prev" aria-label="السابق">&#10094;</button>
-            <button type="button" class="slider-arrow slider-next" aria-label="التالي">&#10095;</button>
+            <button type="button" class="slider-arrow slider-prev" aria-label="<%= t.slider.prev %>">&#10094;</button>
+            <button type="button" class="slider-arrow slider-next" aria-label="<%= t.slider.next %>">&#10095;</button>
             <div class="slider-dots" id="sliderDots"></div>
         </div>
     </section>
@@ -150,78 +152,24 @@
     </div>
     <% } %>
 
-    <!-- قسم الأكثر مبيعاً — عنوان واحد احترافي -->
-    <% const _mostRequested = (typeof mostRequestedProducts !== 'undefined' && mostRequestedProducts) ? mostRequestedProducts : []; %>
-    <% if (_mostRequested.length > 0) { %>
-    <section class="most-requested-section">
-        <div class="container">
-            <header class="section-head-pro">
-                <span class="section-head-accent" aria-hidden="true"></span>
-                <h2 class="section-head-title"><i class="fas fa-chart-line section-head-icon"></i> الأكثر مبيعاً</h2>
-                <div class="section-head-decoration" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
-            </header>
-            <div class="products-grid most-requested-grid">
-                <% _mostRequested.forEach(function(product) { %>
-                <div class="product-card product-has-hover" data-id="<%= product.id %>">
-                    <a href="/product/<%= product.id %>" class="product-card-link">
-                        <div class="product-image">
-                            <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
-                        </div>
-                        <div class="product-info">
-                            <h3><%= product.name %></h3>
-                            <p><%= product.description %></p>
-                        </div>
-                    </a>
-                    <div class="product-actions">
-                        <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
-                            <i class="fas fa-cart-plus"></i> أضف للسلة
-                        </button>
-                        <div class="qty-control-widget" style="display: none;">
-                            <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
-                            <span class="qty-display">1</span>
-                            <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)"><i class="fas fa-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-                <% }); %>
-            </div>
-        </div>
-    </section>
-    <% } %>
-
-    <!-- قسم المنتجات حسب التصنيف -->
-    <main class="container" id="products-section">
-        <% if (locals.error) { %>
-            <div class="error-message">
-                <strong>تنبيه:</strong> <%= error %>
-            </div>
-        <% } %>
-
-        <% if (!locals.products || products.length === 0) { %>
-            <div class="no-products">
-                <p>لا توجد منتجات متاحة حالياً.</p>
-            </div>
-        <% } %>
-        <% if (locals.products && products.length > 0) { %>
+    <!-- تصفح حسب التصنيف (فوق الأكثر مبيعاً) -->
+    <% if (locals.products && products.length > 0) { %>
             <% 
-                let catsToRender = categories;
+                var catsToRender = categories;
                 if (!catsToRender || catsToRender.length === 0) {
-                    const uniqueCats = [...new Set(products.map(p => p.category))];
+                    var uniqueCats = [...new Set(products.map(p => p.category))];
                     catsToRender = uniqueCats.map(c => ({ name: c, id: c }));
                 }
-                const catsWithProducts = catsToRender.filter(cat => products.some(p => p.category === cat.name));
-                const MAX_HOME_CATEGORIES = 5;
-                const mainCatsToShow = catsWithProducts.slice(0, MAX_HOME_CATEGORIES);
-                const restCats = catsWithProducts.slice(MAX_HOME_CATEGORIES);
-                const knownCatNamesAll = catsWithProducts.map(c => c.name);
-                const otherProducts = products.filter(p => !knownCatNamesAll.includes(p.category));
+                var catsWithProducts = catsToRender.filter(cat => products.some(p => p.category === cat.name));
+                var MAX_HOME_CATEGORIES = 5;
+                var mainCatsToShow = catsWithProducts.slice(0, MAX_HOME_CATEGORIES);
+                var restCats = catsWithProducts.slice(MAX_HOME_CATEGORIES);
+                var knownCatNamesAll = catsWithProducts.map(c => c.name);
+                var otherProducts = products.filter(p => !knownCatNamesAll.includes(p.category));
             %>
-            
-            <!-- التصنيفات: 5 أقسام ظاهرة + زر لعرض الباقي -->
             <% if (mainCatsToShow.length > 0 || otherProducts.length > 0 || (restCats && restCats.length > 0)) { %>
             <section class="home-categories-bar">
-                <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> تصفح حسب التصنيف</h2>
+                <h2 class="categories-bar-title"><i class="fas fa-th-large"></i> <%= t.home.browseByCategory %></h2>
                 <div class="home-categories-scroll">
                 <div class="home-categories-list">
                     <% mainCatsToShow.forEach(function(cat) { %>
@@ -242,7 +190,7 @@
                             <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
                         </span>
                         <span class="home-category-card-text">
-                            <span class="pill-name">آيسكريم</span>
+                            <span class="pill-name"><%= t.home.iceCream %></span>
                         </span>
                     </a>
                     <% } %>
@@ -252,7 +200,7 @@
                             <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
                         </span>
                         <span class="home-category-card-text">
-                            <span class="pill-name">أخرى</span>
+                            <span class="pill-name"><%= t.home.other %></span>
                             <span class="pill-count">(<%= otherProducts.length %>)</span>
                         </span>
                     </a>
@@ -263,7 +211,7 @@
                             <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
                         </span>
                         <span class="home-category-card-text">
-                            <span class="pill-name"><i class="fas fa-chevron-down"></i> بقية التصنيفات (<%= restCats.length %>)</span>
+                            <span class="pill-name"><i class="fas fa-chevron-down"></i> <%= t.home.otherCategories %> (<%= restCats.length %>)</span>
                         </span>
                     </button>
                     <% } %>
@@ -271,7 +219,62 @@
                 </div>
             </section>
             <% } %>
-            
+    <% } %>
+
+    <!-- قسم الأكثر مبيعاً — عنوان واحد احترافي -->
+    <% const _mostRequested = (typeof mostRequestedProducts !== 'undefined' && mostRequestedProducts) ? mostRequestedProducts : []; %>
+    <% if (_mostRequested.length > 0) { %>
+    <section class="most-requested-section">
+        <div class="container">
+            <header class="section-head-pro">
+                <span class="section-head-accent" aria-hidden="true"></span>
+                <h2 class="section-head-title"><i class="fas fa-chart-line section-head-icon"></i> <%= t.home.mostSold %></h2>
+                <div class="section-head-decoration" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+            </header>
+            <div class="products-grid most-requested-grid">
+                <% _mostRequested.forEach(function(product) { %>
+                <div class="product-card product-has-hover" data-id="<%= product.id %>">
+                    <a href="/product/<%= product.id %>" class="product-card-link">
+                        <div class="product-image">
+                            <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
+                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> <%= t.common.sar %></span> <span class="price-sale"><%= product.sale_price %> <%= t.common.sar %></span><% } else { %><%= (product.variants && product.variants.length) ? (t.common.priceFrom + ' ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ' + t.common.sar) : (product.price + ' ' + t.common.sar) %><% } %></span>
+                        </div>
+                        <div class="product-info">
+                            <h3><%= product.name %></h3>
+                            <p><%= product.description %></p>
+                        </div>
+                    </a>
+                    <div class="product-actions">
+                        <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
+                            <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
+                        </button>
+                        <div class="qty-control-widget" style="display: none;">
+                            <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
+                            <span class="qty-display">1</span>
+                            <button class="qty-btn plus" onclick="updateItemQty(<%= product.id %>, 1)"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- قسم المنتجات حسب التصنيف -->
+    <main class="container" id="products-section">
+        <% if (locals.error) { %>
+            <div class="error-message">
+                <strong><%= t.error %>:</strong> <%= error %>
+            </div>
+        <% } %>
+
+        <% if (!locals.products || products.length === 0) { %>
+            <div class="no-products">
+                <p><%= t.noProducts %></p>
+            </div>
+        <% } %>
+        <% if (locals.products && products.length > 0) { %>
             <!-- البانر 1: فيديو قصير (بعد شريط التصنيفات) -->
             <% const _b1 = typeof banner1 !== 'undefined' && banner1; const _b2 = typeof banner2 !== 'undefined' && banner2; %>
             <% const _b1IsVideo = _b1 && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(banner1); %>
@@ -297,7 +300,7 @@
                             <div class="category-header-inner">
                                 <span class="category-header-accent" aria-hidden="true"></span>
                                 <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i><%= cat.name %></h2>
-                                <span class="category-header-count"><%= catProducts.length %> منتج</span>
+                                <span class="category-header-count"><%= catProducts.length %> <%= t.home.productCount %></span>
                             </div>
                             <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                         </div>
@@ -307,7 +310,7 @@
                                     <a href="/product/<%= product.id %>" class="product-card-link">
                                         <div class="product-image">
                                             <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
+                                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> <%= t.common.sar %></span> <span class="price-sale"><%= product.sale_price %> <%= t.common.sar %></span><% } else { %><%= (product.variants && product.variants.length) ? (t.common.priceFrom + ' ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ' + t.common.sar) : (product.price + ' ' + t.common.sar) %><% } %></span>
                                         </div>
                                         <div class="product-info">
                                             <h3><%= product.name %></h3>
@@ -316,7 +319,7 @@
                                     </a>
                                     <div class="product-actions">
                                         <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
-                                            <i class="fas fa-cart-plus"></i> أضف للسلة
+                                            <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
                                         </button>
                                         <div class="qty-control-widget" style="display: none;">
                                             <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
@@ -352,7 +355,7 @@
                             <div class="category-header-inner">
                                 <span class="category-header-accent" aria-hidden="true"></span>
                                 <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i><%= cat.name %></h2>
-                                <span class="category-header-count"><%= catProducts.length %> منتج</span>
+                                <span class="category-header-count"><%= catProducts.length %> <%= t.home.productCount %></span>
                             </div>
                             <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                         </div>
@@ -362,7 +365,7 @@
                                     <a href="/product/<%= product.id %>" class="product-card-link">
                                         <div class="product-image">
                                             <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
+                                            <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> <%= t.common.sar %></span> <span class="price-sale"><%= product.sale_price %> <%= t.common.sar %></span><% } else { %><%= (product.variants && product.variants.length) ? (t.common.priceFrom + ' ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ' + t.common.sar) : (product.price + ' ' + t.common.sar) %><% } %></span>
                                         </div>
                                         <div class="product-info">
                                             <h3><%= product.name %></h3>
@@ -371,7 +374,7 @@
                                     </a>
                                     <div class="product-actions">
                                         <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
-                                            <i class="fas fa-cart-plus"></i> أضف للسلة
+                                            <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
                                         </button>
                                         <div class="qty-control-widget" style="display: none;">
                                             <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
@@ -394,8 +397,8 @@
                     <div class="category-header category-header-pro">
                         <div class="category-header-inner">
                             <span class="category-header-accent" aria-hidden="true"></span>
-                            <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i>أخرى</h2>
-                            <span class="category-header-count"><%= otherProducts.length %> منتج</span>
+                            <h2 class="category-title"><i class="fas fa-tag category-title-icon"></i><%= t.home.other %></h2>
+                            <span class="category-header-count"><%= otherProducts.length %> <%= t.home.productCount %></span>
                         </div>
                         <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                     </div>
@@ -405,7 +408,7 @@
                                 <a href="/product/<%= product.id %>" class="product-card-link">
                                     <div class="product-image">
                                         <img src="<%= (product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/600x400?text=No+Image' %>" alt="<%= product.name %>" loading="lazy">
-                                        <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> ر.س</span> <span class="price-sale"><%= product.sale_price %> ر.س</span><% } else { %><%= (product.variants && product.variants.length) ? ('من ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ر.س') : (product.price + ' ر.س') %><% } %></span>
+                                        <span class="price"><% if (product.sale_price != null && product.sale_price !== '' && (!product.variants || !product.variants.length)) { %><span class="price-old"><%= product.price %> <%= t.common.sar %></span> <span class="price-sale"><%= product.sale_price %> <%= t.common.sar %></span><% } else { %><%= (product.variants && product.variants.length) ? (t.common.priceFrom + ' ' + Math.min(...product.variants.map(v=>parseFloat(v.price)||0)) + ' ' + t.common.sar) : (product.price + ' ' + t.common.sar) %><% } %></span>
                                     </div>
                                     <div class="product-info">
                                         <h3><%= product.name %></h3>
@@ -414,7 +417,7 @@
                                 </a>
                                 <div class="product-actions">
                                     <button class="order-btn add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart(<%= JSON.stringify(product) %>)">
-                                        <i class="fas fa-cart-plus"></i> أضف للسلة
+                                        <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
                                     </button>
                                     <div class="qty-control-widget" style="display: none;">
                                         <button class="qty-btn minus" onclick="updateItemQty(<%= product.id %>, -1)"><i class="fas fa-minus"></i></button>
@@ -436,19 +439,19 @@
                 <div class="category-header category-header-pro">
                     <div class="category-header-inner">
                         <span class="category-header-accent" aria-hidden="true"></span>
-                        <h2 class="category-title"><i class="fas fa-ice-cream category-title-icon"></i>آيسكريم</h2>
+                        <h2 class="category-title"><i class="fas fa-ice-cream category-title-icon"></i><%= t.home.iceCream %></h2>
                     </div>
                     <div class="category-header-line" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
                 </div>
                 <div class="ice-cream-builder">
-                    <p class="ice-cream-step-label">١. اختر حجم الكوب</p>
+                    <p class="ice-cream-step-label"><%= t.iceCream.step1 %></p>
                     <div class="ice-cream-cup-sizes" id="iceCreamCupSizes">
                         <% (iceCreamOptions.cupSizes || []).forEach(function(cup) { %>
-                        <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>" data-image-url="<%= (iceCreamOptions.cupImages && iceCreamOptions.cupImages[cup.name_ar]) ? iceCreamOptions.cupImages[cup.name_ar] : '' %>"><%= cup.name_ar %> — <%= cup.price %> ر.س (<%= cup.max_scoops %> كرات)</button>
+                        <button type="button" class="ice-cream-cup-btn" data-name="<%= cup.name_ar %>" data-price="<%= cup.price %>" data-max-scoops="<%= cup.max_scoops %>" data-image-url="<%= (iceCreamOptions.cupImages && iceCreamOptions.cupImages[cup.name_ar]) ? iceCreamOptions.cupImages[cup.name_ar] : '' %>"><%= cup.name_ar %> — <%= cup.price %> <%= t.common.sar %> (<%= cup.max_scoops %> <%= t.iceCream.balls %>)</button>
                         <% }); %>
                     </div>
                     <div class="ice-cream-flavors-wrap" id="iceCreamFlavorsWrap" style="display: none;">
-                        <p class="ice-cream-step-label">٢. اختر النكهات (اضغط لإضافة كرة)</p>
+                        <p class="ice-cream-step-label"><%= t.iceCream.step2 %></p>
                         <div class="ice-cream-layout">
                             <div class="ice-cream-cup-visual" id="iceCreamCupVisual">
                                 <div class="ice-cream-scoops-stack" id="iceCreamScoopsStack"></div>
@@ -465,7 +468,7 @@
                             <span class="ice-cream-cup-price" id="iceCreamCupPrice"></span>
                         </div>
                         <button type="button" class="order-btn ice-cream-add-cart-btn" id="iceCreamAddToCartBtn" disabled>
-                            <i class="fas fa-cart-plus"></i> أضف للسلة
+                            <i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>
                         </button>
                     </div>
                 </div>
@@ -495,8 +498,8 @@
                     wrap.style.display = 'block';
                     if (cupVisual) cupVisual.classList.add('visible');
                     if (scoopsStack) scoopsStack.innerHTML = '';
-                    summary.textContent = 'كوب ' + selectedCup.name_ar + ': —';
-                    priceEl.textContent = selectedCup.price + ' ر.س';
+                    summary.textContent = '<%= t.iceCream.cupLabel %> ' + selectedCup.name_ar + ': —';
+                    priceEl.textContent = selectedCup.price + ' <%= t.common.sar %>';
                     addBtn.disabled = true;
                 });
                 flavorsGridEl.addEventListener('click', function(e) {
@@ -516,8 +519,8 @@
                         ball.offsetHeight;
                         ball.classList.add('scoop-visible');
                     }
-                    summary.textContent = 'كوب ' + selectedCup.name_ar + ': ' + selectedFlavors.join('، ');
-                    priceEl.textContent = selectedCup.price + ' ر.س';
+                    summary.textContent = '<%= t.iceCream.cupLabel %> ' + selectedCup.name_ar + ': ' + selectedFlavors.join(', ');
+                    priceEl.textContent = selectedCup.price + ' <%= t.common.sar %>';
                     addBtn.disabled = false;
                 });
                 addBtn.addEventListener('click', function() {
@@ -526,7 +529,7 @@
                     addBtn.innerHTML = '<i class="fas fa-check"></i> تمت الإضافة';
                     addBtn.disabled = true;
                     setTimeout(function() {
-                        addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> أضف للسلة';
+                        addBtn.innerHTML = '<i class="fas fa-cart-plus"></i> <%= t.home.addToCart %>';
                         addBtn.disabled = selectedFlavors.length === 0;
                     }, 2000);
                 });
@@ -538,10 +541,10 @@
     <!-- آراء الناس من الدمام والخبر والقطيف -->
     <section class="reviews-section">
         <div class="container">
-            <span class="reviews-badge"><i class="fas fa-quote-right"></i> آراء عملائنا</span>
+            <span class="reviews-badge"><i class="fas fa-quote-right"></i> <%= t.reviews.title %></span>
             <div class="reviews-grid">
                 <div class="review-card">
-                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> الدمام</span>
+                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> <%= t.reviews.dammam %></span>
                     <div class="review-stars">★★★★★</div>
                     <blockquote class="review-text">"أطيب بوظة جربتها! الطعم أصلي وذا والخدمة نار، والله يمدحون."</blockquote>
                     <div class="review-author">
@@ -550,7 +553,7 @@
                     </div>
                 </div>
                 <div class="review-card">
-                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> الخبر</span>
+                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> <%= t.reviews.khobar %></span>
                     <div class="review-stars">★★★★★</div>
                     <blockquote class="review-text">"تعاملهم حلو والتوصيل سريع، والكيك خطير والجميع سألني من وين جبته."</blockquote>
                     <div class="review-author">
@@ -559,7 +562,7 @@
                     </div>
                 </div>
                 <div class="review-card">
-                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> القطيف</span>
+                    <span class="review-city"><i class="fas fa-map-marker-alt"></i> <%= t.reviews.qatif %></span>
                     <div class="review-stars">★★★★★</div>
                     <blockquote class="review-text">"الحلويات الشرقية زينه وتسدّ النفس في العزايم، الله يعطيكم العافية."</blockquote>
                     <div class="review-author">
@@ -575,19 +578,19 @@
     <footer class="main-footer">
         <div class="footer-content container">
             <div class="footer-col">
-                <h3>حلويات بقداش</h3>
-                <p>أجود أنواع البقلاوة والشوكولاتة والمعجنات.</p>
+                <h3><%= t.footer.brand %></h3>
+                <p><%= t.footer.tagline %></p>
             </div>
             <div class="footer-col">
-                <h3>روابط سريعة</h3>
+                <h3><%= t.footer.quickLinks %></h3>
                 <ul>
-                    <li><a href="/">الرئيسية</a></li>
-                    <li><a href="#products-section">المنتجات</a></li>
-                    <li><a href="/parties">الحفلات</a></li>
+                    <li><a href="/"><%= t.nav.home %></a></li>
+                    <li><a href="#products-section"><%= t.nav.products %></a></li>
+                    <li><a href="/parties"><%= t.nav.parties %></a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h3>تواصل معنا</h3>
+                <h3><%= t.footer.contact %></h3>
                 <p><i class="fas fa-phone"></i> 920005031</p>
                 <p><i class="fas fa-map-marker-alt"></i> القطيف • سيهات</p>
                 <div class="footer-social">
@@ -599,20 +602,20 @@
                 </div>
             </div>
             <div class="footer-col footer-commercial-reg">
-                <h3>السجل التجاري</h3>
+                <h3><%= t.footer.commercialReg %></h3>
                 <div class="commercial-reg-card">
                     <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - اضغط للتحقق">
                         <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
                     </a>
                     <div class="commercial-reg-info">
-                        <span class="commercial-reg-label">رقم السجل</span>
+                        <span class="commercial-reg-label"><%= t.footerExtra.commercialRegNum %></span>
                         <span class="commercial-reg-num">2053033300</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>جميع الحقوق محفوظة &copy; 2026 حلويات بقداش - Bagdash sweets</p>
+            <p><%= t.footerExtra.rights %> &copy; 2026 <%= t.common.brandName %> - <%= t.common.brandEn %></p>
         </div>
     </footer>
 
@@ -623,6 +626,7 @@
 
     <%- include('partials/cake-form-modal') %>
     <%- include('partials/variant-modal') %>
+    <script>window.__i18n = window.__i18n || {}; window.__i18n.sar = '<%= t.common.sar %>';</script>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
     <% if (stories && stories.length > 0) { %>
     <script>
@@ -691,7 +695,7 @@
             block.hidden = !isHidden;
             btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
             var pill = btn.querySelector('.pill-name');
-            if (pill) pill.innerHTML = isHidden ? '<i class=\"fas fa-chevron-up\"></i> إخفاء التصنيفات' : '<i class=\"fas fa-chevron-down\"></i> بقية التصنيفات (' + count + ')';
+            if (pill) pill.innerHTML = isHidden ? '<i class=\"fas fa-chevron-up\"></i> <%= t.home.hideCategories %>' : '<i class=\"fas fa-chevron-down\"></i> <%= t.home.otherCategories %> (' + count + ')';
             if (isHidden) block.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     })();
