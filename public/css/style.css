@@ -106,8 +106,9 @@ ul {
 .nav-logo {
     height: 48px;
     width: auto;
-    border-radius: 50%;
-    object-fit: cover;
+    max-width: 52px;
+    border-radius: 10px;
+    object-fit: contain;
 }
 
 .brand-name {
@@ -1050,6 +1051,7 @@ ul {
     .topbar .nav-logo {
         height: 40px;
         width: auto;
+        max-width: 44px;
     }
 
     .topbar .brand-name {
