@@ -205,19 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAllUI();
     }
 
-    // 2. Add Item (First Time)
-    function isCakeProduct(product) {
-        if (product.is_cake) return true;
-        const cat = (product.category || '').trim();
-        return ['كيك', 'كيكات'].some(c => cat.includes(c));
-    }
-
     window.addToCart = function(product, selectedVariant) {
-        if (isCakeProduct(product)) {
-            openCakeModal(product);
-            return;
-        }
-
         if (product.variants && product.variants.length > 0 && !selectedVariant) {
             openVariantModal(product);
             return;
@@ -227,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ? { ...product, quantity: 1, selectedVariant: { name: selectedVariant.name, price: selectedVariant.price } }
             : { ...product, quantity: 1 };
         const itemPrice = selectedVariant ? selectedVariant.price : product.price;
-        const matchFn = item => item.id === product.id && !item.cakeOptions && 
+        const matchFn = item => item.id === product.id && 
             (JSON.stringify(item.selectedVariant || {}) === JSON.stringify(cartItem.selectedVariant || {}));
         const existingItem = cart.find(matchFn);
         
@@ -310,96 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const v = product.variants[parseInt(sel.value, 10)];
                 addToCart(product, v);
                 closeVariantModal();
-            });
-        }
-    })();
-
-    window.openCakeModal = function(product) {
-        window._pendingCakeProduct = product;
-        document.getElementById('cakeModalProductName').textContent = product.name;
-        document.getElementById('cakeProductData').value = JSON.stringify(product);
-        document.getElementById('cakeOrderForm').reset();
-        document.getElementById('cakeFileName').textContent = '';
-
-        const sizeSelect = document.getElementById('cakeSize');
-        sizeSelect.innerHTML = '<option value="">اختر</option>';
-        if (product.variants && product.variants.length > 0) {
-            product.variants.forEach(function(v, i) {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = v.name + ' - ' + v.price + ' ' + ((window.__i18n && window.__i18n.sar) || 'ر.س');
-                sizeSelect.appendChild(opt);
-            });
-        } else {
-            ['صغير', 'وسط', 'كبير'].forEach(function(s) {
-                const opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
-                sizeSelect.appendChild(opt);
-            });
-        }
-
-        document.getElementById('cakeFormModal').classList.add('active');
-    };
-
-    window.closeCakeModal = function() {
-        document.getElementById('cakeFormModal').classList.remove('active');
-        window._pendingCakeProduct = null;
-    };
-
-    (function initCakeForm() {
-        const cakeForm = document.getElementById('cakeOrderForm');
-        const cakeModal = document.getElementById('cakeFormModal');
-        if (cakeForm) {
-            cakeForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const product = window._pendingCakeProduct;
-                if (!product) return;
-
-                const sizeVal = document.getElementById('cakeSize').value;
-                const cakeOptions = {
-                    size: product.variants && product.variants.length ? product.variants[parseInt(sizeVal, 10)].name : sizeVal,
-                    sponge: document.getElementById('cakeSponge').value,
-                    filling: document.getElementById('cakeFilling').value,
-                    addon: document.getElementById('cakeAddon').value,
-                    date: document.getElementById('cakeDate').value,
-                    writing: document.getElementById('cakeWriting').value,
-                    note: document.getElementById('cakeNote').value,
-                    imageUrl: null
-                };
-
-                const fileInput = document.getElementById('cakeAttachment');
-                if (fileInput.files.length > 0) {
-                    const formData = new FormData();
-                    formData.append('image', fileInput.files[0]);
-                    try {
-                        const res = await fetch('/api/upload-cake-image', { method: 'POST', body: formData });
-                        const data = await res.json();
-                        if (data.success) cakeOptions.imageUrl = data.url;
-                    } catch (err) { console.error(err); }
-                }
-
-                const selectedVariant = product.variants && product.variants.length ? product.variants[parseInt(sizeVal, 10)] : null;
-                const cartItem = { ...product, quantity: 1, cakeOptions };
-                if (selectedVariant) cartItem.selectedVariant = { name: selectedVariant.name, price: selectedVariant.price };
-                cart.push(cartItem);
-                saveCart();
-                closeCakeModal();
-
-                const card = document.querySelector(`.product-card[data-id="${product.id}"], .product-item[data-id="${product.id}"]`);
-                if (card) {
-                    const img = card.querySelector('.product-image img');
-                    if (img) animateFlyToCart(img);
-                }
-            });
-        }
-        if (cakeModal) {
-            cakeModal.addEventListener('click', function(e) {
-                if (e.target === cakeModal) closeCakeModal();
-            });
-            const attInput = document.getElementById('cakeAttachment');
-            if (attInput) attInput.addEventListener('change', function() {
-                document.getElementById('cakeFileName').textContent = this.files[0] ? this.files[0].name : '';
             });
         }
     })();
@@ -559,11 +457,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const safeName = (item.name || '').replace(/"/g, '&quot;');
                 const sar = (window.__i18n && window.__i18n.sar) || 'ر.س';
                 const variantInfo = item.selectedVariant ? '<div class="cart-item-variant"><small>' + item.selectedVariant.name + ' - ' + item.selectedVariant.price + ' ' + sar + '</small></div>' : '';
-                const cakeInfo = item.cakeOptions ? '<div class="cart-item-cake-options"><small>' +
-                    [item.cakeOptions.size && 'الحجم: ' + item.cakeOptions.size,
-                     item.cakeOptions.sponge && 'السبونج: ' + item.cakeOptions.sponge,
-                     item.cakeOptions.date && 'الموعد: ' + item.cakeOptions.date].filter(Boolean).join(' | ') +
-                    '</small></div>' : '';
                 const iceCreamInfo = (item.type === 'ice_cream' && item.iceCup && item.flavors) ? '<div class="cart-item-ice-cream"><small>كوب ' + item.iceCup.name_ar + ': ' + item.flavors.map(function(f) { return f.name_ar; }).join('، ') + '</small></div>' : '';
                 const displayName = item.type === 'ice_cream' ? (item.name || 'آيسكريم') : item.name;
                 const displayImg = item.type === 'ice_cream' && item.iceCup && item.iceCup.imageUrl
@@ -579,7 +472,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${variantInfo}
                         ${iceCreamInfo}
                         <span class="item-price-unit">${unitPrice} ${sar} × ${item.quantity}</span>
-                        ${cakeInfo}
                     </div>
 
                     <div class="cart-item-actions">
@@ -665,20 +557,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 const sarMsg = (window.__i18n && window.__i18n.sar) || 'ر.س';
                 message += `- ${lineName} (${item.quantity}x): ${(unitPrice * item.quantity).toFixed(2)} ${sarMsg}\n`;
-                if (item.cakeOptions) {
-                    const co = item.cakeOptions;
-                    if (co.size) message += `  • الحجم: ${co.size}\n`;
-                    if (co.sponge) message += `  • السبونج: ${co.sponge}\n`;
-                    if (co.filling) message += `  • الحشوة: ${co.filling}\n`;
-                    if (co.addon) message += `  • الإضافة: ${co.addon}\n`;
-                    if (co.date) message += `  • الموعد: ${co.date}\n`;
-                    if (co.writing) message += `  • الكتابة على القاعدة: ${co.writing}\n`;
-                    if (co.note) message += `  • ملاحظة: ${co.note}\n`;
-                    if (co.imageUrl) {
-                        const imgFullUrl = co.imageUrl.startsWith('http') ? co.imageUrl : (baseUrl + (co.imageUrl.startsWith('/') ? '' : '/') + co.imageUrl);
-                        message += `  • 🖼️ صورة التصميم (اضغط الرابط لمشاهدة الصورة):\n     ${imgFullUrl}\n`;
-                    }
-                }
             });
 
             const total = cart.reduce((sum, item) => {

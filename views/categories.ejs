@@ -88,9 +88,7 @@
         <div class="categories-grid">
             <% catsWithCount.forEach(function(cat) { %>
             <a href="/products?category=<%= encodeURIComponent(cat.name) %>" class="category-page-card">
-                <span class="category-page-card-bg">
-                    <img src="/images/category-card-bg.png" alt="" class="category-page-card-img">
-                </span>
+                <span class="category-page-card-icon" aria-hidden="true"><i class="fas fa-utensils"></i></span>
                 <span class="category-page-card-text">
                     <span class="pill-name"><%= cat.name %></span>
                     <span class="pill-count">(<%= cat.count %> <%= t.home.productCount %>)</span>

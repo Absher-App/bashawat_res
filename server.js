@@ -282,15 +282,6 @@ async function runAutoMigrations() {
     }
 }
 
-// رفع صورة تصميم الكيك (لعملاء الموقع)
-app.post('/api/upload-cake-image', upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, error: 'لم يتم رفع أي ملف' });
-    }
-    const url = '/uploads/' + req.file.filename;
-    res.json({ success: true, url });
-});
-
 // مساعد: تحويل صور المنتج والأحجام/الأوزان من JSON
 function parseProductImages(products) {
     return (products || []).map(p => {
@@ -309,37 +300,6 @@ function parseProductImages(products) {
         p.variant_type = p.variant_type || null;
         return p;
     });
-}
-
-// خيارات الكيك (أحجام، سبونج، حشوة، إضافة) من جدول الإعدادات
-const DEFAULT_CAKE_OPTIONS = {
-    sizes: ['صغير', 'وسط', 'كبير'],
-    sponge: ['فانيلا', 'شوكولاتة', 'مشمش'],
-    filling: ['كريمة', 'شوكولاتة', 'فراولة'],
-    addon: ['بدون', 'فراولة', 'شوكولاتة']
-};
-
-async function getCakeOptions() {
-    try {
-        const rows = await queryDb(
-            "SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('cake_sizes', 'cake_sponge', 'cake_filling', 'cake_addon')"
-        );
-        const opts = { ...DEFAULT_CAKE_OPTIONS };
-        rows.forEach(r => {
-            try {
-                const arr = JSON.parse(r.setting_value || '[]');
-                if (Array.isArray(arr) && arr.length > 0) {
-                    if (r.setting_key === 'cake_sizes') opts.sizes = arr;
-                    else if (r.setting_key === 'cake_sponge') opts.sponge = arr;
-                    else if (r.setting_key === 'cake_filling') opts.filling = arr;
-                    else if (r.setting_key === 'cake_addon') opts.addon = arr;
-                }
-            } catch (e) {}
-        });
-        return opts;
-    } catch (err) {
-        return { ...DEFAULT_CAKE_OPTIONS };
-    }
 }
 
 // خيارات الآيسكريم (أحجام الكوب + النكهات) من جدول الإعدادات
@@ -409,15 +369,13 @@ app.get('/', async (req, res) => {
         const offer_text = (settings.find(s => s.setting_key === 'offer_banner') || {}).setting_value || '';
         const banner1 = (settings.find(s => s.setting_key === 'banner_1') || {}).setting_value || '';
         const banner2 = (settings.find(s => s.setting_key === 'banner_2') || {}).setting_value || '';
-        const cakeOptions = await getCakeOptions();
         const iceCreamOptions = await getIceCreamOptions();
 
-        res.render('index', { products, mostRequestedProducts, categories, slides, stories, offer_text, banner1, banner2, cakeOptions, iceCreamOptions, error: null });
+        res.render('index', { products, mostRequestedProducts, categories, slides, stories, offer_text, banner1, banner2, iceCreamOptions, error: null });
     } catch (err) {
         console.error(err);
-        const cakeOptions = await getCakeOptions().catch(() => ({ ...DEFAULT_CAKE_OPTIONS }));
         const iceCreamOptions = await getIceCreamOptions().catch(() => ({ ...DEFAULT_ICE_CREAM_OPTIONS }));
-        res.render('index', { products: [], mostRequestedProducts: [], categories: [], slides: [], stories: [], offer_text: '', banner1: '', banner2: '', cakeOptions, iceCreamOptions, error: 'خطأ في جلب البيانات' });
+        res.render('index', { products: [], mostRequestedProducts: [], categories: [], slides: [], stories: [], offer_text: '', banner1: '', banner2: '', iceCreamOptions, error: 'خطأ في جلب البيانات' });
     }
 });
 
@@ -429,15 +387,13 @@ app.get('/products', async (req, res) => {
         const categories = await queryDb('SELECT * FROM categories');
         const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
         const offer_text = settings.length > 0 ? settings[0].setting_value : '';
-        const cakeOptions = await getCakeOptions();
         const iceCreamOptions = await getIceCreamOptions();
 
-        res.render('products', { products, categories, offer_text, cakeOptions, iceCreamOptions, error: null });
+        res.render('products', { products, categories, offer_text, iceCreamOptions, error: null });
     } catch (err) {
         console.error(err);
-        const cakeOptions = await getCakeOptions().catch(() => ({ ...DEFAULT_CAKE_OPTIONS }));
         const iceCreamOptions = await getIceCreamOptions().catch(() => ({ ...DEFAULT_ICE_CREAM_OPTIONS }));
-        res.render('products', { products: [], categories: [], offer_text: '', cakeOptions, iceCreamOptions, error: 'خطأ في جلب البيانات' });
+        res.render('products', { products: [], categories: [], offer_text: '', iceCreamOptions, error: 'خطأ في جلب البيانات' });
     }
 });
 
@@ -454,9 +410,8 @@ app.get('/product/:id', async (req, res) => {
         const productCategory = (categoryFromDb != null && String(categoryFromDb).trim() !== '') ? String(categoryFromDb).trim() : '';
         const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
         const offer_text = settings.length > 0 ? settings[0].setting_value : '';
-        const cakeOptions = await getCakeOptions();
         const iceCreamOptions = await getIceCreamOptions();
-        res.render('product-detail', { product, productCategory, offer_text, cakeOptions, iceCreamOptions });
+        res.render('product-detail', { product, productCategory, offer_text, iceCreamOptions });
     } catch (err) {
         console.error(err);
         res.redirect('/products');
@@ -549,64 +504,6 @@ app.get('/admin/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/admin/login');
     });
-});
-
-// خيارات الكيك — استخدام regex لأن Express 5 قد لا يطابق المسار الذي فيه شرطة
-app.get(/^\/admin\/cake-options\/?$/i, (req, res) => res.redirect(302, '/admin/cakeoptions'));
-app.get('/admin/cakeoptions', requireAuth, async (req, res) => {
-    try {
-        const cakeOptions = await getCakeOptions();
-        return res.render('admin/cake-options', { cakeOptions, activePage: 'cake-options' });
-    } catch (err) {
-        console.error(err);
-        return res.send('خطأ في جلب البيانات');
-    }
-});
-app.post('/admin/cakeoptions', requireAuth, async (req, res) => {
-    const { sizes, sponge, filling, addon } = req.body;
-    const toArray = (v) => {
-        if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
-        if (typeof v === 'string') return v.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-        return [];
-    };
-    const sizesArr = toArray(sizes);
-    const spongeArr = toArray(sponge);
-    const fillingArr = toArray(filling);
-    const addonArr = toArray(addon);
-    const query = "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?";
-    try {
-        await queryDb(query, ['cake_sizes', JSON.stringify(sizesArr.length ? sizesArr : DEFAULT_CAKE_OPTIONS.sizes), JSON.stringify(sizesArr.length ? sizesArr : DEFAULT_CAKE_OPTIONS.sizes)]);
-        await queryDb(query, ['cake_sponge', JSON.stringify(spongeArr.length ? spongeArr : DEFAULT_CAKE_OPTIONS.sponge), JSON.stringify(spongeArr.length ? spongeArr : DEFAULT_CAKE_OPTIONS.sponge)]);
-        await queryDb(query, ['cake_filling', JSON.stringify(fillingArr.length ? fillingArr : DEFAULT_CAKE_OPTIONS.filling), JSON.stringify(fillingArr.length ? fillingArr : DEFAULT_CAKE_OPTIONS.filling)]);
-        await queryDb(query, ['cake_addon', JSON.stringify(addonArr.length ? addonArr : DEFAULT_CAKE_OPTIONS.addon), JSON.stringify(addonArr.length ? addonArr : DEFAULT_CAKE_OPTIONS.addon)]);
-        res.redirect('/admin/cakeoptions');
-    } catch (err) {
-        console.error(err);
-        res.redirect('/admin/cakeoptions');
-    }
-});
-app.post(/^\/admin\/cake-options\/?$/i, requireAuth, async (req, res) => {
-    const { sizes, sponge, filling, addon } = req.body;
-    const toArray = (v) => {
-        if (Array.isArray(v)) return v.map(x => String(x).trim()).filter(Boolean);
-        if (typeof v === 'string') return v.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-        return [];
-    };
-    const sizesArr = toArray(sizes);
-    const spongeArr = toArray(sponge);
-    const fillingArr = toArray(filling);
-    const addonArr = toArray(addon);
-    const query = "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?";
-    try {
-        await queryDb(query, ['cake_sizes', JSON.stringify(sizesArr.length ? sizesArr : DEFAULT_CAKE_OPTIONS.sizes), JSON.stringify(sizesArr.length ? sizesArr : DEFAULT_CAKE_OPTIONS.sizes)]);
-        await queryDb(query, ['cake_sponge', JSON.stringify(spongeArr.length ? spongeArr : DEFAULT_CAKE_OPTIONS.sponge), JSON.stringify(spongeArr.length ? spongeArr : DEFAULT_CAKE_OPTIONS.sponge)]);
-        await queryDb(query, ['cake_filling', JSON.stringify(fillingArr.length ? fillingArr : DEFAULT_CAKE_OPTIONS.filling), JSON.stringify(fillingArr.length ? fillingArr : DEFAULT_CAKE_OPTIONS.filling)]);
-        await queryDb(query, ['cake_addon', JSON.stringify(addonArr.length ? addonArr : DEFAULT_CAKE_OPTIONS.addon), JSON.stringify(addonArr.length ? addonArr : DEFAULT_CAKE_OPTIONS.addon)]);
-        res.redirect('/admin/cakeoptions');
-    } catch (err) {
-        console.error(err);
-        res.redirect('/admin/cakeoptions');
-    }
 });
 
 // الآيسكريم — أحجام الكوب والنكهات (regex لتفادي Cannot GET في Express 5)

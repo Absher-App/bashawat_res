@@ -174,22 +174,19 @@
                     <% mainCatsToShow.forEach(function(cat) { %>
                         <% const cp = products.filter(p => p.category === cat.name); %>
                         <a href="#cat-<%= cat.id %>" class="home-category-card">
-                            <span class="home-category-card-bg">
-                                <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
-                            </span>
+                            <span class="home-category-card-icon" aria-hidden="true"><i class="fas fa-utensils"></i></span>
                             <span class="home-category-card-text">
                                 <span class="pill-name"><%= cat.name %></span>
-                                <span class="pill-count">(<%= cp.length %>)</span>
+                                <span class="pill-count"><%= cp.length %> <%= t.home.productCount %></span>
                             </span>
                         </a>
                     <% }); %>
                     <% if (hasMoreCategories) { %>
                     <a href="/categories" class="home-category-card home-category-card-more">
-                        <span class="home-category-card-bg">
-                            <img src="/images/category-card-bg.png" alt="" class="home-category-card-img">
-                        </span>
+                        <span class="home-category-card-icon" aria-hidden="true"><i class="fas fa-th-large"></i></span>
                         <span class="home-category-card-text">
-                            <span class="pill-name"><i class="fas fa-th-large"></i> <%= t.home.allCategories %></span>
+                            <span class="pill-name"><%= t.home.allCategories %></span>
+                            <span class="pill-count"><%= t.home.allCategoriesPageSubtitle %></span>
                         </span>
                     </a>
                     <% } %>
@@ -554,7 +551,6 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <%- include('partials/cake-form-modal') %>
     <%- include('partials/variant-modal') %>
     <script>window.__i18n = window.__i18n || {}; window.__i18n.sar = '<%= t.common.sar %>';</script>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
