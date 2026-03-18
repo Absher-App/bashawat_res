@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حلويات بقداش - Bagdash sweets</title>
-    <meta name="description" content="حلويات بقداش - أفضل حلويات عربية وكيك. طلب أونلاين وتوصيل. كنافة، بقلاوة، بسبوسة، كيك مناسبات.">
-    <meta name="keywords" content="حلويات بقداش، بقداش، حلويات عربية، كنافة، بقلاوة، توصيل حلويات">
-    <meta name="author" content="حلويات بقداش">
+    <title><%= t.common.brandName %> - <%= t.common.brandEn %></title>
+    <meta name="description" content="<%= t.common.brandName %> - طلب أونلاين وتوصيل.">
+    <meta name="keywords" content="<%= t.common.brandName %>، الباشاوات، مطعم، توصيل">
+    <meta name="author" content="<%= t.common.brandName %>">
     <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
     <link rel="canonical" href="<%= siteUrl %>/">
     <meta property="og:url" content="<%= siteUrl %>/">
     <% } %>
     <meta property="og:type" content="website">
-    <meta property="og:title" content="حلويات بقداش - Bagdash sweets">
+    <meta property="og:title" content="<%= t.common.brandName %> - <%= t.common.brandEn %>">
     <meta property="og:description" content="أفضل حلويات عربية وكيك. طلب أونلاين وتوصيل.">
     <meta property="og:locale" content="ar_SA">
     <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="حلويات بقداش - Bagdash sweets">
+    <meta name="twitter:title" content="<%= t.common.brandName %> - <%= t.common.brandEn %>">
     <meta name="twitter:description" content="أفضل حلويات عربية وكيك. طلب أونلاين وتوصيل.">
     <meta name="twitter:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <link rel="icon" href="/images/logo.png" type="image/png">
@@ -537,8 +537,8 @@
             <div class="footer-col footer-commercial-reg">
                 <h3><%= t.footer.commercialReg %></h3>
                 <div class="commercial-reg-card">
-                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="شركة بوطة بقداش التجارية - اضغط للتحقق">
-                        <img src="/images/commercial-registration.png" alt="السجل التجاري - شركة بوطة بقداش 2053033300" class="commercial-reg-img" loading="lazy">
+                    <a href="/images/commercial-registration.png" target="_blank" rel="noopener" class="commercial-reg-link" title="السجل التجاري - اضغط للتحقق">
+                        <img src="/images/commercial-registration.png" alt="السجل التجاري 2053033300" class="commercial-reg-img" loading="lazy">
                     </a>
                     <div class="commercial-reg-info">
                         <span class="commercial-reg-label"><%= t.footerExtra.commercialRegNum %></span>
@@ -587,15 +587,15 @@
         }
     </script>
     <% } %>
-    <!-- بيانات منظمة لـ Google — حلويات بقداش (لظهور أفضل عند البحث بـ "حلويات بقداش") -->
+    <!-- بيانات منظمة لـ Google -->
     <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "Bakery",
-        "name": "حلويات بقداش",
-        "alternateName": ["Bagdash sweets", "بقداش"],
-        "description": "حلويات بقداش - أفضل حلويات عربية وكيك. كنافة، بقلاوة، بسبوسة، كيك مناسبات. طلب أونلاين وتوصيل.",
+        "@type": "Restaurant",
+        "name": "<%= t.common.brandName %>",
+        "alternateName": ["<%= t.common.brandEn %>"],
+        "description": "<%= t.common.brandName %> - طلب أونلاين وتوصيل.",
         "url": "<%= siteUrl %>",
         "logo": "<%= siteUrl %>/images/logo.png",
         "image": "<%= siteUrl %>/images/logo.png",
@@ -608,13 +608,13 @@
             "https://www.tiktok.com/@bagdashsweet",
             "https://www.facebook.com/bagdashsweet/"
         ],
-        "servesCuisine": "حلويات عربية",
+        "servesCuisine": "مأكولات عربية",
         "priceRange": "ريال",
         "potentialAction": { "@type": "OrderAction", "target": { "@type": "EntryPoint", "urlTemplate": "<%= siteUrl %>/products", "actionPlatform": "http://schema.org/DesktopWebPlatform" } }
     }
     </script>
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"Organization","name":"حلويات بقداش","alternateName":"Bagdash sweets","url":"<%= siteUrl %>","logo":"<%= siteUrl %>/images/logo.png","sameAs":["https://www.instagram.com/bodatbagdash/","https://x.com/BodatBagdash","https://www.facebook.com/bagdashsweet/"]}
+    {"@context":"https://schema.org","@type":"Organization","name":"<%= t.common.brandName %>","alternateName":"<%= t.common.brandEn %>","url":"<%= siteUrl %>","logo":"<%= siteUrl %>/images/logo.png","sameAs":["https://www.instagram.com/bodatbagdash/","https://x.com/BodatBagdash","https://www.facebook.com/bagdashsweet/"]}
     </script>
     <% } %>
 </body>

@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قائمة المنتجات - حلويات بقداش - Bagdash sweets | كنافة، بقلاوة، آيسكريم، كيك</title>
-    <meta name="description" content="تصفح جميع منتجات حلويات بقداش: كنافة، بقلاوة، بسبوسة، آيسكريم، كيك ومناسبات. طلب أونلاين وتوصيل.">
-    <meta name="keywords" content="منتجات بقداش، حلويات بقداش، كنافة، بقلاوة، آيسكريم، كيك، حلويات أونلاين">
-    <meta name="author" content="حلويات بقداش">
+    <title><%= t.products.title %> - <%= t.common.brandName %> - <%= t.common.brandEn %></title>
+    <meta name="description" content="<%= t.products.title %> - <%= t.common.brandName %>.">
+    <meta name="keywords" content="<%= t.common.brandName %>، منتجات، مطعم، توصيل">
+    <meta name="author" content="<%= t.common.brandName %>">
     <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
     <link rel="canonical" href="<%= siteUrl %>/products">
     <meta property="og:url" content="<%= siteUrl %>/products">
     <% } %>
     <meta property="og:type" content="website">
-    <meta property="og:title" content="قائمة المنتجات - حلويات بقداش - Bagdash sweets">
-    <meta property="og:description" content="تصفح منتجات حلويات بقداش: كنافة، بقلاوة، آيسكريم، كيك. طلب أونلاين وتوصيل.">
+    <meta property="og:title" content="<%= t.products.title %> - <%= t.common.brandName %> - <%= t.common.brandEn %>">
+    <meta property="og:description" content="<%= t.products.title %> - <%= t.common.brandName %>.">
     <meta property="og:locale" content="ar_SA">
     <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="قائمة المنتجات - حلويات بقداش">
-    <meta name="twitter:description" content="تصفح منتجات حلويات بقداش. طلب أونلاين وتوصيل.">
+    <meta name="twitter:title" content="<%= t.products.title %> - <%= t.common.brandName %>">
+    <meta name="twitter:description" content="<%= t.products.title %> - <%= t.common.brandName %>.">
     <link rel="icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">

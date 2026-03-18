@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خدمات الحفلات والمناسبات - حلويات بقداش - Bagdash sweets</title>
-    <meta name="description" content="خدمات حفلات ومناسبات من حلويات بقداش: كيك، حلويات، بوفيه. احجز مناسبتك.">
-    <meta name="keywords" content="حفلات بقداش، كيك مناسبات، بوفيه حلويات، بقداش">
-    <meta name="author" content="حلويات بقداش">
+    <title><%= t.parties.title %> - <%= t.common.brandName %> - <%= t.common.brandEn %></title>
+    <meta name="description" content="<%= t.parties.title %> - <%= t.common.brandName %>.">
+    <meta name="keywords" content="<%= t.common.brandName %>، حفلات، مناسبات، بوفيه">
+    <meta name="author" content="<%= t.common.brandName %>">
     <% if (typeof siteUrl !== 'undefined' && siteUrl) { %>
     <link rel="canonical" href="<%= siteUrl %>/parties">
     <meta property="og:url" content="<%= siteUrl %>/parties">
     <% } %>
     <meta property="og:type" content="website">
-    <meta property="og:title" content="خدمات الحفلات - حلويات بقداش - Bagdash sweets">
-    <meta property="og:description" content="خدمات حفلات ومناسبات من حلويات بقداش. كيك وبوفيه.">
+    <meta property="og:title" content="<%= t.parties.title %> - <%= t.common.brandName %> - <%= t.common.brandEn %>">
+    <meta property="og:description" content="<%= t.parties.title %> - <%= t.common.brandName %>.">
     <meta property="og:locale" content="ar_SA">
     <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="خدمات الحفلات - حلويات بقداش">
-    <meta name="twitter:description" content="خدمات حفلات ومناسبات. كيك وحلويات. حلويات بقداش.">
+    <meta name="twitter:title" content="<%= t.parties.title %> - <%= t.common.brandName %>">
+    <meta name="twitter:description" content="<%= t.parties.title %> - <%= t.common.brandName %>.">
     <link rel="icon" href="/images/logo.png" type="image/png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
