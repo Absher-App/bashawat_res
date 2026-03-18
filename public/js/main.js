@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // === Cart Logic & State ===
     // Replace with your actual WhatsApp number
-    const PHONE_NUMBER = "966502975175"; 
+    const PHONE_NUMBER = "966542629993"; 
     
     // Global Cart State
     let cart = JSON.parse(localStorage.getItem('bagdash_cart')) || [];
