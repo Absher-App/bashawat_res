@@ -15,11 +15,11 @@
     <meta property="og:title" content="<%= t.products.title %> - <%= t.common.brandName %> - <%= t.common.brandEn %>">
     <meta property="og:description" content="<%= t.products.title %> - <%= t.common.brandName %>.">
     <meta property="og:locale" content="ar_SA">
-    <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png">
+    <meta property="og:image" content="<%= typeof siteUrl !== 'undefined' && siteUrl ? siteUrl : '' %>/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<%= t.products.title %> - <%= t.common.brandName %>">
     <meta name="twitter:description" content="<%= t.products.title %> - <%= t.common.brandName %>.">
-    <link rel="icon" href="/images/logo.png" type="image/png">
+    <link rel="icon" href="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" type="image/png">
     <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -35,7 +35,7 @@
         <nav class="topbar">
             <div class="container topbar-content">
                 <a href="/" class="logo-area">
-                    <img src="/images/logo.png" alt="<%= t.common.brandName %>" class="nav-logo">
+                    <img src="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" alt="<%= t.common.brandName %>" class="nav-logo">
                     <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
                 </a>
                 <ul class="nav-links">
