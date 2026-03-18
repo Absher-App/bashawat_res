@@ -1,6 +1,8 @@
 :root {
-    --primary-color: #d4af37; /* Gold */
-    --secondary-color: #1a1a1a; /* Dark Gray */
+    --primary-color: #d32f2f; /* Red */
+    --primary-dark: #b71c1c;
+    --primary-accent: #ff5252;
+    --secondary-color: #0f0f10; /* Near-black */
     --text-color: #333;
     --light-bg: #f4f4f4;
     --white: #ffffff;
@@ -44,12 +46,12 @@ ul {
     top: 0;
     z-index: 1000;
     background: var(--white);
-    box-shadow: 0 1px 0 rgba(212, 175, 55, 0.12);
+    box-shadow: 0 1px 0 rgba(211, 47, 47, 0.12);
 }
 
 /* شريط العروض — متحرك، يعيد الدورة بعد انتهاء النص بالكامل */
 .offers-banner {
-    background: linear-gradient(135deg, #b8860b 0%, var(--primary-color) 50%, #c9a227 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 50%, var(--primary-accent) 100%);
     color: rgba(255, 255, 255, 0.98);
     padding: 10px 0;
     font-weight: 700;
@@ -504,7 +506,7 @@ ul {
     justify-content: center;
     gap: 8px;
     padding: 14px 28px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #c9a227 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-accent) 100%);
     color: var(--secondary-color);
     font-weight: 800;
     font-size: 1rem;
@@ -1303,7 +1305,7 @@ html[dir="rtl"] .search-box button {
 }
 
 .category-pill.active {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
     border-color: transparent;
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
@@ -1349,7 +1351,7 @@ html[dir="rtl"] .search-box button {
     align-items: center;
     gap: 10px;
     padding: 14px 32px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
     border-radius: 50px;
     font-weight: 700;
@@ -1857,7 +1859,7 @@ html[dir="rtl"] .search-box button {
 }
 
 .home-category-viewall:hover {
-    color: #b89628;
+    color: var(--primary-dark);
 }
 
 .category-block {
@@ -1909,7 +1911,7 @@ html[dir="rtl"] .search-box button {
 }
 
 .ice-cream-cup-btn.active {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #c9a227 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-accent) 100%);
     border-color: var(--primary-color);
     color: #fff;
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
@@ -2189,7 +2191,7 @@ html[dir="rtl"] .search-box button {
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(180deg, var(--primary-color) 0%, #c9a227 100%);
+    background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-accent) 100%);
     border-radius: 0 16px 16px 0;
 }
 
@@ -2579,7 +2581,7 @@ html[dir="rtl"] .search-box button {
 }
 
 .hover-add-btn {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
     border: none;
     padding: 10px 18px;
@@ -2643,7 +2645,7 @@ html[dir="rtl"] .search-box button {
 .add-to-cart-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
     border: none;
     border-radius: 12px;
@@ -2661,7 +2663,7 @@ html[dir="rtl"] .search-box button {
 }
 
 .add-to-cart-btn:hover {
-    background: linear-gradient(135deg, #e5bd3c 0%, #cba52b 100%);
+    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
 }
@@ -2796,7 +2798,7 @@ html[dir="rtl"] .search-box button {
 .cake-submit-btn {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
     border: none;
     border-radius: 14px;
@@ -3093,7 +3095,7 @@ html[dir="rtl"] .search-box button {
 }
 
 .empty-cart-btn.primary {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
 }
 
@@ -3161,14 +3163,14 @@ html[dir="rtl"] .search-box button {
 }
 
 .qty-btn.plus {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #fff;
     border: none;
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
 
 .qty-btn.plus:hover {
-    background: linear-gradient(135deg, #e5bd3c 0%, #cba52b 100%);
+    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
     box-shadow: 0 6px 18px rgba(212, 175, 55, 0.5);
 }
 
@@ -3290,7 +3292,7 @@ html[dir="rtl"] .search-box button {
     margin: -44px auto 20px;
     position: relative;
     z-index: 1;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     border-radius: 18px;
     display: flex;
     align-items: center;
@@ -3335,7 +3337,7 @@ html[dir="rtl"] .search-box button {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), #b89628);
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
 }
 
 .booking-content h2 {
@@ -3512,7 +3514,7 @@ html[dir="rtl"] .search-box button {
 .review-avatar {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #b89628 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
