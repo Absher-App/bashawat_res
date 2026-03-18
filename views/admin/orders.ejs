@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الطلبات - لوحة التحكم</title>
+  <link rel="stylesheet" href="/css/admin.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
+  <link rel="icon" href="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <%- include('partials/sidebar', { activePage }) %>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1><i class="fas fa-receipt"></i> الطلبات</h1>
+      <p class="admin-subtitle">متابعة الطلبات وتغيير الحالة</p>
+    </header>
+
+    <section class="admin-card">
+      <div style="overflow:auto;">
+        <table class="admin-table" style="min-width: 980px;">
+          <thead>
+            <tr>
+              <th>المرجع</th>
+              <th>العميل</th>
+              <th>الجوال</th>
+              <th>الإجمالي</th>
+              <th>الدفع</th>
+              <th>الحالة</th>
+              <th>التاريخ</th>
+              <th>واتساب</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!orders || !orders.length) { %>
+              <tr><td colspan="8" style="text-align:center; color:#666;">لا توجد طلبات بعد.</td></tr>
+            <% } %>
+            <% (orders || []).forEach(o => { %>
+              <tr>
+                <td><strong><%= o.order_ref %></strong></td>
+                <td><%= o.customer_name %></td>
+                <td><%= o.customer_phone %></td>
+                <td><%= Number(o.total).toFixed(2) %> ر.س</td>
+                <td>
+                  <span class="badge" style="background: rgba(11,11,12,.06); border:1px solid rgba(11,11,12,.18); padding: 6px 10px; border-radius: 999px;">
+                    <%= o.payment_method %> / <%= o.payment_status %>
+                  </span>
+                </td>
+                <td>
+                  <form method="POST" action="/admin/orders/<%= o.id %>/status" style="display:flex; gap:8px; align-items:center;">
+                    <select name="status" class="form-control" style="min-width: 180px;">
+                      <% const st = String(o.status || 'new'); %>
+                      <option value="new" <%= st==='new'?'selected':'' %>>جديد</option>
+                      <option value="preparing" <%= st==='preparing'?'selected':'' %>>قيد التجهيز</option>
+                      <option value="out_for_delivery" <%= st==='out_for_delivery'?'selected':'' %>>قيد التوصيل</option>
+                      <option value="completed" <%= st==='completed'?'selected':'' %>>تم التسليم</option>
+                      <option value="cancelled" <%= st==='cancelled'?'selected':'' %>>ملغي</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" style="white-space:nowrap;">
+                      <i class="fas fa-save"></i> حفظ
+                    </button>
+                  </form>
+                </td>
+                <td><%= o.created_at ? new Date(o.created_at).toLocaleString('ar-SA') : '' %></td>
+                <td>
+                  <a class="btn btn-success" href="/payment/success?order_ref=<%= encodeURIComponent(o.order_ref) %>" target="_blank" rel="noopener" style="white-space:nowrap;">
+                    <i class="fab fa-whatsapp"></i> الفاتورة
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="<%= typeof locale !== 'undefined' ? locale : 'ar' %>" dir="<%= typeof dir !== 'undefined' ? dir : 'rtl' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تم الدفع بنجاح - <%= t.common.brandName %></title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" type="image/png">
+  <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="topbar">
+      <div class="container topbar-content">
+        <a href="/" class="logo-area">
+          <img src="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" alt="<%= t.common.brandName %>" class="nav-logo">
+          <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/products" class="nav-link"><%= t.nav.products %></a></li>
+          <li><a href="/cart" class="nav-link nav-cart"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
+        </ul>
+        <%- include('partials/lang-switcher') %>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container" style="padding: 28px 0;">
+    <div class="cart-items-card" style="text-align:center;">
+      <div style="font-size:54px; color: var(--primary-color); margin-top: 6px;">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h1 style="margin: 12px 0 6px;">تم الدفع بنجاح</h1>
+      <p style="color:#555; margin-bottom: 14px;">اضغط الزر أدناه لإرسال الفاتورة إلى واتساب المطعم.</p>
+
+      <div style="max-width: 820px; margin: 0 auto; text-align: start;">
+        <div class="cart-summary-card" style="margin-top: 12px;">
+          <h3>الفاتورة</h3>
+          <pre style="white-space: pre-wrap; font-family: inherit; margin: 10px 0 0; line-height: 1.7;"><%= invoiceText %></pre>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap: wrap; margin-top: 14px;">
+        <a id="waBtn" class="checkout-btn" href="<%= waLink %>" target="_blank" rel="noopener" style="text-decoration:none;">
+          <i class="fab fa-whatsapp"></i> إرسال الفاتورة على واتساب
+        </a>
+        <a href="/products" class="continue-shopping" style="text-align:center;">
+          <i class="fas fa-arrow-right"></i> العودة للقائمة
+        </a>
+      </div>
+      <p style="margin-top:10px; color:#777; font-size: 13px;">إذا لم يفتح واتساب تلقائياً، انسخ الفاتورة وأرسلها يدوياً.</p>
+    </div>
+  </main>
+
+  <script>
+    // محاولة فتح واتساب تلقائياً بعد نجاح الدفع (قد يمنعها المتصفح أحياناً)
+    try {
+      const wa = document.getElementById('waBtn');
+      if (wa && wa.href) setTimeout(() => { window.open(wa.href, '_blank'); }, 700);
+    } catch (e) {}
+    // تفريغ السلة بعد الدفع
+    try { localStorage.removeItem('bagdash_cart'); } catch (e) {}
+  </script>
+</body>
+</html>
+

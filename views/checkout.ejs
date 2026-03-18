@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="<%= typeof locale !== 'undefined' ? locale : 'ar' %>" dir="<%= typeof dir !== 'undefined' ? dir : 'rtl' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إتمام الطلب والدفع - <%= t.common.brandName %> - <%= t.common.brandEn %></title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" href="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" type="image/png">
+  <link rel="stylesheet" href="/css/style.css?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="topbar">
+      <div class="container topbar-content">
+        <a href="/" class="logo-area">
+          <img src="/images/logo.png?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>" alt="<%= t.common.brandName %>" class="nav-logo">
+          <span class="brand-name"><%= t.common.brandName %> <em class="brand-en"><%= t.common.brandEn %></em></span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/products" class="nav-link"><%= t.nav.products %></a></li>
+          <li><a href="/cart" class="nav-link nav-cart active"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
+        </ul>
+        <%- include('partials/lang-switcher') %>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container" style="padding: 28px 0;">
+    <div class="cart-layout" style="grid-template-columns: 1.15fr .85fr; align-items: start;">
+      <section class="cart-items-section">
+        <div class="cart-items-card">
+          <h2 class="cart-section-title cart-section-title-products"><i class="fas fa-map-marker-alt"></i> عنوان التوصيل</h2>
+
+          <form id="checkoutForm" class="admin-form" style="margin-top: 14px;">
+            <div class="form-group">
+              <label for="fullName">الاسم</label>
+              <input id="fullName" name="fullName" type="text" class="form-control" required placeholder="مثال: محمد أحمد">
+            </div>
+
+            <div class="form-group">
+              <label for="phone">رقم الجوال</label>
+              <input id="phone" name="phone" type="tel" class="form-control" required placeholder="مثال: 05xxxxxxxx">
+            </div>
+
+            <div class="form-group">
+              <label for="city">المدينة</label>
+              <input id="city" name="city" type="text" class="form-control" required value="الدمام">
+            </div>
+
+            <div class="form-group">
+              <label for="district">الحي</label>
+              <input id="district" name="district" type="text" class="form-control" required placeholder="مثال: الفيصلية">
+            </div>
+
+            <div class="form-group">
+              <label for="street">الشارع / رقم المبنى</label>
+              <input id="street" name="street" type="text" class="form-control" required placeholder="مثال: شارع الملك عبدالله، مبنى 12">
+            </div>
+
+            <div class="form-group">
+              <label for="notes">ملاحظات (اختياري)</label>
+              <textarea id="notes" name="notes" class="form-control" rows="3" placeholder="مثال: أقرب معلم، وقت مناسب للتوصيل..."></textarea>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap: wrap;">
+              <button type="submit" id="payBtn" class="checkout-btn" style="flex:1; min-width: 240px;">
+                <% if (paymentsEnabled) { %>
+                  <i class="fa-brands fa-apple"></i> الدفع عبر Apple Pay
+                <% } else { %>
+                  <i class="fas fa-flask"></i> محاكاة الدفع (تجربة)
+                <% } %>
+              </button>
+              <a href="/cart" class="continue-shopping" style="flex:1; min-width: 200px; text-align:center;">
+                <i class="fas fa-arrow-right"></i> الرجوع للسلة
+              </a>
+            </div>
+            <% if (mockEnabled) { %>
+              <div style="margin-top:10px; padding:10px 12px; border-radius: 12px; background: rgba(225, 6, 19, .06); border: 1px solid rgba(225, 6, 19, .18);">
+                <strong style="display:block; margin-bottom:4px;">وضع المحاكاة</strong>
+                <span style="color:#555; font-size: 13px; line-height: 1.6;">
+                  هذه عملية تجريبية بدون خصم فعلي. سيتم إنشاء طلب “مدفوع” لأغراض الاختبار، ثم تجهيز الفاتورة لإرسالها إلى واتساب المطعم، وستجده أيضاً في لوحة التحكم ضمن صفحة الطلبات.
+                </span>
+              </div>
+            <% } %>
+            <p id="checkoutError" style="margin-top:12px; color:#b0000b; display:none;"></p>
+          </form>
+        </div>
+      </section>
+
+      <aside class="cart-summary-section">
+        <div class="cart-summary-card">
+          <h3>ملخص الطلب</h3>
+          <div id="checkoutSummary" style="margin-top: 10px;">
+            <div class="loading-cart">جاري تحميل السلة...</div>
+          </div>
+          <hr>
+          <div class="summary-row total">
+            <span>الإجمالي</span>
+            <span id="checkoutTotal">0.00 <%= t.common.sar %></span>
+          </div>
+          <p style="margin-top:10px; color:#666; font-size: 13px; line-height: 1.6;">
+            سيتم تحويلك لصفحة الدفع الآمنة. عند نجاح الدفع سنجهز رسالة الفاتورة لإرسالها مباشرة على واتساب المطعم.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    window.__PAYMENTS__ = {
+      publishableKey: <%- JSON.stringify(stripePublishableKey || '') %>,
+      whatsappPhone: "966542629993",
+      enabled: <%= paymentsEnabled ? 'true' : 'false' %>,
+      mockEnabled: <%= mockEnabled ? 'true' : 'false' %>
+    };
+  </script>
+  <script src="/js/checkout.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
+</body>
+</html>
+

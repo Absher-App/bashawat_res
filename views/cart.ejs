@@ -41,7 +41,7 @@
                     <li><a href="/cart" class="nav-link nav-cart active"><%= t.nav.cart %> <i class="fas fa-shopping-cart"></i></a></li>
                 </ul>
                 <div class="topbar-social">
-                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/bashawathouserest/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
                     <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
                     <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
@@ -66,7 +66,7 @@
         <div class="drawer-lang"><%- include('partials/lang-switcher') %></div>
         <div class="drawer-social">
             <span class="drawer-social-label"><%= t.nav.followUs %></span>
-            <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.instagram.com/bashawathouserest/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
             <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
             <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
             <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
@@ -112,7 +112,7 @@
                     </div>
                     
                     <button class="checkout-btn" id="pageCheckoutBtn">
-                        <i class="fab fa-whatsapp"></i> <%= t.cart.completeViaWhatsApp %>
+                        <i class="fa-brands fa-apple"></i> إتمام الطلب والدفع
                     </button>
                     
                     <a href="/products" class="continue-shopping">
@@ -142,7 +142,7 @@
                 <p><i class="fas fa-phone"></i> 054 262 9993</p>
                 <p><i class="fas fa-map-marker-alt"></i> الدمام • طريق الملك بن عبدالله</p>
                 <div class="footer-social">
-                    <a href="https://www.instagram.com/bodatbagdash/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/bashawathouserest/" target="_blank" rel="noopener" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
                     <a href="https://x.com/BodatBagdash" target="_blank" rel="noopener" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
                     <a href="https://www.snapchat.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
                     <a href="https://www.tiktok.com/@bagdashsweet" target="_blank" rel="noopener" aria-label="تيك توك"><i class="fab fa-tiktok"></i></a>
@@ -183,6 +183,8 @@
     window.__i18n.tax = '<%= t.cart.tax %>';
     window.__i18n.total = '<%= t.cart.total %>';
     window.__i18n.totalLabel = '<%= t.cart.totalLabel %>';
+    window.__PAYMENTS__ = window.__PAYMENTS__ || {};
+    window.__PAYMENTS__.enabled = <%= paymentsEnabled ? 'true' : 'false' %>;
 </script>
     <script src="/js/main.js?v=<%= typeof assetVersion !== 'undefined' ? assetVersion : '' %>"></script>
 </body>

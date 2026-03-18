@@ -536,7 +536,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if(pageCheckoutBtn) {
         pageCheckoutBtn.addEventListener('click', () => {
             if (cart.length === 0) return;
+            const paymentsEnabled = !!(window.__PAYMENTS__ && window.__PAYMENTS__.enabled);
+            if (paymentsEnabled) {
+                // New flow: collect address then pay (Apple Pay via Stripe)
+                window.location.href = '/checkout';
+                return;
+            }
 
+            // Fallback: WhatsApp order (if payments not configured)
             let message = "*طلب جديد من موقع مطعم الباشوات* \n\n";
             message += "*تفاصيل الطلب:*\n";
             const baseUrl = window.location.origin;
@@ -566,11 +573,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalLabel = (window.__i18n && window.__i18n.totalLabel) || 'المجموع الكلي';
             const sarFinal = (window.__i18n && window.__i18n.sar) || 'ر.س';
             message += `\n*${totalLabel}: ${total.toFixed(2)} ${sarFinal}*`;
-            message += "\n\nالرجاء تأكيد الطلب.";
+            message += "\n\n(ملاحظة: الدفع الإلكتروني غير مُفعّل حالياً على الموقع)";
             
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
-            
             window.open(whatsappUrl, '_blank');
         });
     }

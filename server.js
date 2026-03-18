@@ -8,6 +8,11 @@ const fs = require('fs');
 
 dotenv.config();
 
+// Payments (Stripe) - optional
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const stripePublishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
+const stripe = stripeSecretKey ? require('stripe')(stripeSecretKey) : null;
+
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, 'public/uploads');
 if (!fs.existsSync(uploadDir)){
@@ -145,6 +150,75 @@ async function safeQueryDb(sql, params = [], { okCodes = [] } = {}) {
     }
 }
 
+function generateOrderRef() {
+    // 10 chars, human-friendly-ish
+    return Math.random().toString(36).slice(2, 8).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+
+function sanitizePhone(v) {
+    return String(v || '').replace(/[^\d+]/g, '').trim();
+}
+
+// In-memory fallback store (for sandbox when DB isn't reachable)
+const memoryOrders = new Map(); // order_ref -> order object
+let memoryOrderIdSeq = 1000;
+
+function toMemoryOrder({ order_ref, customer_name, customer_phone, address, items, total, payment_method, payment_status, provider_ref }) {
+    const now = new Date();
+    return {
+        id: memoryOrderIdSeq++,
+        order_ref,
+        customer_name: String(customer_name || '').trim(),
+        customer_phone: sanitizePhone(customer_phone),
+        address_json: JSON.stringify(address || {}),
+        items_json: JSON.stringify(items || []),
+        total: parseFloat(total || 0),
+        payment_method: String(payment_method || 'mock'),
+        payment_status: String(payment_status || 'paid'),
+        status: 'new',
+        provider_ref: provider_ref ? String(provider_ref) : null,
+        created_at: now,
+        updated_at: now
+    };
+}
+
+async function createOrderRecord({ customer_name, customer_phone, address, items, total, payment_method, payment_status, provider_ref }) {
+    const order_ref = generateOrderRef();
+    try {
+        await queryDb(
+            `INSERT INTO orders (order_ref, customer_name, customer_phone, address_json, items_json, total, payment_method, payment_status, status, provider_ref)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?)`,
+            [
+                order_ref,
+                String(customer_name || '').trim(),
+                sanitizePhone(customer_phone),
+                JSON.stringify(address || {}),
+                JSON.stringify(items || []),
+                parseFloat(total || 0),
+                String(payment_method || 'unknown'),
+                String(payment_status || 'unpaid'),
+                provider_ref ? String(provider_ref) : null
+            ]
+        );
+        const rows = await queryDb('SELECT * FROM orders WHERE order_ref = ? LIMIT 1', [order_ref]);
+        return rows && rows[0] ? rows[0] : null;
+    } catch (err) {
+        // fallback to memory
+        const mem = toMemoryOrder({ order_ref, customer_name, customer_phone, address, items, total, payment_method, payment_status, provider_ref });
+        memoryOrders.set(order_ref, mem);
+        return mem;
+    }
+}
+
+async function getOrderByRef(order_ref) {
+    try {
+        const rows = await queryDb('SELECT * FROM orders WHERE order_ref = ? LIMIT 1', [order_ref]);
+        return rows && rows[0] ? rows[0] : null;
+    } catch (err) {
+        return memoryOrders.get(String(order_ref)) || null;
+    }
+}
+
 // إنشاء الجداول الأساسية تلقائياً (مهم على السيرفر أول مرة)
 async function ensureBaseSchema() {
     await safeQueryDb(
@@ -202,6 +276,25 @@ async function ensureBaseSchema() {
             id INT AUTO_INCREMENT PRIMARY KEY,
             setting_key VARCHAR(50) UNIQUE NOT NULL,
             setting_value TEXT,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+    );
+
+    // Orders: created from checkout (mock or real payment)
+    await safeQueryDb(
+        `CREATE TABLE IF NOT EXISTS orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            order_ref VARCHAR(32) NOT NULL UNIQUE,
+            customer_name VARCHAR(255) NOT NULL,
+            customer_phone VARCHAR(64) NOT NULL,
+            address_json TEXT NOT NULL,
+            items_json TEXT NOT NULL,
+            total DECIMAL(10, 2) NOT NULL,
+            payment_method VARCHAR(50) NOT NULL,
+            payment_status VARCHAR(20) NOT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'new',
+            provider_ref VARCHAR(255) DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
     );
@@ -438,9 +531,285 @@ app.get('/cart', async (req, res) => {
     try {
         const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
         const offer_text = settings.length > 0 ? settings[0].setting_value : '';
-        res.render('cart', { offer_text });
+        res.render('cart', { offer_text, paymentsEnabled: Boolean(stripe && stripePublishableKey) });
     } catch (err) {
-        res.render('cart', { offer_text: '' });
+        res.render('cart', { offer_text: '', paymentsEnabled: Boolean(stripe && stripePublishableKey) });
+    }
+});
+
+// Checkout: collect address then pay (Apple Pay via Stripe Checkout)
+app.get('/checkout', async (req, res) => {
+    try {
+        const paymentsEnabled = Boolean(stripe && stripePublishableKey);
+        const mockEnabled = !paymentsEnabled; // automatic sandbox if not configured
+        res.render('checkout', { stripePublishableKey, paymentsEnabled, mockEnabled });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/cart');
+    }
+});
+
+function normalizeText(v) {
+    return String(v || '').trim();
+}
+
+function formatInvoiceText({ brandName, orderId, address, items, totalSar, paidAt }) {
+    const lines = [];
+    lines.push(`*فاتورة مدفوعة - ${brandName}*`);
+    if (orderId) lines.push(`رقم العملية: ${orderId}`);
+    if (paidAt) lines.push(`وقت الدفع: ${paidAt}`);
+    lines.push('');
+    lines.push('*بيانات العميل:*');
+    lines.push(`- الاسم: ${address.fullName || '-'}`);
+    lines.push(`- الجوال: ${address.phone || '-'}`);
+    lines.push(`- العنوان: ${[address.city, address.district, address.street].filter(Boolean).join('، ') || '-'}`);
+    if (address.notes) lines.push(`- ملاحظات: ${address.notes}`);
+    lines.push('');
+    lines.push('*تفاصيل الطلب:*');
+    (items || []).forEach(it => {
+        lines.push(`- ${it.name} (${it.quantity}x): ${it.lineTotal.toFixed(2)} ر.س`);
+    });
+    lines.push('');
+    lines.push(`*الإجمالي المدفوع: ${totalSar.toFixed(2)} ر.س*`);
+    return lines.join('\n');
+}
+
+async function buildLineItemsFromCart(cart) {
+    if (!Array.isArray(cart) || cart.length === 0) return { lineItems: [], invoiceItems: [], total: 0 };
+    const ids = [...new Set(cart.map(x => parseInt(x.id, 10)).filter(Boolean))];
+    if (!ids.length) return { lineItems: [], invoiceItems: [], total: 0 };
+
+    const placeholders = ids.map(() => '?').join(',');
+    let rows = await queryDb(`SELECT id, name, price, sale_price, variants FROM products WHERE id IN (${placeholders})`, ids);
+    rows = rows || [];
+    const byId = new Map(rows.map(r => [String(r.id), r]));
+
+    const lineItems = [];
+    const invoiceItems = [];
+    let total = 0;
+
+    for (const item of cart) {
+        const id = String(item.id || '');
+        const qty = Math.max(1, parseInt(item.quantity || 1, 10));
+        const p = byId.get(id);
+        if (!p) continue;
+
+        let unitPrice = (p.sale_price != null && String(p.sale_price).trim() !== '') ? parseFloat(p.sale_price) : parseFloat(p.price);
+        let displayName = p.name;
+
+        const sel = item.selectedVariant;
+        if (sel && sel.name && sel.price != null) {
+            // Validate selected variant price against product variants list
+            let variants = [];
+            try { variants = p.variants ? JSON.parse(p.variants) : []; } catch (e) { variants = []; }
+            const match = Array.isArray(variants) ? variants.find(v => String(v.name) === String(sel.name)) : null;
+            if (match && match.price != null) {
+                unitPrice = parseFloat(match.price) || unitPrice;
+                displayName = `${p.name} - ${match.name}`;
+            }
+        }
+
+        if (!Number.isFinite(unitPrice) || unitPrice <= 0) continue;
+        const lineTotal = unitPrice * qty;
+        total += lineTotal;
+
+        lineItems.push({
+            price_data: {
+                currency: 'sar',
+                product_data: { name: displayName },
+                unit_amount: Math.round(unitPrice * 100),
+            },
+            quantity: qty,
+        });
+        invoiceItems.push({ name: displayName, quantity: qty, unitPrice, lineTotal });
+    }
+
+    return { lineItems, invoiceItems, total };
+}
+
+function buildInvoiceItemsFromClientCart(cart) {
+    const items = [];
+    let total = 0;
+    if (!Array.isArray(cart)) return { items, total };
+    for (const it of cart) {
+        const qty = Math.max(1, parseInt(it.quantity || 1, 10));
+        let name = String(it.name || 'منتج');
+        if (it.selectedVariant && it.selectedVariant.name) {
+            name = `${name} - ${String(it.selectedVariant.name)}`;
+        }
+        const unitPrice = it.selectedVariant && it.selectedVariant.price != null
+            ? parseFloat(it.selectedVariant.price) || 0
+            : (it.sale_price != null && String(it.sale_price).trim() !== '' ? (parseFloat(it.sale_price) || 0) : (parseFloat(it.price) || 0));
+        const lineTotal = unitPrice * qty;
+        if (!Number.isFinite(lineTotal) || lineTotal <= 0) continue;
+        total += lineTotal;
+        items.push({ name, quantity: qty, unitPrice, lineTotal });
+    }
+    return { items, total };
+}
+
+app.post('/api/payments/create-checkout-session', async (req, res) => {
+    try {
+        if (!stripe) return res.status(400).send('Payments are not configured on this server.');
+
+        const cart = req.body && req.body.cart;
+        const address = req.body && req.body.address ? req.body.address : {};
+
+        const addr = {
+            fullName: normalizeText(address.fullName),
+            phone: normalizeText(address.phone),
+            city: normalizeText(address.city),
+            district: normalizeText(address.district),
+            street: normalizeText(address.street),
+            notes: normalizeText(address.notes),
+        };
+        if (!addr.fullName || !addr.phone || !addr.city || !addr.district || !addr.street) {
+            return res.status(400).send('الرجاء تعبئة بيانات العنوان كاملة.');
+        }
+
+        const { lineItems, total } = await buildLineItemsFromCart(cart);
+        if (!lineItems.length || total <= 0) return res.status(400).send('السلة فارغة أو غير صالحة.');
+
+        const base = (process.env.SITE_URL || '').replace(/\/$/, '') || (req.protocol + '://' + req.get('host'));
+        const session = await stripe.checkout.sessions.create({
+            mode: 'payment',
+            line_items: lineItems,
+            success_url: `${base}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${base}/cart`,
+            automatic_payment_methods: { enabled: true },
+            metadata: {
+                address_json: JSON.stringify(addr),
+                total_sar: String(total.toFixed(2)),
+            },
+        });
+
+        return res.json({ url: session.url });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('تعذر إنشاء جلسة الدفع. حاول مرة أخرى.');
+    }
+});
+
+// Sandbox payment: create paid order locally (no gateway)
+app.post('/api/payments/mock-pay', async (req, res) => {
+    try {
+        const cart = req.body && req.body.cart;
+        const address = req.body && req.body.address ? req.body.address : {};
+
+        const addr = {
+            fullName: normalizeText(address.fullName),
+            phone: normalizeText(address.phone),
+            city: normalizeText(address.city),
+            district: normalizeText(address.district),
+            street: normalizeText(address.street),
+            notes: normalizeText(address.notes),
+        };
+        if (!addr.fullName || !addr.phone || !addr.city || !addr.district || !addr.street) {
+            return res.status(400).send('الرجاء تعبئة بيانات العنوان كاملة.');
+        }
+
+        // In sandbox we can build totals from client cart without DB
+        let invoiceItems = [];
+        let total = 0;
+        try {
+            const r = buildInvoiceItemsFromClientCart(cart);
+            invoiceItems = r.items;
+            total = r.total;
+        } catch (e) {}
+        if (!invoiceItems.length || total <= 0) return res.status(400).send('السلة فارغة أو غير صالحة.');
+
+        // Save order for tracking in admin
+        const order = await createOrderRecord({
+            customer_name: addr.fullName,
+            customer_phone: addr.phone,
+            address: addr,
+            items: invoiceItems,
+            total,
+            payment_method: 'mock',
+            payment_status: 'paid',
+            provider_ref: 'MOCK'
+        });
+
+        return res.json({ redirect: `/payment/success?order_ref=${encodeURIComponent(order.order_ref)}` });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('تعذر إتمام المحاكاة. حاول مرة أخرى.');
+    }
+});
+
+app.get('/payment/success', async (req, res) => {
+    try {
+        const orderRef = req.query.order_ref;
+        if (orderRef) {
+            const o = await getOrderByRef(String(orderRef));
+            if (!o) return res.redirect('/cart');
+            let addr = {};
+            let items = [];
+            try { addr = o.address_json ? JSON.parse(o.address_json) : {}; } catch (e) {}
+            try { items = o.items_json ? JSON.parse(o.items_json) : []; } catch (e) {}
+            const totalSar = parseFloat(o.total) || 0;
+            const invoiceText = formatInvoiceText({
+                brandName: (res.locals && res.locals.t && res.locals.t.common && res.locals.t.common.brandName) ? res.locals.t.common.brandName : 'المطعم',
+                orderId: o.order_ref,
+                address: addr,
+                items,
+                totalSar,
+                paidAt: o.created_at ? new Date(o.created_at).toLocaleString('ar-SA') : ''
+            });
+            const phone = '966542629993';
+            const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(invoiceText)}`;
+            return res.render('payment-success', { invoiceText, waLink });
+        }
+
+        if (!stripe) return res.redirect('/cart');
+        const sessionId = req.query.session_id;
+        if (!sessionId) return res.redirect('/cart');
+
+        const s = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['line_items'] });
+        if (!s || s.payment_status !== 'paid') return res.redirect('/cart');
+
+        let addr = {};
+        try { addr = s.metadata && s.metadata.address_json ? JSON.parse(s.metadata.address_json) : {}; } catch (e) { addr = {}; }
+
+        const items = (s.line_items && s.line_items.data ? s.line_items.data : []).map(li => {
+            const qty = li.quantity || 1;
+            const amount = (li.amount_total != null ? li.amount_total : (li.amount_subtotal || 0));
+            return {
+                name: (li.description || (li.price && li.price.product && li.price.product.name) || 'منتج'),
+                quantity: qty,
+                lineTotal: (amount || 0) / 100,
+            };
+        });
+
+        const totalSar = (s.amount_total || 0) / 100;
+        const paidAt = s.created ? new Date(s.created * 1000).toLocaleString('ar-SA') : '';
+
+        // Save order for tracking
+        const saved = await createOrderRecord({
+            customer_name: addr.fullName || 'عميل',
+            customer_phone: addr.phone || '',
+            address: addr,
+            items,
+            total: totalSar,
+            payment_method: 'stripe',
+            payment_status: 'paid',
+            provider_ref: s.id
+        });
+
+        const invoiceText = formatInvoiceText({
+            brandName: (res.locals && res.locals.t && res.locals.t.common && res.locals.t.common.brandName) ? res.locals.t.common.brandName : 'المطعم',
+            orderId: saved ? saved.order_ref : s.id,
+            address: addr,
+            items,
+            totalSar,
+            paidAt,
+        });
+        const phone = '966542629993';
+        const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(invoiceText)}`;
+        return res.render('payment-success', { invoiceText, waLink });
+    } catch (err) {
+        console.error(err);
+        return res.redirect('/cart');
     }
 });
 
@@ -504,6 +873,32 @@ app.get('/admin/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/admin/login');
     });
+});
+
+// الطلبات (لوحة التحكم)
+app.get('/admin/orders', requireAuth, async (req, res) => {
+    try {
+        let orders = await queryDb('SELECT * FROM orders ORDER BY id DESC LIMIT 200');
+        return res.render('admin/orders', { orders, activePage: 'orders' });
+    } catch (err) {
+        console.error(err);
+        // fallback to memory orders
+        const orders = Array.from(memoryOrders.values()).sort((a, b) => (b.id || 0) - (a.id || 0));
+        return res.render('admin/orders', { orders, activePage: 'orders' });
+    }
+});
+
+app.post('/admin/orders/:id/status', requireAuth, async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const status = String(req.body.status || '').trim();
+    const allowed = new Set(['new', 'preparing', 'out_for_delivery', 'completed', 'cancelled']);
+    if (!id || !allowed.has(status)) return res.redirect('/admin/orders');
+    try {
+        await queryDb('UPDATE orders SET status = ? WHERE id = ?', [status, id]);
+    } catch (err) {
+        console.error(err);
+    }
+    return res.redirect('/admin/orders');
 });
 
 // الآيسكريم — أحجام الكوب والنكهات (regex لتفادي Cannot GET في Express 5)
