@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         pageCheckoutBtn.addEventListener('click', () => {
             if (cart.length === 0) return;
 
-            let message = "*طلب جديد من موقع مطعم الباشاوات* \n\n";
+            let message = "*طلب جديد من موقع مطعم الباشوات* \n\n";
             message += "*تفاصيل الطلب:*\n";
             const baseUrl = window.location.origin;
             
