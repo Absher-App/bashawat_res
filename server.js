@@ -478,17 +478,6 @@ app.get('/categories', async (req, res) => {
     }
 });
 
-// صفحة الحفلات
-app.get('/parties', async (req, res) => {
-    try {
-        const settings = await queryDb("SELECT * FROM settings WHERE setting_key = 'offer_banner'");
-        const offer_text = settings.length > 0 ? settings[0].setting_value : '';
-        res.render('parties', { offer_text });
-    } catch (err) {
-        res.render('parties', { offer_text: '' });
-    }
-});
-
 // صفحة السلة
 app.get('/cart', async (req, res) => {
     try {
@@ -500,7 +489,7 @@ app.get('/cart', async (req, res) => {
     }
 });
 
-// Sitemap ديناميكي لتحسين الأرشفة في جوجل (يضم الرئيسية، المنتجات، الحفلات، السلة، وكل صفحة منتج)
+// Sitemap ديناميكي لتحسين الأرشفة في جوجل (يضم الرئيسية، المنتجات، التصنيفات، السلة، وكل صفحة منتج)
 app.get('/sitemap.xml', async (req, res) => {
     const base = (process.env.SITE_URL || '').replace(/\/$/, '') || (req.protocol + '://' + req.get('host'));
     const today = new Date().toISOString().slice(0, 10);
@@ -508,7 +497,6 @@ app.get('/sitemap.xml', async (req, res) => {
         { loc: base + '/', changefreq: 'weekly', priority: '1.0' },
         { loc: base + '/products', changefreq: 'weekly', priority: '0.9' },
         { loc: base + '/categories', changefreq: 'weekly', priority: '0.85' },
-        { loc: base + '/parties', changefreq: 'monthly', priority: '0.8' },
         { loc: base + '/cart', changefreq: 'weekly', priority: '0.7' }
     ];
     try {

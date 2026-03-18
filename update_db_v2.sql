@@ -27,5 +27,5 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('offer_banner',
 
 INSERT INTO slides (title, subtitle, image_url, link_url, display_order) VALUES 
 ('أشهى الحلويات العربية', 'طعم الأصالة في كل قطعة', 'https://images.unsplash.com/photo-1579372786545-d24232daf58c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80', '#products-section', 1),
-('كيك فاخر للمناسبات', 'شارك أحبابك أجمل اللحظات', 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80', '/parties', 2),
+('كيك فاخر للمناسبات', 'شارك أحبابك أجمل اللحظات', 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80', '/products', 2),
 ('مطعم الباشوات', 'انتعاش لا يقاوم في كل قضمة', 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80', '#products-section', 3);
