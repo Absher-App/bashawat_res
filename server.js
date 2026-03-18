@@ -136,13 +136,92 @@ function queryDb(sql, params = []) {
     });
 }
 
+async function safeQueryDb(sql, params = [], { okCodes = [] } = {}) {
+    try {
+        return await queryDb(sql, params);
+    } catch (err) {
+        if (okCodes.includes(err.code)) return null;
+        throw err;
+    }
+}
+
+// إنشاء الجداول الأساسية تلقائياً (مهم على السيرفر أول مرة)
+async function ensureBaseSchema() {
+    await safeQueryDb(
+        `CREATE TABLE IF NOT EXISTS categories (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+    );
+
+    await safeQueryDb(
+        `CREATE TABLE IF NOT EXISTS products (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            details TEXT DEFAULT NULL,
+            price DECIMAL(10, 2) NOT NULL,
+            sale_price DECIMAL(10, 2) DEFAULT NULL,
+            image_url VARCHAR(255),
+            images TEXT DEFAULT NULL,
+            category VARCHAR(255),
+            is_cake TINYINT(1) DEFAULT 0,
+            variant_type VARCHAR(50) DEFAULT NULL,
+            variants TEXT DEFAULT NULL,
+            is_most_requested TINYINT(1) DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+    );
+
+    await safeQueryDb(
+        `CREATE TABLE IF NOT EXISTS slides (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255),
+            subtitle VARCHAR(255),
+            image_url VARCHAR(255) NOT NULL,
+            link_url VARCHAR(255),
+            button_text VARCHAR(255) DEFAULT NULL,
+            display_order INT DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+    );
+
+    await safeQueryDb(
+        `CREATE TABLE IF NOT EXISTS stories (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255),
+            cover_url VARCHAR(255) NOT NULL,
+            video_url VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+    );
+
+    await safeQueryDb(
+        `CREATE TABLE IF NOT EXISTS settings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            setting_key VARCHAR(50) UNIQUE NOT NULL,
+            setting_value TEXT,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;`
+    );
+}
+
 // تشغيل المايجريشن تلقائياً عند بدء السيرفر (لا يحتاج تيرمينال)
 async function runAutoMigrations() {
+    try {
+        await ensureBaseSchema();
+        console.log('✓ تم التأكد من وجود الجداول الأساسية');
+    } catch (err) {
+        console.error('خطأ أثناء إنشاء الجداول الأساسية:', err.message);
+    }
+
     try {
         await queryDb("ALTER TABLE products ADD COLUMN details TEXT DEFAULT NULL");
         console.log('✓ تم إضافة عمود تفاصيل المنتج (details)');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود details موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -150,6 +229,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود is_cake');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود is_cake موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -157,6 +237,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود صور متعددة (images)');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود images موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -164,6 +245,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود variant_type (أحجام/أوزان)');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود variant_type موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -171,6 +253,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود variants (الأحجام/الأوزان والأسعار)');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود variants موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -178,6 +261,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود is_most_requested (الأكثر طلباً)');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود is_most_requested موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -185,6 +269,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود sale_price (سعر بعد الخصم)');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود sale_price موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول products غير موجود');
         else console.error('تحذير:', err.message);
     }
     try {
@@ -192,6 +277,7 @@ async function runAutoMigrations() {
         console.log('✓ تم إضافة عمود button_text للسلايدر');
     } catch (err) {
         if (err.code === 'ER_DUP_FIELDNAME') console.log('✓ عمود button_text موجود مسبقاً');
+        else if (err.code === 'ER_NO_SUCH_TABLE') console.error('تحذير: جدول slides غير موجود');
         else console.error('تحذير:', err.message);
     }
 }
